@@ -1,0 +1,132 @@
+{
+  "identificacion": {
+    "version": 3,
+    "ambiente": "01",
+    "tipoDte": "04",
+    "numeroControl": "DTE-04-M001P001-000000000017630",
+    "codigoGeneracion": "4396AC87-B26B-1EDF-89B8-310080793554",
+    "tipoModelo": 1,
+    "tipoOperacion": 1,
+    "tipoContingencia": null,
+    "motivoContin": null,
+    "fecEmi": "2024-06-08",
+    "horEmi": "12:04:24",
+    "tipoMoneda": "USD"
+  },
+  "documentoRelacionado": null,
+  "emisor": {
+    "nit": "06142303951041",
+    "nrc": "844152",
+    "nombre": "INGENIO CHAPARRASTIQUE, S.A. DE C.V.",
+    "codActividad": "10721",
+    "descActividad": "Ingenios azucareros",
+    "nombreComercial": null,
+    "tipoEstablecimiento": "02",
+    "direccion": {
+      "departamento": "12",
+      "municipio": "17",
+      "complemento": "CARR. AL CUCO KM. 144 Y 1/2, CTON. EL JUTE, SAN MIGUEL, SAN MIGUEL"
+    },
+    "telefono": "26674800",
+    "correo": "info@grupocassa.com",
+    "codEstableMH": "M001",
+    "codEstable": null,
+    "codPuntoVentaMH": "P001",
+    "codPuntoVenta": null
+  },
+  "receptor": {
+    "tipoDocumento": "36",
+    "numDocumento": "06142312740013",
+    "nrc": "205001",
+    "nombre": "ALMACENADORA DEL PACIFICO, S.A. DE C.V.",
+    "codActividad": "52109",
+    "descActividad": "ALQUILER DE BODEGAS PARA ALMACENAMIENTO Y DEPÓSITO N.C.P.",
+    "nombreComercial": null,
+    "direccion": {
+      "departamento": "06",
+      "municipio": "14",
+      "complemento": "89 AV. NORTE # 350, COL. ESCALON"
+    },
+    "telefono": "25247900",
+    "correo": "facturacion.electronica@almapac.com",
+    "bienTitulo": "04"
+  },
+  "ventaTercero": null,
+  "cuerpoDocumento": [
+    {
+      "numItem": 1,
+      "tipoItem": 1,
+      "numeroDocumento": null,
+      "codigo": "7100001",
+      "codTributo": null,
+      "descripcion": "AZUCAR CRUDO (>= 98.5 <= 99.1) GRANEL ( KG )|KG",
+      "cantidad": 39790,
+      "uniMedida": 34,
+      "precioUni": 0,
+      "montoDescu": 0,
+      "ventaNoSuj": 0,
+      "ventaExenta": 0,
+      "ventaGravada": 0,
+      "tributos": null
+    }
+  ],
+  "resumen": {
+    "totalNoSuj": 0,
+    "totalExenta": 0,
+    "totalGravada": 0,
+    "subTotalVentas": 0,
+    "descuNoSuj": 0,
+    "descuExenta": 0,
+    "descuGravada": 0,
+    "porcentajeDescuento": 0,
+    "totalDescu": 0,
+    "tributos": null,
+    "subTotal": 0,
+    "montoTotalOperacion": 0,
+    "totalLetras": "Cero Dólares US con 00/100"
+  },
+  "extension": {
+    "nombEntrega": null,
+    "docuEntrega": null,
+    "nombRecibe": null,
+    "docuRecibe": null,
+    "observaciones": "No Transferencia de Dominio - MARCHAMOS   74933-74934-74935-74936"
+  },
+  "apendice": [
+    {
+      "campo": "nombreDoc",
+      "etiqueta": "nombreDoc",
+      "valor": "2000_ZTRA_0080793554.json"
+    },
+    {
+      "campo": "pdf417",
+      "etiqueta": "pdf417",
+      "valor": "<93554>"
+    },
+    {
+      "campo": "motorista",
+      "etiqueta": "empresa|motorista|telefono|placa|remolque",
+      "valor": "MARTINEZ ESCOBAR, S.A. DE C.V.|ALFREDO ARMANDO TORRES||C96094|RE43233"
+    },
+    {
+      "campo": "peso",
+      "etiqueta": "Peso1|Fecha1|Peso2|Fecha3|Peso3|Fecha3",
+      "valor": "13,720.000|08/06/2024 10:32:57|53,510.000|08/06/2024 11:57:00|39,790.000|08/06/2024 11:57:00"
+    }
+  ],
+  "responseMH": {
+    "version": 2,
+    "ambiente": "01",
+    "versionApp": 2,
+    "estado": "PROCESADO",
+    "codigoGeneracion": "4396AC87-B26B-1EDF-89B8-310080793554",
+    "numeroControl": "DTE-04-M001P001-000000000017630",
+    "selloRecibido": "202449B4AC7E8E20458685EE76A38DC841BBXVYD",
+    "fhProcesamiento": "08/06/2024 12:06:04",
+    "codigoMsg": "001",
+    "descripcionMsg": "RECIBIDO",
+    "observaciones": []
+  },
+  "codigoEmpresa": "ICHP",
+  "token": "eyJhbGciOiJSUzUxMiJ9.ewogICJpZGVudGlmaWNhY2lvbiI6IHsKICAgICJ2ZXJzaW9uIjogMywKICAgICJhbWJpZW50ZSI6ICIwMSIsCiAgICAidGlwb0R0ZSI6ICIwNCIsCiAgICAibnVtZXJvQ29udHJvbCI6ICJEVEUtMDQtTTAwMVAwMDEtMDAwMDAwMDAwMDE3NjMwIiwKICAgICJjb2RpZ29HZW5lcmFjaW9uIjogIjQzOTZBQzg3LUIyNkItMUVERi04OUI4LTMxMDA4MDc5MzU1NCIsCiAgICAidGlwb01vZGVsbyI6IDEsCiAgICAidGlwb09wZXJhY2lvbiI6IDEsCiAgICAidGlwb0NvbnRpbmdlbmNpYSI6IG51bGwsCiAgICAibW90aXZvQ29udGluIjogbnVsbCwKICAgICJmZWNFbWkiOiAiMjAyNC0wNi0wOCIsCiAgICAiaG9yRW1pIjogIjEyOjA0OjI0IiwKICAgICJ0aXBvTW9uZWRhIjogIlVTRCIKICB9LAogICJkb2N1bWVudG9SZWxhY2lvbmFkbyI6IG51bGwsCiAgImVtaXNvciI6IHsKICAgICJuaXQiOiAiMDYxNDIzMDM5NTEwNDEiLAogICAgIm5yYyI6ICI4NDQxNTIiLAogICAgIm5vbWJyZSI6ICJJTkdFTklPIENIQVBBUlJBU1RJUVVFLCBTLkEuIERFIEMuVi4iLAogICAgImNvZEFjdGl2aWRhZCI6ICIxMDcyMSIsCiAgICAiZGVzY0FjdGl2aWRhZCI6ICJJbmdlbmlvcyBhenVjYXJlcm9zIiwKICAgICJub21icmVDb21lcmNpYWwiOiBudWxsLAogICAgInRpcG9Fc3RhYmxlY2ltaWVudG8iOiAiMDIiLAogICAgImRpcmVjY2lvbiI6IHsKICAgICAgImRlcGFydGFtZW50byI6ICIxMiIsCiAgICAgICJtdW5pY2lwaW8iOiAiMTciLAogICAgICAiY29tcGxlbWVudG8iOiAiQ0FSUi4gQUwgQ1VDTyBLTS4gMTQ0IFkgMS8yLCBDVE9OLiBFTCBKVVRFLCBTQU4gTUlHVUVMLCBTQU4gTUlHVUVMIgogICAgfSwKICAgICJ0ZWxlZm9ubyI6ICIyNjY3NDgwMCIsCiAgICAiY29ycmVvIjogImluZm9AZ3J1cG9jYXNzYS5jb20iLAogICAgImNvZEVzdGFibGVNSCI6ICJNMDAxIiwKICAgICJjb2RFc3RhYmxlIjogbnVsbCwKICAgICJjb2RQdW50b1ZlbnRhTUgiOiAiUDAwMSIsCiAgICAiY29kUHVudG9WZW50YSI6IG51bGwKICB9LAogICJyZWNlcHRvciI6IHsKICAgICJ0aXBvRG9jdW1lbnRvIjogIjM2IiwKICAgICJudW1Eb2N1bWVudG8iOiAiMDYxNDIzMTI3NDAwMTMiLAogICAgIm5yYyI6ICIyMDUwMDEiLAogICAgIm5vbWJyZSI6ICJBTE1BQ0VOQURPUkEgREVMIFBBQ0lGSUNPLCBTLkEuIERFIEMuVi4iLAogICAgImNvZEFjdGl2aWRhZCI6ICI1MjEwOSIsCiAgICAiZGVzY0FjdGl2aWRhZCI6ICJBTFFVSUxFUiBERSBCT0RFR0FTIFBBUkEgQUxNQUNFTkFNSUVOVE8gWSBERVDDk1NJVE8gTi5DLlAuIiwKICAgICJub21icmVDb21lcmNpYWwiOiBudWxsLAogICAgImRpcmVjY2lvbiI6IHsKICAgICAgImRlcGFydGFtZW50byI6ICIwNiIsCiAgICAgICJtdW5pY2lwaW8iOiAiMTQiLAogICAgICAiY29tcGxlbWVudG8iOiAiODkgQVYuIE5PUlRFICMgMzUwLCBDT0wuIEVTQ0FMT04iCiAgICB9LAogICAgInRlbGVmb25vIjogIjI1MjQ3OTAwIiwKICAgICJjb3JyZW8iOiAiZmFjdHVyYWNpb24uZWxlY3Ryb25pY2FAYWxtYXBhYy5jb20iLAogICAgImJpZW5UaXR1bG8iOiAiMDQiCiAgfSwKICAidmVudGFUZXJjZXJvIjogbnVsbCwKICAiY3VlcnBvRG9jdW1lbnRvIjogWwogICAgewogICAgICAibnVtSXRlbSI6IDEsCiAgICAgICJ0aXBvSXRlbSI6IDEsCiAgICAgICJudW1lcm9Eb2N1bWVudG8iOiBudWxsLAogICAgICAiY29kaWdvIjogIjcxMDAwMDEiLAogICAgICAiY29kVHJpYnV0byI6IG51bGwsCiAgICAgICJkZXNjcmlwY2lvbiI6ICJBWlVDQVIgQ1JVRE8gKD49IDk4LjUgPD0gOTkuMSkgR1JBTkVMICggS0cgKXxLRyIsCiAgICAgICJjYW50aWRhZCI6IDM5NzkwLAogICAgICAidW5pTWVkaWRhIjogMzQsCiAgICAgICJwcmVjaW9VbmkiOiAwLAogICAgICAibW9udG9EZXNjdSI6IDAsCiAgICAgICJ2ZW50YU5vU3VqIjogMCwKICAgICAgInZlbnRhRXhlbnRhIjogMCwKICAgICAgInZlbnRhR3JhdmFkYSI6IDAsCiAgICAgICJ0cmlidXRvcyI6IG51bGwKICAgIH0KICBdLAogICJyZXN1bWVuIjogewogICAgInRvdGFsTm9TdWoiOiAwLAogICAgInRvdGFsRXhlbnRhIjogMCwKICAgICJ0b3RhbEdyYXZhZGEiOiAwLAogICAgInN1YlRvdGFsVmVudGFzIjogMCwKICAgICJkZXNjdU5vU3VqIjogMCwKICAgICJkZXNjdUV4ZW50YSI6IDAsCiAgICAiZGVzY3VHcmF2YWRhIjogMCwKICAgICJwb3JjZW50YWplRGVzY3VlbnRvIjogMCwKICAgICJ0b3RhbERlc2N1IjogMCwKICAgICJ0cmlidXRvcyI6IG51bGwsCiAgICAic3ViVG90YWwiOiAwLAogICAgIm1vbnRvVG90YWxPcGVyYWNpb24iOiAwLAogICAgInRvdGFsTGV0cmFzIjogIkNlcm8gRMOzbGFyZXMgVVMgY29uIDAwLzEwMCIKICB9LAogICJleHRlbnNpb24iOiB7CiAgICAibm9tYkVudHJlZ2EiOiBudWxsLAogICAgImRvY3VFbnRyZWdhIjogbnVsbCwKICAgICJub21iUmVjaWJlIjogbnVsbCwKICAgICJkb2N1UmVjaWJlIjogbnVsbCwKICAgICJvYnNlcnZhY2lvbmVzIjogIk5vIFRyYW5zZmVyZW5jaWEgZGUgRG9taW5pbyAtIE1BUkNIQU1PUyAgIDc0OTMzLTc0OTM0LTc0OTM1LTc0OTM2IgogIH0sCiAgImFwZW5kaWNlIjogWwogICAgewogICAgICAiY2FtcG8iOiAibm9tYnJlRG9jIiwKICAgICAgImV0aXF1ZXRhIjogIm5vbWJyZURvYyIsCiAgICAgICJ2YWxvciI6ICIyMDAwX1pUUkFfMDA4MDc5MzU1NC5qc29uIgogICAgfSwKICAgIHsKICAgICAgImNhbXBvIjogInBkZjQxNyIsCiAgICAgICJldGlxdWV0YSI6ICJwZGY0MTciLAogICAgICAidmFsb3IiOiAiPDkzNTU0PiIKICAgIH0sCiAgICB7CiAgICAgICJjYW1wbyI6ICJtb3RvcmlzdGEiLAogICAgICAiZXRpcXVldGEiOiAiZW1wcmVzYXxtb3RvcmlzdGF8dGVsZWZvbm98cGxhY2F8cmVtb2xxdWUiLAogICAgICAidmFsb3IiOiAiTUFSVElORVogRVNDT0JBUiwgUy5BLiBERSBDLlYufEFMRlJFRE8gQVJNQU5ETyBUT1JSRVN8fEN8NzI1ODgtUkUtMTUxMiIKICAgIH0sCiAgICB7CiAgICAgICJjYW1wbyI6ICJwZXNvIiwKICAgICAgImV0aXF1ZXRhIjogIlBlc28xfEZlY2hhMXxQZXNvMnxGZWNoYTN8UGVzbzN8RmVjaGEzIiwKICAgICAgInZhbG9yIjogIjEzLDcyMC4wMDB8MDgvMDYvMjAyNCAxMDozMjo1N3w1Myw1MTAuMDAwfDA4LzA2LzIwMjQgMTE6NTc6MDB8MzksNzkwLjAwMHwwOC8wNi8yMDI0IDExOjU3OjAwIgogICAgfQogIF0KfQ.SL4IDzl0KEfTjbRpU72KYgUVG-26O5CS-ILVB_lbskVPlrdBJz6TynmJRAfQjWlDsKuCNKZBxPEErgbk2HuINQ7qrR8OLUhUyAF7k0BomIMohGrk81lvc6O_xz3vkJ4CThO_h1cnq2RSpyepBgtZm4aPB10bu1pwpHer-FFVmdV_7Nc_WT7lrhJcs_2VIBG7VfdOWpiFBcOKM5aB9x2t3ukUa7cmBiEBaAVQimbzngovLIM2-SYs61_li8HG2XBJ9ikiCvOUpmG67zdwas3-SQx7zDbioO7k85JPbOagghr-gGRbJggLI2hG26KoLaE_WoIQoy48fz9DuENAkDqXOg"
+}

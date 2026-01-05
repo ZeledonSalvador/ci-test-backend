@@ -1,0 +1,7 @@
+export enum TypeLogsShipments {
+    ESTATUS = 'ESTATUS',
+    SUGAR_TIMES = 'SUGAR_TIMES',
+    REQUIRE_SWEEPING = 'REQUIRE_SWEEPING',
+    SYS_INTERNAL = 'SYS_INTERNAL',
+    OTRO = 'OTRO'
+}

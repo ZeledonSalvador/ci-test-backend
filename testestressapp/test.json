@@ -1,0 +1,28 @@
+{
+    "vehiculo": {
+        "motorista": {
+            "licencia": "367030",
+            "nombre": "JUAN PÉREZ GÓMEZ"
+        },
+        "placa": "S30732",
+        "placa_remolque": "B40123",
+        "tipo_camion": "V"
+    },
+    "transportista": {
+        "nombre": "ROSA MARÍA SÁNCHEZ CASTRO"
+    },
+    "codigo_gen": "9B1970F4-077D-4F2D-BF81-9F697835BFB8",
+    "producto": "AZ-003",
+    "tipo_operacion": "C",
+    "tipo_carga": "G",
+    "codigo_ingenio": "ILC",
+    "cantidad_producto": 43,
+    "unidad_medida": "kg",
+    "require_barrido": "N",
+    "marchamos": [
+        "8838",
+        "7299",
+        "8715",
+        "4855"
+    ]
+}

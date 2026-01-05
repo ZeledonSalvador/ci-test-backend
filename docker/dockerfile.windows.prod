@@ -1,0 +1,13 @@
+FROM mcr.microsoft.com/windows/servercore:ltsc2022
+RUN powershell -Command \
+    Invoke-WebRequest -Uri https://nodejs.org/dist/v18.17.1/node-v18.17.1-x64.msi -OutFile nodejs.msi; \
+    Start-Process msiexec.exe -ArgumentList '/i nodejs.msi /quiet /norestart' -NoNewWindow -Wait; \
+    Remove-Item -Force nodejs.msi
+
+WORKDIR /app
+RUN npm install -g @nestjs/cli
+RUN npm install
+RUN npm run build
+COPY . .
+ 
+ENTRYPOINT powershell -Command "node dist/main.js"

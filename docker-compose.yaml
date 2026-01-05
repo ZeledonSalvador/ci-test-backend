@@ -1,0 +1,50 @@
+services:
+  api_quickpass_main_prod:
+    build:
+      context: .
+      dockerfile: docker/dockerfile.windows.dev
+    container_name: api_quickpass_main_prod
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    networks:
+      - quickpass_api_app_prod
+    depends_on:
+      - api_quickpass_middleware_nav_prod
+      - api_middleware_excalibur_prod
+
+  api_quickpass_middleware_nav_prod:
+    build:
+      context: ./middleware_ingenioapi-erp
+      dockerfile: dockerfile
+    container_name: api_quickpass_middleware_nav_prod
+    restart: unless-stopped
+    # Comentado para evitar que el puerto 5064 sea accesible desde el exterior.
+    # Solo será accesible desde otros servicios dentro de la red Docker.
+    # ports:
+    #   - "5064:8080"
+    networks:
+      - quickpass_api_app_prod
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+
+  api_middleware_excalibur_prod:
+    build:
+      context: ./Middleware_Excalibur
+      dockerfile: dockerfile
+    container_name: api_middleware_excalibur_prod
+    restart: unless-stopped
+    # Comentado para evitar que el puerto 5065 sea accesible desde el exterior.
+    # Solo será accesible desde otros servicios dentro de la red Docker.
+    # ports:
+    #   - "5065:8080"
+    networks:
+      - quickpass_api_app_prod
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+
+networks:
+  quickpass_api_app_prod:
+    driver: nat

@@ -1,0 +1,22 @@
+FROM node:latest
+
+# Establece la zona horaria de El Salvador
+RUN ln -sf /usr/share/zoneinfo/America/El_Salvador /etc/localtime
+
+# Instala las dependencias necesarias, incluyendo libnss3
+RUN apt-get update \
+    && apt-get install -y libnss3 wget \
+    && apt-get clean
+
+
+WORKDIR /app/dist/
+RUN chmod -R 777 /app/dist/
+
+# Instala globalmente el CLI de Nest.js
+RUN npm i -g @nestjs/cli
+
+# Crea el directorio de la aplicación y establece el directorio de trabajo
+# Copia todos los archivos al directorio de trabajo
+COPY . .
+
+ENTRYPOINT ["sh", "-c", "npm install ; npm run start:dev"]

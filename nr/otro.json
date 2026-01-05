@@ -1,0 +1,142 @@
+{
+    "identificacion": {
+        "version": 3,
+        "ambiente": "01",
+        "tipoDte": "04",
+        "numeroControl": "DTE-04-00000000-000000000008812",
+        "codigoGeneracion": "6U7C8424-E3AD-1EDE-A982-760080761212",
+        "tipoModelo": 1,
+        "tipoOperacion": 1,
+        "tipoContingencia": null,
+        "motivoContin": null,
+        "fecEmi": "2023-12-26",
+        "horEmi": "13:31:57",
+        "tipoMoneda": "USD"
+    },
+    "documentoRelacionado": null,
+    "emisor": {
+        "nit": "06142303951041",
+        "nrc": "844152",
+        "nombre": "INGENIO CHAPARRASTIQUE, S.A. DE C.V.",
+        "codActividad": "10721",
+        "descActividad": "Ingenios azucareros",
+        "nombreComercial": null,
+        "tipoEstablecimiento": "02",
+        "direccion": {
+            "departamento": "12",
+            "municipio": "17",
+            "complemento": "CARR. AL CUCO KM. 144 Y 1/2, CTON. EL JUTE, SAN MIGUEL, SAN MIGUEL"
+        },
+        "telefono": "26674800",
+        "correo": "info@grupocassa.com",
+        "codEstableMH": "M001",
+        "codEstable": null,
+        "codPuntoVentaMH": "P001",
+        "codPuntoVenta": null
+    },
+    "receptor": {
+        "tipoDocumento": "36",
+        "numDocumento": "06143101041023",
+        "nrc": "1549959",
+        "nombre": "EMPAQUES Y SABORES, S.A. DE C.V.",
+        "codActividad": "82929",
+        "descActividad": "SERVICIO DE ENVASE Y EMPAQUE NCP",
+        "nombreComercial": null,
+        "direccion": {
+            "departamento": "06",
+            "municipio": "14",
+            "complemento": "AV. Y PJE. BUGAMBILIAS, COL. SAN SAN FRANCISCO,  # 15-A,"
+        },
+        "telefono": "22672600",
+        "correo": "anitavillalta@dizucar.com",
+        "bienTitulo": "04"
+    },
+    "ventaTercero": null,
+    "cuerpoDocumento": [
+        {
+            "numItem": 1,
+            "tipoItem": 1,
+            "numeroDocumento": null,
+            "codigo": "7003065",
+            "codTributo": null,
+            "descripcion": "AZUCAR BLANCA | J13|UN",
+            "cantidad": 20,
+            "uniMedida": 59,
+            "precioUni": 0,
+            "montoDescu": 0,
+            "ventaNoSuj": 0,
+            "ventaExenta": 0,
+            "ventaGravada": 0,
+            "tributos": null
+        }
+    ],
+    "resumen": {
+        "totalNoSuj": 0,
+        "totalExenta": 0,
+        "totalGravada": 0,
+        "subTotalVentas": 0,
+        "descuNoSuj": 0,
+        "descuExenta": 0,
+        "descuGravada": 0,
+        "porcentajeDescuento": 0,
+        "totalDescu": 0,
+        "tributos": null,
+        "subTotal": 0,
+        "montoTotalOperacion": 0,
+        "totalLetras": "Cero Dólares US con 00/100"
+    },
+    "extension": {
+        "nombEntrega": null,
+        "docuEntrega": null,
+        "nombRecibe": null,
+        "docuRecibe": null,
+        "observaciones": "No Transferencia de Dominio - CENTRO EMPAQUE LA CABANA"
+    },
+    "apendice": [
+        {
+            "campo": "nombreDoc",
+            "etiqueta": "nombreDoc",
+            "valor": "2000_ZLO_0080761270.json"
+        },
+        {
+            "campo": "pdf417",
+            "etiqueta": "pdf417",
+            "valor": "C"
+        },
+        {
+            "campo": "motorista",
+            "etiqueta": "transportista|motorista|telefono|placa|remolque",
+            "valor": "VERONICA MARISOL ESCOBAR DE MARTINE|NELSON BALMORI QUINTANILLA SEGOVIA||C96094|RE8973|"
+        },
+        {
+            "campo": "peso",
+            "etiqueta": "Peso1|Fecha1|Peso2|Fecha3|Peso3|Fecha3",
+            "valor": "15,260.000|26/12/2023 09:41:50|41,230.000|26/12/2023 11:15:20|25,970.000|26/12/2023 11:15:20"
+        },
+        {
+            "campo": "main",
+            "etiqueta": "licencia|placa_remolque|tipo_operacion|tipo_carga|tipo_camion",
+            "valor": "221311232P|RE8973|C|G|V"
+        },
+        {
+            "campo": "others",
+            "etiqueta": "require_barrido|marchamos",
+            "valor": "N|34234,23213"
+        }
+    ],
+    "responseMH": {
+        "version": 2,
+        "ambiente": "01",
+        "versionApp": 2,
+        "estado": "PROCESADO",
+        "codigoGeneracion": "2B9C8424-E3AD-1EDE-A982-960080761212",
+        "numeroControl": "DTE-04-00000000-000000000008812",
+        "selloRecibido": "20231EA0A02D3A354C1183EEA17C86ADC35FNXHS",
+        "fhProcesamiento": "26/12/2023 11:17:03",
+        "codigoMsg": "001",
+        "descripcionMsg": "RECIBIDO",
+        "observaciones": []
+    },
+    "codigoEmpresa": "ILC",
+    "token": "eyJhbGciOiJSUzUxMiJ9.ewogICJpZGVudGlmaWNhY2lvbiI6IHsKICAgICJ2ZXJzaW9uIjogMywKICAgICJhbWJpZW50ZSI6ICIwMSIsCiAgICAidGlwb0R0ZSI6ICIwNCIsCiAgICAibnVtZXJvQ29udHJvbCI6ICJEVEUtMDQtMDAwMDAwMDAtMDAwMDAwMDAwMDA4ODMwIiwKICAgICJjb2RpZ29HZW5lcmFjaW9uIjogIjJCOUM4NDI0LUUzQUQtMUVERS1BOTgyLTk2MDA4MDc2MTI3MCIsCiAgICAidGlwb01vZGVsbyI6IDEsCiAgICAidGlwb09wZXJhY2lvbiI6IDEsCiAgICAidGlwb0NvbnRpbmdlbmNpYSI6IG51bGwsCiAgICAibW90aXZvQ29udGluIjogbnVsbCwKICAgICJmZWNFbWkiOiAiMjAyMy0xMi0yNiIsCiAgICAiaG9yRW1pIjogIjEzOjMxOjU3IiwKICAgICJ0aXBvTW9uZWRhIjogIlVTRCIKICB9LAogICJkb2N1bWVudG9SZWxhY2lvbmFkbyI6IG51bGwsCiAgImVtaXNvciI6IHsKICAgICJuaXQiOiAiMDYxNDIzMDM5NTEwNDEiLAogICAgIm5yYyI6ICI4NDQxNTIiLAogICAgIm5vbWJyZSI6ICJJTkdFTklPIENIQVBBUlJBU1RJUVVFLCBTLkEuIERFIEMuVi4iLAogICAgImNvZEFjdGl2aWRhZCI6ICIxMDcyMSIsCiAgICAiZGVzY0FjdGl2aWRhZCI6ICJJbmdlbmlvcyBhenVjYXJlcm9zIiwKICAgICJub21icmVDb21lcmNpYWwiOiBudWxsLAogICAgInRpcG9Fc3RhYmxlY2ltaWVudG8iOiAiMDIiLAogICAgImRpcmVjY2lvbiI6IHsKICAgICAgImRlcGFydGFtZW50byI6ICIxMiIsCiAgICAgICJtdW5pY2lwaW8iOiAiMTciLAogICAgICAiY29tcGxlbWVudG8iOiAiQ0FSUi4gQUwgQ1VDTyBLTS4gMTQ0IFkgMS8yLCBDVE9OLiBFTCBKVVRFLCBTQU4gTUlHVUVMLCBTQU4gTUlHVUVMIgogICAgfSwKICAgICJ0ZWxlZm9ubyI6ICIyNjY3NDgwMCIsCiAgICAiY29ycmVvIjogImluZm9AZ3J1cG9jYXNzYS5jb20iLAogICAgImNvZEVzdGFibGVNSCI6ICJNMDAxIiwKICAgICJjb2RFc3RhYmxlIjogbnVsbCwKICAgICJjb2RQdW50b1ZlbnRhTUgiOiAiUDAwMSIsCiAgICAiY29kUHVudG9WZW50YSI6IG51bGwKICB9LAogICJyZWNlcHRvciI6IHsKICAgICJ0aXBvRG9jdW1lbnRvIjogIjM2IiwKICAgICJudW1Eb2N1bWVudG8iOiAiMDYxNDMxMDEwNDEwMjMiLAogICAgIm5yYyI6ICIxNTQ5OTU5IiwKICAgICJub21icmUiOiAiRU1QQVFVRVMgWSBTQUJPUkVTLCBTLkEuIERFIEMuVi4iLAogICAgImNvZEFjdGl2aWRhZCI6ICI4MjkyOSIsCiAgICAiZGVzY0FjdGl2aWRhZCI6ICJTRVJWSUNJTyBERSBFTlZBU0UgWSBFTVBBUVVFIE5DUCIsCiAgICAibm9tYnJlQ29tZXJjaWFsIjogbnVsbCwKICAgICJkaXJlY2Npb24iOiB7CiAgICAgICJkZXBhcnRhbWVudG8iOiAiMDYiLAogICAgICAibXVuaWNpcGlvIjogIjE0IiwKICAgICAgImNvbXBsZW1lbnRvIjogIkFWLiBZIFBKRS4gQlVHQU1CSUxJQVMsIENPTC4gU0FOIFNBTiBGUkFOQ0lTQ08sICAjIDE1LUEsIgogICAgfSwKICAgICJ0ZWxlZm9ubyI6ICIyMjY3MjYwMCIsCiAgICAiY29ycmVvIjogImFuaXRhdmlsbGFsdGFAZGl6dWNhci5jb20iLAogICAgImJpZW5UaXR1bG8iOiAiMDQiCiAgfSwKICAidmVudGFUZXJjZXJvIjogbnVsbCwKICAiY3VlcnBvRG9jdW1lbnRvIjogWwogICAgewogICAgICAibnVtSXRlbSI6IDEsCiAgICAgICJ0aXBvSXRlbSI6IDEsCiAgICAgICJudW1lcm9Eb2N1bWVudG8iOiBudWxsLAogICAgICAiY29kaWdvIjogIjcwMDMwNjUiLAogICAgICAiY29kVHJpYnV0byI6IG51bGwsCiAgICAgICJkZXNjcmlwY2lvbiI6ICJBWlVDQVIgQkxBTkNBIHwgSjEzfFVOIiwKICAgICAgImNhbnRpZGFkIjogMjAuMCwKICAgICAgInVuaU1lZGlkYSI6IDU5LAogICAgICAicHJlY2lvVW5pIjogMC4wLAogICAgICAibW9udG9EZXNjdSI6IDAuMCwKICAgICAgInZlbnRhTm9TdWoiOiAwLjAsCiAgICAgICJ2ZW50YUV4ZW50YSI6IDAuMCwKICAgICAgInZlbnRhR3JhdmFkYSI6IDAuMCwKICAgICAgInRyaWJ1dG9zIjogbnVsbAogICAgfQogIF0sCiAgInJlc3VtZW4iOiB7CiAgICAidG90YWxOb1N1aiI6IDAuMCwKICAgICJ0b3RhbEV4ZW50YSI6IDAuMCwKICAgICJ0b3RhbEdyYXZhZGEiOiAwLjAsCiAgICAic3ViVG90YWxWZW50YXMiOiAwLjAsCiAgICAiZGVzY3VOb1N1aiI6IDAuMCwKICAgICJkZXNjdUV4ZW50YSI6IDAuMCwKICAgICJkZXNjdUdyYXZhZGEiOiAwLjAsCiAgICAicG9yY2VudGFqZURlc2N1ZW50byI6IDAuMCwKICAgICJ0b3RhbERlc2N1IjogMC4wLAogICAgInRyaWJ1dG9zIjogbnVsbCwKICAgICJzdWJUb3RhbCI6IDAuMCwKICAgICJtb250b1RvdGFsT3BlcmFjaW9uIjogMC4wLAogICAgInRvdGFsTGV0cmFzIjogIkNlcm8gRMOzbGFyZXMgVVMgY29uIDAwLzEwMCIKICB9LAogICJleHRlbnNpb24iOiB7CiAgICAibm9tYkVudHJlZ2EiOiBudWxsLAogICAgImRvY3VFbnRyZWdhIjogbnVsbCwKICAgICJub21iUmVjaWJlIjogbnVsbCwKICAgICJkb2N1UmVjaWJlIjogbnVsbCwKICAgICJvYnNlcnZhY2lvbmVzIjogIk5vIFRyYW5zZmVyZW5jaWEgZGUgRG9taW5pbyAtIENFTlRSTyBFTVBBUVVFIExBIENBQkFOQSIKICB9LAogICJhcGVuZGljZSI6IFsKICAgIHsKICAgICAgImNhbXBvIjogIm5vbWJyZURvYyIsCiAgICAgICJldGlxdWV0YSI6ICJub21icmVEb2MiLAogICAgICAidmFsb3IiOiAiMjAwMF9aTE9fMDA4MDc2MTI3MC5qc29uIgogICAgfSwKICAgIHsKICAgICAgImNhbXBvIjogInBkZjQxNyIsCiAgICAgICJldGlxdWV0YSI6ICJwZGY0MTciLAogICAgICAidmFsb3IiOiAiQyIKICAgIH0sCiAgICB7CiAgICAgICJjYW1wbyI6ICJtb3RvcmlzdGEiLAogICAgICAiZXRpcXVldGEiOiAiZW1wcmVzYXxtb3RvcmlzdGF8dGVsZWZvbm98cGxhY2F8cmVtb2xxdWUiLAogICAgICAidmFsb3IiOiAiVkVST05JQ0EgTUFSSVNPTCBFU0NPQkFSIERFIE1BUlRJTkV8TkVMU09OIEJBTE1PUkkgUVVJTlRBTklMTEEgU0VHT1ZJQXx8Qzk2MDk0fCIKICAgIH0sCiAgICB7CiAgICAgICJjYW1wbyI6ICJwZXNvIiwKICAgICAgImV0aXF1ZXRhIjogIlBlc28xfEZlY2hhMXxQZXNvMnxGZWNoYTN8UGVzbzN8RmVjaGEzIiwKICAgICAgInZhbG9yIjogIjE1LDI2MC4wMDB8MjYvMTIvMjAyMyAwOTo0MTo1MHw0MSwyMzAuMDAwfDI2LzEyLzIwMjMgMTE6MTU6MjB8MjUsOTcwLjAwMHwyNi8xMi8yMDIzIDExOjE1OjIwIgogICAgfQogIF0KfQ.nVC9ghBNcPuGOqrfCiJY8Gi6N_vKe5CrYv8_i5cQZpxt9zpnxkjJpqkBYAf6j5Xl6IiQQYtR01ccZiisLe1s4KS2JUz6adH4-nRkXv62PqYZRamdD75zhjLFFlkV1akkcJ_Gwa0ltdQL_ue7CuR-tVDVz5qiXb-vS2t-BSiYL1xhCyiCm7wlXXfHBiZ3-y04SbID3Nc-F6KmHto48UsKIWurF9yBqAVlmpn5T_HMQ0LsKFvMM_ep4WB1EE4p0K9LeA7ILmsAnWfKG8JifprDeuoKFGUnQU4KobxtT697jZscIpR8AJL84xNjE_9RZMhr9g5GuFKgFtqDlQx-1YG6xA"
+}

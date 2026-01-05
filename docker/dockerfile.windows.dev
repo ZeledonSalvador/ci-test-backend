@@ -1,0 +1,31 @@
+FROM mcr.microsoft.com/windows/servercore:ltsc2022
+
+# Instalar Node.js v20 (LTS) - Actualizado para compatibilidad con @nestjs/cli 11.x
+RUN powershell -Command \
+    Invoke-WebRequest -Uri https://nodejs.org/dist/v20.18.1/node-v20.18.1-x64.msi -OutFile nodejs.msi; \
+    Start-Process msiexec.exe -ArgumentList '/i nodejs.msi /quiet /norestart' -NoNewWindow -Wait; \
+    Remove-Item -Force nodejs.msi
+
+# Establecer la zona horaria en UTC-6 (El Salvador)
+RUN powershell -Command "tzutil /s 'Central America Standard Time'"
+
+# Establecer el directorio de trabajo
+WORKDIR /app
+
+# Instalar NestJS CLI
+RUN npm install -g @nestjs/cli
+
+# Copiar el package.json y package-lock.json primero para aprovechar el cache de Docker
+COPY package*.json ./
+
+# Instalar solo dependencias de producción
+RUN npm install --only=production
+
+# Copiar el resto del código de la aplicación
+COPY . .
+
+# Compilar la aplicación NestJS
+RUN npm run build
+
+# Configurar el ENTRYPOINT para ejecutar la aplicación en producción
+CMD ["node", "dist/main.js"]

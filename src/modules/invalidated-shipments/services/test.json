@@ -1,0 +1,115 @@
+{
+    "statusesJson": [
+        {
+            "id": 4,
+            "createdAt": "2024-10-16T23:33:09.277Z",
+            "updatedAt": "2024-10-16T23:33:09.277Z",
+            "predefinedStatus": {
+                "id": 1,
+                "name": "En Transito",
+                "description": "Es cuando se hace el envío del Ingenio y termina hasta que llega a la planta, API"
+            }
+        },
+        {
+            "id": 5,
+            "createdAt": "2024-10-17T21:39:00.400Z",
+            "updatedAt": "2024-10-17T21:39:00.400Z",
+            "predefinedStatus": {
+                "id": 2,
+                "name": "Documento validado",
+                "description": "Se verifico que el documento ha sido validado con la API"
+            }
+        },
+        {
+            "id": 6,
+            "createdAt": "2024-10-17T21:39:20.263Z",
+            "updatedAt": "2024-10-17T21:39:20.263Z",
+            "predefinedStatus": {
+                "id": 3,
+                "name": "Prechequeado",
+                "description": "Se hace el checking en el portón con el vigilante, Pretransacción"
+            }
+        },
+        {
+            "id": 7,
+            "createdAt": "2024-10-17T21:39:28.220Z",
+            "updatedAt": "2024-10-17T21:39:28.220Z",
+            "predefinedStatus": {
+                "id": 4,
+                "name": "Transacción Autorizada",
+                "description": "Es cuando todos los datos son validados correctamente en el chequeo"
+            }
+        },
+        {
+            "id": 8,
+            "createdAt": "2024-10-17T21:39:34.057Z",
+            "updatedAt": "2024-10-17T21:39:34.057Z",
+            "predefinedStatus": {
+                "id": 5,
+                "name": "Ingreso Autorizado",
+                "description": "Se autoriza el acceso a la planta desde el programa de recepción de azúcar"
+            }
+        },
+        {
+            "id": 1002,
+            "createdAt": "2024-10-22T07:00:05.920Z",
+            "updatedAt": "2024-10-22T07:00:05.920Z",
+            "predefinedStatus": {
+                "id": 6,
+                "name": "Pesaje Entrada pluma uno",
+                "description": "Proceso cuando se abre la pluma uno al entrar"
+            }
+        },
+        {
+            "id": 1003,
+            "createdAt": "2024-10-22T07:00:13.017Z",
+            "updatedAt": "2024-10-22T07:00:13.017Z",
+            "predefinedStatus": {
+                "id": 7,
+                "name": "Pesaje Entrada pluma dos",
+                "description": "Proceso cuando se cierra la pluma uno al entrar"
+            }
+        },
+        {
+            "id": 1004,
+            "createdAt": "2024-10-22T07:00:17.140Z",
+            "updatedAt": "2024-10-22T07:00:17.140Z",
+            "predefinedStatus": {
+                "id": 8,
+                "name": "Iniciar descarga/carga",
+                "description": "El camión inicia la descarga/carga, comenzando el cronómetro"
+            }
+        },
+        {
+            "id": 1005,
+            "createdAt": "2024-10-22T07:00:21.480Z",
+            "updatedAt": "2024-10-22T07:00:21.480Z",
+            "predefinedStatus": {
+                "id": 9,
+                "name": "Finalizar descarga/carga",
+                "description": "El camión finaliza la descarga/carga, listo para la báscula"
+            }
+        },
+        {
+            "id": 1006,
+            "createdAt": "2024-10-22T07:00:56.963Z",
+            "updatedAt": "2024-10-22T07:00:56.963Z",
+            "predefinedStatus": {
+                "id": 10,
+                "name": "Pesaje salida pluma uno",
+                "description": "Proceso cuando se abre la pluma uno al salir"
+            }
+        },
+        {
+            "id": 1007,
+            "createdAt": "2024-10-22T07:01:02.960Z",
+            "updatedAt": "2024-10-22T07:01:02.960Z",
+            "predefinedStatus": {
+                "id": 11,
+                "name": "Pesaje salida pluma dos",
+                "description": "Proceso cuando se cierra la pluma uno al salir"
+            }
+        }
+    ],
+    "attachmentJson": []
+}
