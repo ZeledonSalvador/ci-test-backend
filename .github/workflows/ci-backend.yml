@@ -1,4 +1,4 @@
-name: CI Backend (NestJS)
+name: CI for BackEnd QuickPass (IngenioAPI)
 
 on:
   push:
