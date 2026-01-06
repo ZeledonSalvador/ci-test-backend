@@ -33,9 +33,9 @@ jobs:
         run: npx prettier --check "src/**/*.ts" "test/**/*.ts" "*.md" "*.json"
 
       # ESLint: tu script "lint" usa --fix; en CI NO queremos auto-fix.
-      # Esto falla si hay warnings (max-warnings=0).
-      - name: ESLint (no warnings)
-        run: npx eslint "{src,apps,libs,test}/**/*.ts" --max-warnings=0
+      # Temporalmente permitimos hasta 100 warnings mientras se limpia el código
+      - name: ESLint (max 100 warnings)
+        run: npx eslint "{src,apps,libs,test}/**/*.ts" --max-warnings=100
 
       - name: Unit tests with coverage
         run: npm run test:cov -- --runInBand

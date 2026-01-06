@@ -108,14 +108,14 @@ export class AuthGuard implements CanActivate {
        para este midleware de auth
     */
     const codeGenFields = ['codeGen', 'code_gen', 'genCode', 'codigo_gen'];
-    let codeGen = this.getFromFields(request, codeGenFields);
+    const codeGen = this.getFromFields(request, codeGenFields);
 
     return codeGen || null;
   }
 
   private getCodeClientFromRequest(request: any): string | null {
     const codeCliendFilds = ['codigo_ingenio', 'ingenioCode', 'codigoEmpresa'];
-    let codigoIngenio = this.getFromFields(request, codeCliendFilds);
+    const codigoIngenio = this.getFromFields(request, codeCliendFilds);
     return codigoIngenio || null;
   }
 

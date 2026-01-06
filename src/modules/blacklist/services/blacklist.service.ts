@@ -1616,7 +1616,7 @@ export class BlacklistService {
       } = penalty;
 
       const banStartDate = new Date(penaltyStartDate || penalty.createdAt);
-      let currentBanEndDate: Date | null = penaltyEndDate;
+      const currentBanEndDate: Date | null = penaltyEndDate;
       let calculatedDays: number | null = null;
       const isPermanent = penaltyType === PenaltyType.PERMANENTE;
       let isActive = false;

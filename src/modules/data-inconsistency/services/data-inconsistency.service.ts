@@ -171,7 +171,7 @@ export class DataInconsistencyService {
       }
 
       // Buscar si ya existe un reporte para esta shipment
-      let existingReport = await this.dataInconsistencyRepository.findOne({
+      const existingReport = await this.dataInconsistencyRepository.findOne({
         where: { shipment: { id: shipment.id } },
         relations: [
           'shipment',

@@ -345,7 +345,7 @@ export class DashboardController {
 
     const toInt = (v?: string) =>
       v == null || v === '' ? undefined : Number(v);
-    let hour = toInt(hourStr);
+    const hour = toInt(hourStr);
     let hStart = toInt(hStartStr);
     let hEnd = toInt(hEndStr);
 

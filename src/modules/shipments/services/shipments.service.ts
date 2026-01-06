@@ -1243,7 +1243,7 @@ export class ShipmentsService {
     data: ShipmentsWithFormattedStatusesAndFormatResponseAndFormatResponse[];
     pagination: Pagination;
   }> {
-    let relations = [
+    const relations = [
       'driver',
       'vehicle',
       'ingenio',
@@ -1255,7 +1255,7 @@ export class ShipmentsService {
       relations.push('shipmentAttachments');
     }
 
-    let whereCondition: any = {
+    const whereCondition: any = {
       currentStatus: statusType,
     };
 
@@ -3532,7 +3532,7 @@ export class ShipmentsService {
       // Cargar los statuses por separado para evitar duplicados
       const shipmentIds = shipments.map((s) => s.id);
 
-      let statusesMap: Map<number, any[]> = new Map();
+      const statusesMap: Map<number, any[]> = new Map();
       if (shipmentIds.length > 0) {
         const statuses = await this.dataSource
           .getRepository(Status)

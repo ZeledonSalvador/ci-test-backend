@@ -337,7 +337,7 @@ ORDER BY g.fecha, g.statusKey;
     const fromParts = parseHHmm(horaDesde);
     const toParts = parseHHmm(horaHasta);
 
-    let fromLocal = new Date(todayLocal);
+    const fromLocal = new Date(todayLocal);
     let toLocal = new Date(todayLocal);
 
     if (fromParts) fromLocal.setHours(fromParts.h, fromParts.m, 0, 0);

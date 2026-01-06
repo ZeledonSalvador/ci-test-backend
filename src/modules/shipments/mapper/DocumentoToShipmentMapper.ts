@@ -294,7 +294,7 @@ export default class DocumentToShipmentMapper {
     if (value == null) return null;
     if (typeof value === 'number' && Number.isFinite(value)) return value;
 
-    let text = Array.isArray(value) ? value.join(' ') : String(value);
+    const text = Array.isArray(value) ? value.join(' ') : String(value);
     // toma el primer número (soporta miles con . o , y decimales con . o ,)
     const m = text.match(/-?\d+(?:[.,]\d{3})*(?:[.,]\d+)?/);
     if (!m) return null;

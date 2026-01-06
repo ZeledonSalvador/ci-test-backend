@@ -20,7 +20,7 @@ export class IsExpirationFormatConstraint implements ValidatorConstraintInterfac
 }
 
 export function IsExpirationFormat(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
       name: 'isExpirationFormat',
       target: object.constructor,
