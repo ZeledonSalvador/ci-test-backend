@@ -125,7 +125,7 @@ jobs:
                 warnings += (f.warningCount || 0);
                 errors += (f.errorCount || 0);
               }
-              process.stdout.write(\\\`\\\${warnings} \\\${errors}\\\`);
+              process.stdout.write(warnings + ' ' + errors);
             ")
           fi
 
