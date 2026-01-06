@@ -5,7 +5,7 @@ import { AuthGuard } from 'src/modules/auth/guards/auth.guard';
 import { Roles } from 'src/modules/auth/decorators/roles.decorator';
 import { Role } from 'src/modules/auth/enums/roles.enum';
 import { ExcelExporter } from '../exporters/excel/excel.exporter';
-import { PdfExporter } from '../exporters/pdf/pdf.exporter';
+import { PdfExporter } from '../exporters/PDF/pdf.exporter';
 
 import { TempBrixChartDto } from '../dto/temp-brix.dto';
 import { TempBrixChartService } from '../services/temp-brix.service';

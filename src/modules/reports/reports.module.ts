@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ReportsController } from './controllers/reports.controller';
 import { ReportsService } from './services/reports.service';
 import { ExcelExporter } from './exporters/excel/excel.exporter';
-import { PdfExporter } from './exporters/pdf/pdf.exporter';
+import { PdfExporter } from './exporters/PDF/pdf.exporter';
 import { TruckEntryReportService } from './services/truck-entry.report';
 import { AuthModule } from 'src/modules/auth/auth.module';
 import { TempBrixChartService } from '../reports/services/temp-brix.service';
