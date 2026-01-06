@@ -111,11 +111,12 @@ jobs:
           start_sv="$(TZ=America/El_Salvador date -d "${CI_START_ISO}" '+%Y-%m-%d %H:%M:%S %Z' || true)"
           run_url="https://github.com/${REPO}/actions/runs/${RUN_ID}"
 
-          # Parse ESLint report (warnings/errors)
+          # Parse ESLint report (warnings/errors) - ROBUSTO
           eslint_warnings="N/A"
           eslint_errors="N/A"
+
           if [ -f eslint-report.json ]; then
-            read -r eslint_warnings eslint_errors < <(node -e "
+            counts="$(node - <<'NODE' 2>/dev/null || true
               const fs = require('fs');
               const p = 'eslint-report.json';
               const raw = fs.readFileSync(p, 'utf8');
@@ -125,8 +126,14 @@ jobs:
                 warnings += (f.warningCount || 0);
                 errors += (f.errorCount || 0);
               }
-              process.stdout.write(warnings + ' ' + errors);
-            ")
+              process.stdout.write(\`${warnings} ${errors}\`);
+          NODE
+            )"
+
+            # Si counts vino vacío, no rompas el step
+            if [ -n "${counts:-}" ]; then
+              read -r eslint_warnings eslint_errors <<< "$counts" || true
+            fi
           fi
 
           # Función helper para iconos de status
@@ -191,6 +198,8 @@ jobs:
               echo "- ✅ Build pasó."
             fi
           } >> "$GITHUB_STEP_SUMMARY"
+
+          exit 0
 
       # Gate final: si algo falló, el job debe fallar (pero ya dejamos Summary)
       - name: Fail job if quality checks failed
