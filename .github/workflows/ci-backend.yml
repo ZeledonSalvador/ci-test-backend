@@ -1,72 +1,203 @@
-# Nombre del workflow (así aparece en la pestaña "Actions" de GitHub)
 name: CI Backend (NestJS)
 
-# Define cuándo se ejecuta este workflow
 on:
-  # Se ejecuta cuando hay un push a estas ramas
   push:
     branches: [ main, qa ]
-  # Se ejecuta cuando se crea/actualiza un Pull Request hacia estas ramas
   pull_request:
     branches: [ main, qa ]
 
-# Evita que se ejecuten varios runs del mismo workflow a la vez para la misma referencia (rama/commit)
 concurrency:
-  # Agrupa ejecuciones por referencia (por ejemplo: refs/heads/main o refs/pull/123/merge)
   group: ci-backend-${{ github.ref }}
-  # Si entra una ejecución nueva del mismo grupo, cancela la anterior para ahorrar tiempo/recursos
   cancel-in-progress: true
 
-# Conjunto de trabajos (jobs) que se ejecutan en el workflow
 jobs:
-  # ID del job (nombre interno)
   quality:
-    # Nombre amigable que se muestra en GitHub Actions
     name: CI for QuickPass BackEnd (IngenioAPI)
-    # Define el sistema operativo/runner donde corre el job
     runs-on: ubuntu-latest
 
-    # Lista de pasos (steps) que se ejecutan en orden
     steps:
-      # Paso: clona el repo en el runner para poder trabajar con el código
       - name: Checkout
-        # Usa la action oficial para hacer checkout del código
+        id: checkout
         uses: actions/checkout@v4
 
-      # Paso: instala/configura Node.js en el runner
+      # 0) Timer (para medir TOTAL incluyendo POST)
+      - name: Start CI timer
+        uses: ./.github/actions/ci-timer
+
       - name: Setup Node
-        # Action oficial para instalar Node y configurar cache
+        id: setup_node
         uses: actions/setup-node@v4
         with:
-          # Fija la versión de Node a usar (Node 18)
           node-version: "18"
-          # Habilita caché de npm para acelerar instalaciones en siguientes runs
           cache: "npm"
 
-      # Paso: instala dependencias de forma limpia y reproducible
       - name: Install dependencies (npm ci)
-        # npm ci instala exactamente lo que está en package-lock.json (ideal para CI)
-        # --legacy-peer-deps evita fallos por conflictos de peer deps (común en algunos proyectos)
+        id: install
         run: npm ci --legacy-peer-deps
 
-      # Comentario: tu script "format" escribe cambios, pero en CI solo validamos estilo
-      # Paso: verifica formato con Prettier sin modificar archivos
+      # Prettier: check sin escribir
       - name: Prettier check
-        # npx ejecuta prettier sin necesitar instalación global
-        # --check falla el job si encuentra archivos sin formato
-        # Se revisan: src/**/*.ts, test/**/*.ts, y algunos archivos raíz (*.md, *.json)
-        run: npx prettier --check "src/**/*.ts" "test/**/*.ts" "*.md" "*.json"
+        id: prettier
+        run: |
+          set +e
+          npx prettier --check "src/**/*.ts" "test/**/*.ts" "*.md" "*.json"
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
 
-      # Comentario: tu script lint usa --fix (arregla solo), pero en CI NO queremos modificar
-      # Comentario: se permite temporalmente hasta 100 warnings (mientras se limpia el código)
-      # Paso: ejecuta ESLint y falla si pasa el límite de warnings (o si hay errors)
+      # ESLint: generar reporte JSON para contar warnings/errors en el summary
       - name: ESLint (max 100 warnings)
-        # Lint en ts dentro de src, apps, libs y test
-        # --max-warnings=100 permite hasta 100 warnings antes de fallar
-        run: npx eslint "{src,apps,libs,test}/**/*.ts" --max-warnings=100
-        
-      # Comentario: paso de build
-      # Paso: compila el proyecto (en Nest normalmente genera dist/ o salida de build)
+        id: eslint
+        run: |
+          set +e
+          npx eslint "{src,apps,libs,test}/**/*.ts" --max-warnings=100 -f json -o eslint-report.json
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
       - name: Build
-        # Ejecuta el script "build" definido en package.json
-        run: npm run build
+        id: build
+        run: |
+          set +e
+          npm run build
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      # Artifact del reporte ESLint
+      - name: Upload ESLint report (artifact)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eslint-report
+          path: eslint-report.json
+          if-no-files-found: ignore
+
+      # Summary visual (antes de los POST steps)
+      - name: Build Job Summary (visual)
+        if: always()
+        id: summary
+        env:
+          PRETTIER_CODE: ${{ steps.prettier.outputs.exit_code }}
+          ESLINT_CODE: ${{ steps.eslint.outputs.exit_code }}
+          BUILD_CODE: ${{ steps.build.outputs.exit_code }}
+          ACTOR: ${{ github.actor }}
+          EVENT_NAME: ${{ github.event_name }}
+          REPO: ${{ github.repository }}
+          REF: ${{ github.ref }}
+          SHA: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+          WORKFLOW_NAME: ${{ github.workflow }}
+        run: |
+          set -euo pipefail
+
+          # Marca el fin de los steps "normales" (pre-POST)
+          end_prepost_ms=$(date +%s%3N)
+          echo "$end_prepost_ms" > .ci_end_prepost_ms
+
+          start_ms="${CI_START_EPOCH_MS}"
+          pre_ms=$((end_prepost_ms - start_ms))
+
+          fmt() {
+            local ms="$1"
+            local sec=$((ms/1000))
+            local min=$((sec/60))
+            local rem=$((sec%60))
+            printf "%d:%02d" "$min" "$rem"
+          }
+
+          # Hora inicio (UTC y El Salvador)
+          start_utc="${CI_START_ISO}"
+          start_sv="$(TZ=America/El_Salvador date -d "${CI_START_ISO}" '+%Y-%m-%d %H:%M:%S %Z' || true)"
+          run_url="https://github.com/${REPO}/actions/runs/${RUN_ID}"
+
+          # Parse ESLint report (warnings/errors)
+          eslint_warnings="N/A"
+          eslint_errors="N/A"
+          if [ -f eslint-report.json ]; then
+            read -r eslint_warnings eslint_errors < <(node -e "
+              const fs = require('fs');
+              const p = 'eslint-report.json';
+              const raw = fs.readFileSync(p, 'utf8');
+              const arr = JSON.parse(raw);
+              let warnings = 0, errors = 0;
+              for (const f of arr) {
+                warnings += (f.warningCount || 0);
+                errors += (f.errorCount || 0);
+              }
+              process.stdout.write(\\\`\\\${warnings} \\\${errors}\\\`);
+            ")
+          fi
+
+          # Función helper para iconos de status
+          status_icon() {
+            local code="$1"
+            if [ "$code" = "0" ]; then echo "✅ OK"; else echo "❌ FAIL"; fi
+          }
+
+          prettier_status="$(status_icon "${PRETTIER_CODE:-1}")"
+          eslint_status="$(status_icon "${ESLINT_CODE:-1}")"
+          build_status="$(status_icon "${BUILD_CODE:-1}")"
+
+          {
+            echo "# 📋 CI Summary — ${WORKFLOW_NAME}"
+            echo ""
+            echo "## 👤 Metadata"
+            echo ""
+            echo "| Campo | Valor |"
+            echo "|---|---|"
+            echo "| Usuario (actor) | \`${ACTOR}\` |"
+            echo "| Evento | \`${EVENT_NAME}\` |"
+            echo "| Repo | \`${REPO}\` |"
+            echo "| Ref | \`${REF}\` |"
+            echo "| Commit | \`${SHA}\` |"
+            echo "| Inicio (UTC) | \`${start_utc}\` |"
+            echo "| Inicio (El Salvador) | \`${start_sv}\` |"
+            echo "| Duración (pre-POST) | \`$(fmt "$pre_ms")\` |"
+            echo "| Run | ${run_url} |"
+            echo ""
+            echo "## ✅ Pasos ejecutados y resultados"
+            echo ""
+            echo "| Paso | Resultado | Detalle |"
+            echo "|---|---:|---|"
+            echo "| Checkout | ✅ OK | actions/checkout@v4 |"
+            echo "| Setup Node | ✅ OK | Node 18 + cache npm |"
+            echo "| Install deps | ✅ OK | npm ci --legacy-peer-deps |"
+            echo "| Prettier | ${prettier_status} | exit_code=${PRETTIER_CODE:-N/A} |"
+            echo "| ESLint | ${eslint_status} | warnings=${eslint_warnings}, errors=${eslint_errors}, exit_code=${ESLINT_CODE:-N/A} |"
+            echo "| Build | ${build_status} | exit_code=${BUILD_CODE:-N/A} |"
+            echo ""
+            echo "## 📦 Artifacts"
+            echo ""
+            echo "- \`eslint-report\` (eslint-report.json) — **si existe, queda adjunto en esta run**."
+            echo ""
+            echo "## 🧩 Diagnóstico rápido"
+            echo ""
+            if [ "${PRETTIER_CODE:-1}" != "0" ]; then
+              echo "- ❌ **Prettier falló**: hay archivos que no cumplen formato (usa `npm run format` localmente o corre prettier)."
+            else
+              echo "- ✅ Prettier pasó."
+            fi
+
+            if [ "${ESLINT_CODE:-1}" != "0" ]; then
+              echo "- ❌ **ESLint falló**: revisar el artifact `eslint-report` y/o reducir warnings (límite: 100)."
+            else
+              echo "- ✅ ESLint pasó dentro del límite de warnings."
+            fi
+
+            if [ "${BUILD_CODE:-1}" != "0" ]; then
+              echo "- ❌ **Build falló**: el proyecto no compiló."
+            else
+              echo "- ✅ Build pasó."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Gate final: si algo falló, el job debe fallar (pero ya dejamos Summary)
+      - name: Fail job if quality checks failed
+        if: always()
+        run: |
+          failures=0
+          [ "${{ steps.prettier.outputs.exit_code }}" = "0" ] || failures=1
+          [ "${{ steps.eslint.outputs.exit_code }}" = "0" ] || failures=1
+          [ "${{ steps.build.outputs.exit_code }}" = "0" ] || failures=1
+          exit $failures

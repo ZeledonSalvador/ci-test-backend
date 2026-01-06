@@ -1,0 +1,6 @@
+name: "CI Timer"
+description: "Mide tiempos del job (pre-POST y total incluyendo POST) y lo agrega al Job Summary."
+runs:
+  using: "node20"
+  main: "main.js"
+  post: "post.js"
