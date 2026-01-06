@@ -10,23 +10,23 @@ import { Users } from 'src/models/Users';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
-    @Post('login')
-    async login(@Body() loginDto: LoginDto): Promise<resLogin> {
-        return this.authService.login(loginDto);
-    }
+  @Post('login')
+  async login(@Body() loginDto: LoginDto): Promise<resLogin> {
+    return this.authService.login(loginDto);
+  }
 
-    @Post('register')
-    @UseGuards(AuthGuard)
-    @Roles(Role.ADMIN)
-    async register(@Body() registerDto: RegisterDto): Promise<Users> {
-        return this.authService.register(registerDto);
-    }
+  @Post('register')
+  @UseGuards(AuthGuard)
+  @Roles(Role.ADMIN)
+  async register(@Body() registerDto: RegisterDto): Promise<Users> {
+    return this.authService.register(registerDto);
+  }
 
-    @Post('verify-jwt')
-    async verifyJwt(@Body('access_token') token: string): Promise<any> {
-        const isValid = await this.authService.verifyJwt(token);
-        return isValid;
-    }
+  @Post('verify-jwt')
+  async verifyJwt(@Body('access_token') token: string): Promise<any> {
+    const isValid = await this.authService.verifyJwt(token);
+    return isValid;
+  }
 }

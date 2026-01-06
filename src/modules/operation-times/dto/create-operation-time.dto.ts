@@ -3,9 +3,8 @@ import { Type } from 'class-transformer';
 
 export class CreateOperationTimeDto {
   @IsNumber({}, { message: 'shipmentId debe ser numérico' })
-  @Type(() => Number) 
+  @Type(() => Number)
   shipmentId: number;
-
 
   @IsString()
   @IsNotEmpty()

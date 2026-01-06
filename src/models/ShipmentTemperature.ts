@@ -1,4 +1,11 @@
-import {Entity, Column, ManyToOne, PrimaryGeneratedColumn, CreateDateColumn, JoinColumn} from 'typeorm';
+import {
+  Entity,
+  Column,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  JoinColumn,
+} from 'typeorm';
 import { Shipments } from './Shipments';
 
 @Entity({ name: 'ShipmentsTemperature', schema: 'dbo' })
@@ -7,7 +14,10 @@ export class ShipmentTemperature {
   id: number;
 
   // Relación -> usa la FK real 'shipment_id'
-  @ManyToOne(() => Shipments, (s) => s.shipmentTemperatures, { onDelete: 'CASCADE', nullable: false })
+  @ManyToOne(() => Shipments, (s) => s.shipmentTemperatures, {
+    onDelete: 'CASCADE',
+    nullable: false,
+  })
   @JoinColumn({ name: 'shipment_id' }) // 👈 clave: mapea la FK al nombre real
   shipment: Shipments;
 
@@ -18,6 +28,10 @@ export class ShipmentTemperature {
   @Column({ name: 'comment', type: 'nvarchar', length: 500, nullable: true })
   comment: string | null;
 
-  @CreateDateColumn({ name: 'created_at', type: 'datetime', default: () => 'GETDATE()' })
+  @CreateDateColumn({
+    name: 'created_at',
+    type: 'datetime',
+    default: () => 'GETDATE()',
+  })
   created_at: Date;
 }

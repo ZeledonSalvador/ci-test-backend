@@ -66,8 +66,24 @@ import { Locations } from 'src/models/Locations';
     BlacklistModule,
     BlocksModule,
   ],
-  controllers: [ShippingController, ShippingClientController, ShipmentsQueryController],
-  providers: [ShipmentsService, ShipmentsUpdateService, ShipmentsQueryService, AuthGuard, MassConverter],
-  exports: [ShipmentsService, ShipmentsUpdateService, ShipmentsQueryService, TypeOrmModule, MassConverter]
+  controllers: [
+    ShippingController,
+    ShippingClientController,
+    ShipmentsQueryController,
+  ],
+  providers: [
+    ShipmentsService,
+    ShipmentsUpdateService,
+    ShipmentsQueryService,
+    AuthGuard,
+    MassConverter,
+  ],
+  exports: [
+    ShipmentsService,
+    ShipmentsUpdateService,
+    ShipmentsQueryService,
+    TypeOrmModule,
+    MassConverter,
+  ],
 })
 export class ShipmentsModule {}

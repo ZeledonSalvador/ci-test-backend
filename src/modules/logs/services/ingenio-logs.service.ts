@@ -14,12 +14,14 @@ export class IngenioLogsService {
   async createLog(data: Partial<IngenioLogEntity>) {
     const log = this.logRepo.create({
       ...data,
-      jsonEnviado: typeof data.jsonEnviado === 'object'
-        ? JSON.stringify(data.jsonEnviado)
-        : data.jsonEnviado,
-      jsonModificacion: typeof data.jsonModificacion === 'object'
-        ? JSON.stringify(data.jsonModificacion)
-        : data.jsonModificacion,
+      jsonEnviado:
+        typeof data.jsonEnviado === 'object'
+          ? JSON.stringify(data.jsonEnviado)
+          : data.jsonEnviado,
+      jsonModificacion:
+        typeof data.jsonModificacion === 'object'
+          ? JSON.stringify(data.jsonModificacion)
+          : data.jsonModificacion,
     });
 
     return await this.logRepo.save(log);
@@ -28,7 +30,7 @@ export class IngenioLogsService {
   async getLogsByCodeGen(codeGen: string) {
     return await this.logRepo.find({
       where: { codigoGeneracion: codeGen },
-      order: { fechaCreacion: 'DESC' }
+      order: { fechaCreacion: 'DESC' },
     });
   }
 
@@ -42,27 +44,31 @@ export class IngenioLogsService {
 
     return await this.logRepo.find({
       where: {
-        fechaCreacion: Between(inicio, fin)
+        fechaCreacion: Between(inicio, fin),
       },
-      order: { fechaCreacion: 'DESC' }
+      order: { fechaCreacion: 'DESC' },
     });
   }
 
   async getLogsByUsuario(usuario: string) {
     return await this.logRepo.find({
       where: { usuario },
-      order: { fechaCreacion: 'DESC' }
+      order: { fechaCreacion: 'DESC' },
     });
   }
 
   async getLogsByEstatus(estatus: string) {
     return await this.logRepo.find({
       where: { estatus },
-      order: { fechaCreacion: 'DESC' }
+      order: { fechaCreacion: 'DESC' },
     });
   }
 
-  async updateLogEstatus(id: number, estatus: string, motivoInvalidacion?: string) {
+  async updateLogEstatus(
+    id: number,
+    estatus: string,
+    motivoInvalidacion?: string,
+  ) {
     const updateData: any = { estatus };
     if (motivoInvalidacion) {
       updateData.motivoInvalidacion = motivoInvalidacion;
@@ -76,32 +82,34 @@ export class IngenioLogsService {
     const [logs, total] = await this.logRepo.findAndCount({
       order: { fechaCreacion: 'DESC' },
       skip: (page - 1) * limit,
-      take: limit
+      take: limit,
     });
 
     return {
       data: logs,
       total,
       page,
-      pages: Math.ceil(total / limit)
+      pages: Math.ceil(total / limit),
     };
   }
 
   // Método helper para logging de errores específicos de ingenios
   async logIngenioError(
-    codeGen: string, 
-    usuario: string, 
-    estatus: string, 
+    codeGen: string,
+    usuario: string,
+    estatus: string,
     errorMessage: string,
-    requestData?: any
+    requestData?: any,
   ): Promise<void> {
     try {
       await this.createLog({
         codigoGeneracion: codeGen,
-        jsonEnviado: JSON.stringify(requestData || { error: 'Error en operación de ingenio' }),
+        jsonEnviado: JSON.stringify(
+          requestData || { error: 'Error en operación de ingenio' },
+        ),
         usuario: usuario,
         estatus: estatus,
-        motivoInvalidacion: errorMessage
+        motivoInvalidacion: errorMessage,
       });
     } catch (logError) {
       console.error(`Failed to log ingenio error: ${logError.message}`);
@@ -115,7 +123,7 @@ export class IngenioLogsService {
     estatus: string,
     operationType: string,
     requestData?: any,
-    responseData?: any
+    responseData?: any,
   ): Promise<void> {
     try {
       await this.createLog({
@@ -127,8 +135,8 @@ export class IngenioLogsService {
           action: operationType,
           success: true,
           timestamp: new Date().toISOString(),
-          responseData: responseData || null
-        })
+          responseData: responseData || null,
+        }),
       });
     } catch (logError) {
       console.error(`Failed to log ingenio success: ${logError.message}`);

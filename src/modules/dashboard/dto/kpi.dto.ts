@@ -1,5 +1,5 @@
 export type KpiPorFechaYTipo = {
-  fecha: string;           // 'YYYY-MM-DD'
+  fecha: string; // 'YYYY-MM-DD'
   truckType: string | null;
   total: number;
   enTransito: number;
@@ -13,7 +13,7 @@ export type KpiPorFechaYTipo = {
 };
 
 export type KpiHoyPorHora = {
-  hourBucket: string;      // 'HH:00'
+  hourBucket: string; // 'HH:00'
   total: number;
   enTransito: number;
   prechequeado: number;

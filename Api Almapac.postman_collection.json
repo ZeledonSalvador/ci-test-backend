@@ -1,723 +1,621 @@
 {
-	"info": {
-		"_postman_id": "6a0846b8-5b36-4c8d-9aa9-8bdd6c171657",
-		"name": "Api Almapac",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "34990860"
-	},
-	"item": [
-		{
-			"name": "Auth (All)",
-			"item": [
-				{
-					"name": "login (all)",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"username\" : \"Admin\",\r\n    \"password\" : \"123\",\r\n    \"rol\" : \"admin\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{localhost}}api/auth/login",
-							"host": [
-								"{{localhost}}api"
-							],
-							"path": [
-								"auth",
-								"login"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "register (all)",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluX3VzZXIiLCJzdWIiOjEsInJvbGVzIjpbImFkbWluIl0sImlhdCI6MTcyODQwNjQ4MSwiZXhwIjoxNzI4NDkyODgxfQ.jq-7aAazAz3_MGUIQdvqokJPn5TxRFdujvS6ZomUru0",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"username\" : \"test\",\r\n    \"password\" : \"123\",\r\n    \"role\" : \"admin\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{localhost}}api/auth/register",
-							"host": [
-								"{{localhost}}api"
-							],
-							"path": [
-								"auth",
-								"register"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Mills (ingenios)",
-			"item": [
-				{
-					"name": "crear",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFkbWluIiwic3ViIjoyLCJyb2xlcyI6WyJhZG1pbiJdLCJpYXQiOjE3Mjg2ODA5MTQsImV4cCI6MTcyODc2NzMxNH0.S6yM6xwXQ4ER9DTQALsVydKnr0joti7qgi2E5aI3WQA",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"username\" : \"azucares_buenos\",\r\n    \"ingenioCode\" : \"2334\",\r\n    \"password\" : \"password\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{localhost}}api/mills/register",
-							"host": [
-								"{{localhost}}api"
-							],
-							"path": [
-								"mills",
-								"register"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "login",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"username\" : \"azucares_buenos\",\r\n    \"password\" : \"password\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{localhost}}api/mills/login",
-							"host": [
-								"{{localhost}}api"
-							],
-							"path": [
-								"mills",
-								"login"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "get all",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFkbWluIiwic3ViIjoyLCJyb2xlcyI6WyJhZG1pbiJdLCJpYXQiOjE3Mjg2ODA5MTQsImV4cCI6MTcyODc2NzMxNH0.S6yM6xwXQ4ER9DTQALsVydKnr0joti7qgi2E5aI3WQA",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{localhost}}api/mills/",
-							"host": [
-								"{{localhost}}api"
-							],
-							"path": [
-								"mills",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "get by username",
-					"request": {
-						"method": "GET",
-						"header": []
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Bots (Programas)",
-			"item": [
-				{
-					"name": "create",
-					"request": {
-						"method": "POST",
-						"header": []
-					},
-					"response": []
-				},
-				{
-					"name": "login",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"username\" : \"bot_user_2\",\r\n    \"password\" : \"123\",\r\n    \"expiration\" : \"unlimited\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{localhost}}api/bot/login",
-							"host": [
-								"{{localhost}}api"
-							],
-							"path": [
-								"bot",
-								"login"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "get all",
-					"request": {
-						"method": "GET",
-						"header": []
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Users (Admins)",
-			"item": [
-				{
-					"name": "create",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{localhost}}api/user",
-							"host": [
-								"{{localhost}}api"
-							],
-							"path": [
-								"user"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "login",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"username\" : \"Admin\",\r\n    \"password\" : \"123\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{localhost}}api/users/login",
-							"host": [
-								"{{localhost}}api"
-							],
-							"path": [
-								"users",
-								"login"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Shipments",
-			"item": [
-				{
-					"name": "crear",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluX3VzZXIiLCJzdWIiOjEsInJvbGVzIjpbImFkbWluIl0sImlhdCI6MTcyODQ4ODg1MywiZXhwIjoxNzI4NTc1MjUzfQ.XvJoHMPKmGELSLoGRr0MtG2kX-JRH7yyGEiZ3Hd5ado",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "    {\r\n        \"codigo_gen\": \"43421236263123\",  \r\n        \"producto\": \"Azucar a granel\",\r\n        \"tipo_operacion\": \"carga\",\r\n        \"tipo_carga\": \"granel\",\r\n        \"vehiculo\": {\r\n            \"motorista\": {\r\n                \"licencia\": \"3234423\",\r\n                \"nombre\": \"Rodrigo Franco\"\r\n            },\r\n            \"placa\": \"C2332\",\r\n            \"placa_remolque\": \"R3323\",\r\n            \"tipo_camion\": \"Rastra\"\r\n        },\r\n        \"transportista\": {\r\n            \"nombre\": \"Pedidos YA\"\r\n        },\r\n        \"codigo_ingenio\": \"1234\",\r\n        \"cantidad_producto\": 32,\r\n        \"unidad_medida\": \"t\"\r\n    }",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{localhost}}api/shipping/",
-							"host": [
-								"{{localhost}}api"
-							],
-							"path": [
-								"shipping",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "update",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluX3VzZXIiLCJzdWIiOjEsInJvbGVzIjpbImFkbWluIl0sImlhdCI6MTcyODUzODgxNSwiZXhwIjoxNzI4NjI1MjE1fQ.V5Slx8WbBtkX8c99agnhg0lR4TTJdX38FUwy9gZh6dI",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n       \"unidad_medida\" : \"lb\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{localhost}}api/shipping/4342123123",
-							"host": [
-								"{{localhost}}api"
-							],
-							"path": [
-								"shipping",
-								"4342123123"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "get by ingenio",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluX3VzZXIiLCJzdWIiOjEsInJvbGVzIjpbImFkbWluIl0sImlhdCI6MTcyODQ4ODg1MywiZXhwIjoxNzI4NTc1MjUzfQ.XvJoHMPKmGELSLoGRr0MtG2kX-JRH7yyGEiZ3Hd5ado",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{localhost}}api/shipping/ingenio/1234?page=2&size=2",
-							"host": [
-								"{{localhost}}api"
-							],
-							"path": [
-								"shipping",
-								"ingenio",
-								"1234"
-							],
-							"query": [
-								{
-									"key": "page",
-									"value": "2"
-								},
-								{
-									"key": "size",
-									"value": "2"
-								},
-								{
-									"key": "startDate",
-									"value": "2024-10-01",
-									"disabled": true
-								},
-								{
-									"key": "endDate",
-									"value": "2024-10-09",
-									"disabled": true
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "get by code",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluX3VzZXIiLCJzdWIiOjEsInJvbGVzIjpbImFkbWluIl0sImlhdCI6MTcyODQ4ODg1MywiZXhwIjoxNzI4NTc1MjUzfQ.XvJoHMPKmGELSLoGRr0MtG2kX-JRH7yyGEiZ3Hd5ado",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{localhost}}api/shipping/43421236263123",
-							"host": [
-								"{{localhost}}api"
-							],
-							"path": [
-								"shipping",
-								"43421236263123"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "get by status",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluX3VzZXIiLCJzdWIiOjEsInJvbGVzIjpbImFkbWluIl0sImlhdCI6MTcyODQ4ODg1MywiZXhwIjoxNzI4NTc1MjUzfQ.XvJoHMPKmGELSLoGRr0MtG2kX-JRH7yyGEiZ3Hd5ado",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{localhost}}api/shipping/status/1",
-							"host": [
-								"{{localhost}}api"
-							],
-							"path": [
-								"shipping",
-								"status",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "get all",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluX3VzZXIiLCJzdWIiOjEsInJvbGVzIjpbImFkbWluIl0sImlhdCI6MTcyODQ4ODg1MywiZXhwIjoxNzI4NTc1MjUzfQ.XvJoHMPKmGELSLoGRr0MtG2kX-JRH7yyGEiZ3Hd5ado",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{localhost}}api/shipping/?page=2&size=2",
-							"host": [
-								"{{localhost}}api"
-							],
-							"path": [
-								"shipping",
-								""
-							],
-							"query": [
-								{
-									"key": "page",
-									"value": "2"
-								},
-								{
-									"key": "size",
-									"value": "2"
-								}
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Statuses",
-			"item": [
-				{
-					"name": "See status by gen code",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{localhost}}api/status/shipment/dsdsd2123123",
-							"host": [
-								"{{localhost}}api"
-							],
-							"path": [
-								"status",
-								"shipment",
-								"dsdsd2123123"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "push new status by gen code",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluX3VzZXIiLCJzdWIiOjEsInJvbGVzIjpbImFkbWluIl0sImlhdCI6MTcyODQ4ODg1MywiZXhwIjoxNzI4NTc1MjUzfQ.XvJoHMPKmGELSLoGRr0MtG2kX-JRH7yyGEiZ3Hd5ado",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"codeGen\" : \"34324sdsd\",\r\n    \"predefinedStatusId\" : 1\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{localhost}}api/status/push",
-							"host": [
-								"{{localhost}}api"
-							],
-							"path": [
-								"status",
-								"push"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "BlackList",
-			"item": [
-				{
-					"name": "Add observacion blacklist",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluX3VzZXIiLCJzdWIiOjEsInJvbGVzIjpbImFkbWluIl0sImlhdCI6MTcyODUzNjQ3OSwiZXhwIjoxNzI4NjIyODc5fQ.O4kY79R8gYzYQGhoofG9vxf8Jzx64Nbqz8UqGPxr9mc",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"license\" : \"3234423\",\r\n    \"observation\" : \"Venia sin licencia XD\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{localhost}}api/blacklist",
-							"host": [
-								"{{localhost}}api"
-							],
-							"path": [
-								"blacklist"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get by licence driver",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluX3VzZXIiLCJzdWIiOjEsInJvbGVzIjpbImFkbWluIl0sImlhdCI6MTcyODUzNjQ3OSwiZXhwIjoxNzI4NjIyODc5fQ.O4kY79R8gYzYQGhoofG9vxf8Jzx64Nbqz8UqGPxr9mc",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{localhost}}api/blacklist/3234423/observations",
-							"host": [
-								"{{localhost}}api"
-							],
-							"path": [
-								"blacklist",
-								"3234423",
-								"observations"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get all Blacklist",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluX3VzZXIiLCJzdWIiOjEsInJvbGVzIjpbImFkbWluIl0sImlhdCI6MTcyODUzNjQ3OSwiZXhwIjoxNzI4NjIyODc5fQ.O4kY79R8gYzYQGhoofG9vxf8Jzx64Nbqz8UqGPxr9mc",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{localhost}}api/blacklist/3234423/observations",
-							"host": [
-								"{{localhost}}api"
-							],
-							"path": [
-								"blacklist",
-								"3234423",
-								"observations"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "hello",
-			"request": {
-				"method": "GET",
-				"header": []
-			},
-			"response": []
-		}
-	],
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"type": "text/javascript",
-				"packages": {},
-				"exec": [
-					""
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"type": "text/javascript",
-				"packages": {},
-				"exec": [
-					""
-				]
-			}
-		}
-	],
-	"variable": [
-		{
-			"key": "localhost",
-			"value": "http://localhost:3000/",
-			"type": "string"
-		},
-		{
-			"key": "dev",
-			"value": "http://192.168.200.112:3000/",
-			"type": "string"
-		},
-		{
-			"key": "admintoken",
-			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFkbWluIiwic3ViIjoyLCJyb2xlcyI6WyJhZG1pbiJdLCJpYXQiOjE3Mjg5MjE4NTYsImV4cCI6MTcyOTAwODI1Nn0.CgYv92GtHEvgMWljM4FKfVfO2_rTsl1S8DOYpFvshYI",
-			"type": "string"
-		}
-	]
+  "info": {
+    "_postman_id": "6a0846b8-5b36-4c8d-9aa9-8bdd6c171657",
+    "name": "Api Almapac",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "34990860"
+  },
+  "item": [
+    {
+      "name": "Auth (All)",
+      "item": [
+        {
+          "name": "login (all)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\" : \"Admin\",\r\n    \"password\" : \"123\",\r\n    \"rol\" : \"admin\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{localhost}}api/auth/login",
+              "host": ["{{localhost}}api"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "register (all)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluX3VzZXIiLCJzdWIiOjEsInJvbGVzIjpbImFkbWluIl0sImlhdCI6MTcyODQwNjQ4MSwiZXhwIjoxNzI4NDkyODgxfQ.jq-7aAazAz3_MGUIQdvqokJPn5TxRFdujvS6ZomUru0",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\" : \"test\",\r\n    \"password\" : \"123\",\r\n    \"role\" : \"admin\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{localhost}}api/auth/register",
+              "host": ["{{localhost}}api"],
+              "path": ["auth", "register"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Mills (ingenios)",
+      "item": [
+        {
+          "name": "crear",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFkbWluIiwic3ViIjoyLCJyb2xlcyI6WyJhZG1pbiJdLCJpYXQiOjE3Mjg2ODA5MTQsImV4cCI6MTcyODc2NzMxNH0.S6yM6xwXQ4ER9DTQALsVydKnr0joti7qgi2E5aI3WQA",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\" : \"azucares_buenos\",\r\n    \"ingenioCode\" : \"2334\",\r\n    \"password\" : \"password\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{localhost}}api/mills/register",
+              "host": ["{{localhost}}api"],
+              "path": ["mills", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\" : \"azucares_buenos\",\r\n    \"password\" : \"password\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{localhost}}api/mills/login",
+              "host": ["{{localhost}}api"],
+              "path": ["mills", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get all",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFkbWluIiwic3ViIjoyLCJyb2xlcyI6WyJhZG1pbiJdLCJpYXQiOjE3Mjg2ODA5MTQsImV4cCI6MTcyODc2NzMxNH0.S6yM6xwXQ4ER9DTQALsVydKnr0joti7qgi2E5aI3WQA",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{localhost}}api/mills/",
+              "host": ["{{localhost}}api"],
+              "path": ["mills", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get by username",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Bots (Programas)",
+      "item": [
+        {
+          "name": "create",
+          "request": {
+            "method": "POST",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\" : \"bot_user_2\",\r\n    \"password\" : \"123\",\r\n    \"expiration\" : \"unlimited\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{localhost}}api/bot/login",
+              "host": ["{{localhost}}api"],
+              "path": ["bot", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get all",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users (Admins)",
+      "item": [
+        {
+          "name": "create",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{localhost}}api/user",
+              "host": ["{{localhost}}api"],
+              "path": ["user"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\" : \"Admin\",\r\n    \"password\" : \"123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{localhost}}api/users/login",
+              "host": ["{{localhost}}api"],
+              "path": ["users", "login"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Shipments",
+      "item": [
+        {
+          "name": "crear",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluX3VzZXIiLCJzdWIiOjEsInJvbGVzIjpbImFkbWluIl0sImlhdCI6MTcyODQ4ODg1MywiZXhwIjoxNzI4NTc1MjUzfQ.XvJoHMPKmGELSLoGRr0MtG2kX-JRH7yyGEiZ3Hd5ado",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "    {\r\n        \"codigo_gen\": \"43421236263123\",  \r\n        \"producto\": \"Azucar a granel\",\r\n        \"tipo_operacion\": \"carga\",\r\n        \"tipo_carga\": \"granel\",\r\n        \"vehiculo\": {\r\n            \"motorista\": {\r\n                \"licencia\": \"3234423\",\r\n                \"nombre\": \"Rodrigo Franco\"\r\n            },\r\n            \"placa\": \"C2332\",\r\n            \"placa_remolque\": \"R3323\",\r\n            \"tipo_camion\": \"Rastra\"\r\n        },\r\n        \"transportista\": {\r\n            \"nombre\": \"Pedidos YA\"\r\n        },\r\n        \"codigo_ingenio\": \"1234\",\r\n        \"cantidad_producto\": 32,\r\n        \"unidad_medida\": \"t\"\r\n    }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{localhost}}api/shipping/",
+              "host": ["{{localhost}}api"],
+              "path": ["shipping", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluX3VzZXIiLCJzdWIiOjEsInJvbGVzIjpbImFkbWluIl0sImlhdCI6MTcyODUzODgxNSwiZXhwIjoxNzI4NjI1MjE1fQ.V5Slx8WbBtkX8c99agnhg0lR4TTJdX38FUwy9gZh6dI",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n       \"unidad_medida\" : \"lb\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{localhost}}api/shipping/4342123123",
+              "host": ["{{localhost}}api"],
+              "path": ["shipping", "4342123123"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get by ingenio",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluX3VzZXIiLCJzdWIiOjEsInJvbGVzIjpbImFkbWluIl0sImlhdCI6MTcyODQ4ODg1MywiZXhwIjoxNzI4NTc1MjUzfQ.XvJoHMPKmGELSLoGRr0MtG2kX-JRH7yyGEiZ3Hd5ado",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{localhost}}api/shipping/ingenio/1234?page=2&size=2",
+              "host": ["{{localhost}}api"],
+              "path": ["shipping", "ingenio", "1234"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "2"
+                },
+                {
+                  "key": "size",
+                  "value": "2"
+                },
+                {
+                  "key": "startDate",
+                  "value": "2024-10-01",
+                  "disabled": true
+                },
+                {
+                  "key": "endDate",
+                  "value": "2024-10-09",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get by code",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluX3VzZXIiLCJzdWIiOjEsInJvbGVzIjpbImFkbWluIl0sImlhdCI6MTcyODQ4ODg1MywiZXhwIjoxNzI4NTc1MjUzfQ.XvJoHMPKmGELSLoGRr0MtG2kX-JRH7yyGEiZ3Hd5ado",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{localhost}}api/shipping/43421236263123",
+              "host": ["{{localhost}}api"],
+              "path": ["shipping", "43421236263123"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get by status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluX3VzZXIiLCJzdWIiOjEsInJvbGVzIjpbImFkbWluIl0sImlhdCI6MTcyODQ4ODg1MywiZXhwIjoxNzI4NTc1MjUzfQ.XvJoHMPKmGELSLoGRr0MtG2kX-JRH7yyGEiZ3Hd5ado",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{localhost}}api/shipping/status/1",
+              "host": ["{{localhost}}api"],
+              "path": ["shipping", "status", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get all",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluX3VzZXIiLCJzdWIiOjEsInJvbGVzIjpbImFkbWluIl0sImlhdCI6MTcyODQ4ODg1MywiZXhwIjoxNzI4NTc1MjUzfQ.XvJoHMPKmGELSLoGRr0MtG2kX-JRH7yyGEiZ3Hd5ado",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{localhost}}api/shipping/?page=2&size=2",
+              "host": ["{{localhost}}api"],
+              "path": ["shipping", ""],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "2"
+                },
+                {
+                  "key": "size",
+                  "value": "2"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Statuses",
+      "item": [
+        {
+          "name": "See status by gen code",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{localhost}}api/status/shipment/dsdsd2123123",
+              "host": ["{{localhost}}api"],
+              "path": ["status", "shipment", "dsdsd2123123"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "push new status by gen code",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluX3VzZXIiLCJzdWIiOjEsInJvbGVzIjpbImFkbWluIl0sImlhdCI6MTcyODQ4ODg1MywiZXhwIjoxNzI4NTc1MjUzfQ.XvJoHMPKmGELSLoGRr0MtG2kX-JRH7yyGEiZ3Hd5ado",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"codeGen\" : \"34324sdsd\",\r\n    \"predefinedStatusId\" : 1\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{localhost}}api/status/push",
+              "host": ["{{localhost}}api"],
+              "path": ["status", "push"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "BlackList",
+      "item": [
+        {
+          "name": "Add observacion blacklist",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluX3VzZXIiLCJzdWIiOjEsInJvbGVzIjpbImFkbWluIl0sImlhdCI6MTcyODUzNjQ3OSwiZXhwIjoxNzI4NjIyODc5fQ.O4kY79R8gYzYQGhoofG9vxf8Jzx64Nbqz8UqGPxr9mc",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"license\" : \"3234423\",\r\n    \"observation\" : \"Venia sin licencia XD\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{localhost}}api/blacklist",
+              "host": ["{{localhost}}api"],
+              "path": ["blacklist"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get by licence driver",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluX3VzZXIiLCJzdWIiOjEsInJvbGVzIjpbImFkbWluIl0sImlhdCI6MTcyODUzNjQ3OSwiZXhwIjoxNzI4NjIyODc5fQ.O4kY79R8gYzYQGhoofG9vxf8Jzx64Nbqz8UqGPxr9mc",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{localhost}}api/blacklist/3234423/observations",
+              "host": ["{{localhost}}api"],
+              "path": ["blacklist", "3234423", "observations"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get all Blacklist",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluX3VzZXIiLCJzdWIiOjEsInJvbGVzIjpbImFkbWluIl0sImlhdCI6MTcyODUzNjQ3OSwiZXhwIjoxNzI4NjIyODc5fQ.O4kY79R8gYzYQGhoofG9vxf8Jzx64Nbqz8UqGPxr9mc",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{localhost}}api/blacklist/3234423/observations",
+              "host": ["{{localhost}}api"],
+              "path": ["blacklist", "3234423", "observations"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "hello",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "localhost",
+      "value": "http://localhost:3000/",
+      "type": "string"
+    },
+    {
+      "key": "dev",
+      "value": "http://192.168.200.112:3000/",
+      "type": "string"
+    },
+    {
+      "key": "admintoken",
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFkbWluIiwic3ViIjoyLCJyb2xlcyI6WyJhZG1pbiJdLCJpYXQiOjE3Mjg5MjE4NTYsImV4cCI6MTcyOTAwODI1Nn0.CgYv92GtHEvgMWljM4FKfVfO2_rTsl1S8DOYpFvshYI",
+      "type": "string"
+    }
+  ]
 }

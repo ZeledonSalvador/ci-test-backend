@@ -12,7 +12,7 @@ import { InvalidatedShipments } from 'src/models/InvalidatedShipments';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Users, Shipments, Clients, InvalidatedShipments]),
-    forwardRef(() => AuthModule)
+    forwardRef(() => AuthModule),
   ],
   controllers: [UsersController],
   providers: [UsersService],

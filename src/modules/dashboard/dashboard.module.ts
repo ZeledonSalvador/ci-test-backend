@@ -11,4 +11,4 @@ import { AuthModule } from 'src/modules/auth/auth.module';
   controllers: [DashboardController],
   providers: [DashboardService],
 })
-export class DashboardModule { }
+export class DashboardModule {}

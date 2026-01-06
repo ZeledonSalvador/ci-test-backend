@@ -1,4 +1,11 @@
-import { BadRequestException, ConflictException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoginSimpleDto } from 'src/dto/loginSimple.dto';
 import { RegisterSimpleDto } from 'src/dto/registerSimple.dto';
@@ -22,8 +29,8 @@ export class UsersService {
     @InjectRepository(Clients)
     private clientsRepository: Repository<Clients>,
     @InjectRepository(InvalidatedShipments)
-    private invalidatedShipmentsRepository: Repository<InvalidatedShipments>
-  ) { }
+    private invalidatedShipmentsRepository: Repository<InvalidatedShipments>,
+  ) {}
 
   async login(loginDto: LoginSimpleDto) {
     return this.authService.login({
@@ -39,8 +46,6 @@ export class UsersService {
     });
   }
 
-
-
   async findOneById(id: number): Promise<Users | undefined> {
     return await this.usersRepository.findOne({ where: { id } });
   }
@@ -52,20 +57,25 @@ export class UsersService {
     });
 
     if (!client) {
-      throw new NotFoundException("No se encontro el cliente con ese codigo");
+      throw new NotFoundException('No se encontro el cliente con ese codigo');
     }
 
     return client.user;
   }
 
-  async handleGetUser(codeGen: string | null, codeClient: string | null): Promise<Users> {
-    console.log("Código de generación recibido (codeGen):", codeGen);
-    console.log("Código de cliente recibido (codeClient):", codeClient);
+  async handleGetUser(
+    codeGen: string | null,
+    codeClient: string | null,
+  ): Promise<Users> {
+    console.log('Código de generación recibido (codeGen):', codeGen);
+    console.log('Código de cliente recibido (codeClient):', codeClient);
 
     // Validar que al menos uno de los códigos no sea null
     if (!codeGen && !codeClient) {
-      console.error("Error: Ambos códigos son nulos");
-      throw new BadRequestException("Debe proporcionar al menos un código para buscar el usuario");
+      console.error('Error: Ambos códigos son nulos');
+      throw new BadRequestException(
+        'Debe proporcionar al menos un código para buscar el usuario',
+      );
     }
 
     // Priorizar la búsqueda por codeGen si existe
@@ -75,28 +85,30 @@ export class UsersService {
       });
 
       if (shipmentExists) {
-        console.log("Shipment encontrado con codeGen:", codeGen);
+        console.log('Shipment encontrado con codeGen:', codeGen);
         return this.getUserByShipment(codeGen);
       } else {
-
         /* 
           Si no se encontro el shipment entonces hay que buscar si esta
           invalidado
         */
 
-        const shipmentInvalid = await this.invalidatedShipmentsRepository.findOne({
-          where: {
-            codeGen: codeGen
-          }
-        });
+        const shipmentInvalid =
+          await this.invalidatedShipmentsRepository.findOne({
+            where: {
+              codeGen: codeGen,
+            },
+          });
 
         if (shipmentInvalid) {
           /* 
             Si si hay un registro, bueno, debo mandar un error claro
           */
-          throw new ConflictException("El código de generación que ha proporcionado está invalidado. Si considera que se trata de un error, por favor póngase en contacto con el propietario para revalidarlo.");
+          throw new ConflictException(
+            'El código de generación que ha proporcionado está invalidado. Si considera que se trata de un error, por favor póngase en contacto con el propietario para revalidarlo.',
+          );
         }
-        console.warn("No se encontró shipment con codeGen:", codeGen);
+        console.warn('No se encontró shipment con codeGen:', codeGen);
       }
     }
 
@@ -107,21 +119,23 @@ export class UsersService {
       });
 
       if (clientExists) {
-        console.log("Cliente encontrado con codeClient:", codeClient);
+        console.log('Cliente encontrado con codeClient:', codeClient);
         return this.getUserByCodeClient(codeClient);
       } else {
-        console.warn("No se encontró cliente con codeClient:", codeClient);
+        console.warn('No se encontró cliente con codeClient:', codeClient);
       }
     } else {
-      console.log("CodeClient es nulo, omitiendo búsqueda de cliente.");
+      console.log('CodeClient es nulo, omitiendo búsqueda de cliente.');
     }
 
     // Si ninguno de los códigos es válido, lanzar una excepción
-    console.error("Error: No se encontró un usuario con los códigos proporcionados");
-    throw new NotFoundException("No se pudo encontrar un usuario con los códigos proporcionados");
+    console.error(
+      'Error: No se encontró un usuario con los códigos proporcionados',
+    );
+    throw new NotFoundException(
+      'No se pudo encontrar un usuario con los códigos proporcionados',
+    );
   }
-
-
 
   async getUserByShipment(codeGen: string): Promise<Users> {
     const shipment = await this.shipmentsRepository.findOne({
@@ -148,18 +162,20 @@ export class UsersService {
     return user;
   }
 
-  async findOneByUsername(username: string, role?: string): Promise<Users | undefined> {
-
+  async findOneByUsername(
+    username: string,
+    role?: string,
+  ): Promise<Users | undefined> {
     if (role === Role.CLIENT) {
       return await this.usersRepository.findOne({
         where: { username },
-        relations: ["clients"]
+        relations: ['clients'],
       });
     }
 
     return await this.usersRepository.findOne({
-      where: { username }
-    })
+      where: { username },
+    });
   }
 
   async findOne(username: string): Promise<Users | undefined> {
@@ -185,7 +201,7 @@ export class UsersService {
     }
 
     return await this.usersRepository.find({
-      where: { role }
+      where: { role },
     });
   }
 }

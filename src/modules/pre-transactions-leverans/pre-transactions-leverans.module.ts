@@ -9,14 +9,14 @@ import { HttpManager } from 'src/utils/HttpManager';
 import { LogsModule } from '../logs/logs.module';
 
 @Module({
-  imports : [
+  imports: [
     TypeOrmModule.forFeature([Shipments]),
     forwardRef(() => ShipmentsModule),
     HttpModule,
-    LogsModule
+    LogsModule,
   ],
   controllers: [PreTransactionsLeveransController],
   providers: [PreTransactionsLeveransService, HttpManager],
-  exports: [PreTransactionsLeveransService, HttpModule, HttpManager]
+  exports: [PreTransactionsLeveransService, HttpModule, HttpManager],
 })
 export class PreTransactionsLeveransModule {}

@@ -89,9 +89,13 @@ describe('InternalAuthController', () => {
         password: 'wrongpass',
       };
 
-      mockInternalAuthService.login.mockRejectedValue(new Error('Credenciales inválidas'));
+      mockInternalAuthService.login.mockRejectedValue(
+        new Error('Credenciales inválidas'),
+      );
 
-      await expect(controller.login(loginDto)).rejects.toThrow('Credenciales inválidas');
+      await expect(controller.login(loginDto)).rejects.toThrow(
+        'Credenciales inválidas',
+      );
       expect(service.login).toHaveBeenCalledWith(loginDto);
     });
   });
@@ -109,7 +113,9 @@ describe('InternalAuthController', () => {
         message: 'Token válido',
       };
 
-      mockInternalAuthService.verifyInternalJwt.mockResolvedValue(expectedResult);
+      mockInternalAuthService.verifyInternalJwt.mockResolvedValue(
+        expectedResult,
+      );
 
       const result = await controller.verifyToken(token);
 
@@ -125,7 +131,9 @@ describe('InternalAuthController', () => {
         message: 'Token expirado',
       };
 
-      mockInternalAuthService.verifyInternalJwt.mockResolvedValue(expectedResult);
+      mockInternalAuthService.verifyInternalJwt.mockResolvedValue(
+        expectedResult,
+      );
 
       const result = await controller.verifyToken(token);
 

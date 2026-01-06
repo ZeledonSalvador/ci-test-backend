@@ -24,7 +24,7 @@ export class MediaController {
    * Soporta nombre opcional (/media/e/:name) para incluir extensión
    * y query ?k=i|v|u como pista de tipo para evitar HEAD en el frontend.
    */
- @Get(['e', 'e/:name'])
+  @Get(['e', 'e/:name'])
   async getMedia(
     @Query('t') t: string,
     @Query('k') k: string, // i=image, v=video, u=unknown
@@ -52,7 +52,8 @@ export class MediaController {
       // HEAD rápido (sin tocar OneDrive)
       if (isHead) {
         const contentType =
-          this.inferContentTypeFromNameOrHint(name, k) || 'application/octet-stream';
+          this.inferContentTypeFromNameOrHint(name, k) ||
+          'application/octet-stream';
 
         res.set({
           'Content-Type': contentType,
@@ -63,13 +64,16 @@ export class MediaController {
         });
 
         const elapsed = Date.now() - startTime;
-        this.logger.debug(`✓ HEAD 200 en ${elapsed}ms para ${fileId.substring(0, 15)}...`);
+        this.logger.debug(
+          `✓ HEAD 200 en ${elapsed}ms para ${fileId.substring(0, 15)}...`,
+        );
         res.status(200).end();
         return;
       }
 
       // GET: obtener URL temporal (cacheada 15m) y redirigir
-      const downloadUrl = await this.oneDriveService.getTemporaryDownloadUrl(fileId);
+      const downloadUrl =
+        await this.oneDriveService.getTemporaryDownloadUrl(fileId);
 
       res.set({
         'Cache-Control': `public, max-age=${MediaController.MAX_AGE_SECONDS}, s-maxage=${MediaController.MAX_AGE_SECONDS}, stale-while-revalidate=30`,
@@ -77,11 +81,16 @@ export class MediaController {
       });
 
       const elapsed = Date.now() - startTime;
-      this.logger.log(`✓ Redirect 307 en ${elapsed}ms para ${fileId.substring(0, 15)}...`);
+      this.logger.log(
+        `✓ Redirect 307 en ${elapsed}ms para ${fileId.substring(0, 15)}...`,
+      );
       res.redirect(307, downloadUrl);
     } catch (error: any) {
       const elapsed = Date.now() - startTime;
-      this.logger.error(`✗ Error tras ${elapsed}ms: ${error?.message}`, error?.stack);
+      this.logger.error(
+        `✗ Error tras ${elapsed}ms: ${error?.message}`,
+        error?.stack,
+      );
       if (!res.headersSent) {
         res.status(500).json({
           statusCode: 500,
@@ -93,7 +102,10 @@ export class MediaController {
   }
 
   // --- helper ---
-  private inferContentTypeFromNameOrHint(name?: string, k?: string): string | null {
+  private inferContentTypeFromNameOrHint(
+    name?: string,
+    k?: string,
+  ): string | null {
     if (k === 'i') return 'image/jpeg';
     if (k === 'v') return 'video/mp4';
 

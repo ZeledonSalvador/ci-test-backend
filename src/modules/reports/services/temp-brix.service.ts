@@ -21,7 +21,7 @@ export class TempBrixChartService {
     // Validar que los parámetros requeridos estén presentes
     if (!ingenioCode || !from || !to) {
       throw new BadRequestException(
-        'Los parámetros ingenioCode, from y to son requeridos'
+        'Los parámetros ingenioCode, from y to son requeridos',
       );
     }
 
@@ -113,16 +113,22 @@ export class TempBrixChartService {
       FROM Daily;
     `;
 
-    const summaryRow = (await this.dataSource.query(sqlSummary, [
-      ingenioCode,
-      product,
-      from,
-      to,
-    ]))?.[0] ?? {};
+    const summaryRow =
+      (
+        await this.dataSource.query(sqlSummary, [
+          ingenioCode,
+          product,
+          from,
+          to,
+        ])
+      )?.[0] ?? {};
 
     // Normalizamos fechas a YYYY-MM-DD para labels
     const rowsNormalized = rows.map((r) => {
-      const d = r.fecha_recepcion instanceof Date ? r.fecha_recepcion : new Date(r.fecha_recepcion);
+      const d =
+        r.fecha_recepcion instanceof Date
+          ? r.fecha_recepcion
+          : new Date(r.fecha_recepcion);
       const yyyy = d.getFullYear();
       const mm = String(d.getMonth() + 1).padStart(2, '0');
       const dd = String(d.getDate()).padStart(2, '0');

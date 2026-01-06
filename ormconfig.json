@@ -1,15 +1,14 @@
 {
-    "type": "mssql",
-    "host": "localhost",
-    "port": 1433,
-    "username": "sa",
-    "password": "<YourPassword>",
-    "database": "ingenioapi",
-    "synchronize": false,
-    "logging": true,
-    "entities": ["dist/**/*.entity{.ts,.js}"],
-    "cli": {
-      "entitiesDir": "src/entities"
-    }
+  "type": "mssql",
+  "host": "localhost",
+  "port": 1433,
+  "username": "sa",
+  "password": "<YourPassword>",
+  "database": "ingenioapi",
+  "synchronize": false,
+  "logging": true,
+  "entities": ["dist/**/*.entity{.ts,.js}"],
+  "cli": {
+    "entitiesDir": "src/entities"
   }
-  
+}

@@ -1,10 +1,4 @@
-import {
-  IsInt,
-  Min,
-  IsArray,
-  ArrayMinSize,
-  IsString,
-} from 'class-validator';
+import { IsInt, Min, IsArray, ArrayMinSize, IsString } from 'class-validator';
 
 export class CreateMarchamoDto {
   @IsInt()

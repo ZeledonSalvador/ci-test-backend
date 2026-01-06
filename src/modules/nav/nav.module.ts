@@ -14,12 +14,12 @@ import { ShipmentsModule } from 'src/modules/shipments/shipments.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Shipments]),
-    forwardRef(() => ShipmentsModule),            // 👈 solo así
+    forwardRef(() => ShipmentsModule), // 👈 solo así
     HttpModule,
     LogsModule,
     forwardRef(() => StatusModule),
     AuthModule,
-    PreTransactionsLeveransModule,                // si aquí no hay ciclo, puede ir normal
+    PreTransactionsLeveransModule, // si aquí no hay ciclo, puede ir normal
     // ❌ ShipmentsModule (ELIMINADO, causaba el error en el índice 7)
   ],
   controllers: [NavController],

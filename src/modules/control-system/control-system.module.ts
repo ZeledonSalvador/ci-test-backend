@@ -12,18 +12,11 @@ import { DiscoveryModule } from '@nestjs/core';
 @Module({
   imports: [
     HttpModule,
-    TypeOrmModule.forFeature([
-      Shipments,
-      InvalidatedShipments,
-      Vehicles,
-    ]),
+    TypeOrmModule.forFeature([Shipments, InvalidatedShipments, Vehicles]),
     AuthModule,
-    DiscoveryModule
+    DiscoveryModule,
   ],
   controllers: [ControlSystemController],
-  providers: [
-    ControlSystemService,
-    HttpManager
-  ],
+  providers: [ControlSystemService, HttpManager],
 })
-export class ControlSystemModule { }
+export class ControlSystemModule {}

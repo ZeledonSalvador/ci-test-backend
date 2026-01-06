@@ -1,8 +1,8 @@
-import { createEnumMap } from "src/utils/functions.util";
+import { createEnumMap } from 'src/utils/functions.util';
 
 export enum RequiresSweepingType {
-    SI = 'S',
-    NO = 'N',
+  SI = 'S',
+  NO = 'N',
 }
 
-export const RequiresSweepingMap = createEnumMap(RequiresSweepingType)
+export const RequiresSweepingMap = createEnumMap(RequiresSweepingType);

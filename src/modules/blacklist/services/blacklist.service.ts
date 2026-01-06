@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  Logger,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Drivers } from 'src/models/Drivers';
 import { Repository } from 'typeorm';
@@ -40,7 +45,9 @@ interface ProcessedFile {
 @Injectable()
 export class BlacklistService {
   private readonly logger = new Logger(BlacklistService.name);
-  private readonly MEDIA_URL_TTL_SECONDS = Number(process.env.MEDIA_URL_TTL_SECONDS ?? 600);
+  private readonly MEDIA_URL_TTL_SECONDS = Number(
+    process.env.MEDIA_URL_TTL_SECONDS ?? 600,
+  );
 
   constructor(
     @InjectRepository(BlacklistDrivers)
@@ -62,37 +69,43 @@ export class BlacklistService {
     if (!filename || typeof filename !== 'string') {
       return '';
     }
-    
+
     const mimePattern = /=\?([^?]+)\?([BbQq])\?([^?]+)\?=/g;
     let decoded = filename;
     let hasMatch = false;
-    
-    decoded = decoded.replace(mimePattern, (fullMatch, charset, encoding, encodedText) => {
-      hasMatch = true;
-      
-      try {
-        if (encoding.toUpperCase() === 'B') {
-          const buffer = Buffer.from(encodedText, 'base64');
-          return buffer.toString('utf8');
-        } else if (encoding.toUpperCase() === 'Q') {
-          return encodedText
-            .replace(/_/g, ' ')
-            .replace(/=([0-9A-F]{2})/gi, (_, hex) => 
-              String.fromCharCode(parseInt(hex, 16))
-            );
+
+    decoded = decoded.replace(
+      mimePattern,
+      (fullMatch, charset, encoding, encodedText) => {
+        hasMatch = true;
+
+        try {
+          if (encoding.toUpperCase() === 'B') {
+            const buffer = Buffer.from(encodedText, 'base64');
+            return buffer.toString('utf8');
+          } else if (encoding.toUpperCase() === 'Q') {
+            return encodedText
+              .replace(/_/g, ' ')
+              .replace(/=([0-9A-F]{2})/gi, (_, hex) =>
+                String.fromCharCode(parseInt(hex, 16)),
+              );
+          }
+        } catch (error) {
+          this.logger.warn(
+            `Error decodificando segmento MIME: ${fullMatch}`,
+            error,
+          );
+          return fullMatch;
         }
-      } catch (error) {
-        this.logger.warn(`Error decodificando segmento MIME: ${fullMatch}`, error);
+
         return fullMatch;
-      }
-      
-      return fullMatch;
-    });
-    
+      },
+    );
+
     if (hasMatch) {
       this.logger.debug(`Nombre decodificado: "${filename}" -> "${decoded}"`);
     }
-    
+
     return decoded;
   }
 
@@ -100,10 +113,11 @@ export class BlacklistService {
    * Procesar archivos y cachear decodificación una sola vez
    */
   private processFiles(files: Express.Multer.File[]): ProcessedFile[] {
-    return files.map(file => {
+    return files.map((file) => {
       const decodedName = this.decodeMimeFilename(file.originalname);
       const extension = path.extname(decodedName);
-      const sanitizedBaseName = path.basename(decodedName, extension)
+      const sanitizedBaseName = path
+        .basename(decodedName, extension)
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
         .replace(/[^\w\-]/g, '_')
@@ -122,7 +136,9 @@ export class BlacklistService {
   /**
    * Validar archivos procesados
    */
-  private async validateProcessedFiles(processedFiles: ProcessedFile[]): Promise<{
+  private async validateProcessedFiles(
+    processedFiles: ProcessedFile[],
+  ): Promise<{
     isValid: boolean;
     errors: string[];
     validFiles: number;
@@ -131,18 +147,33 @@ export class BlacklistService {
     let validFiles = 0;
 
     if (processedFiles.length > 10) {
-      errors.push(`Se ha superado el numero maximo de archivos permitidos (10). Archivos enviados: ${processedFiles.length}`);
+      errors.push(
+        `Se ha superado el numero maximo de archivos permitidos (10). Archivos enviados: ${processedFiles.length}`,
+      );
       return { isValid: false, errors, validFiles: 0 };
     }
 
     const allowedMimeTypes = new Set([
-      'image/jpeg', 'image/png', 'image/gif', 'image/webp',
-      'image/heic', 'image/heif', 'video/mp4', 'video/x-m4v'
+      'image/jpeg',
+      'image/png',
+      'image/gif',
+      'image/webp',
+      'image/heic',
+      'image/heif',
+      'video/mp4',
+      'video/x-m4v',
     ]);
 
     const allowedExtensions = new Set([
-      '.jpg', '.jpeg', '.png', '.gif', '.webp', '.heic', '.heif',
-      '.mp4', '.m4v'
+      '.jpg',
+      '.jpeg',
+      '.png',
+      '.gif',
+      '.webp',
+      '.heic',
+      '.heif',
+      '.mp4',
+      '.m4v',
     ]);
 
     const MAX_FILE_SIZE = 20 * 1024 * 1024;
@@ -152,23 +183,28 @@ export class BlacklistService {
       const fileIndex = i + 1;
 
       if (!file?.buffer?.length) {
-        errors.push(`Archivo ${fileIndex}: El archivo esta vacio o no tiene contenido valido.`);
+        errors.push(
+          `Archivo ${fileIndex}: El archivo esta vacio o no tiene contenido valido.`,
+        );
         continue;
       }
 
       if (file.size > MAX_FILE_SIZE) {
         errors.push(
-          `Archivo ${fileIndex}: Tamano ${this.formatFileSize(file.size)} excede el limite de ${this.formatFileSize(MAX_FILE_SIZE)}.`
+          `Archivo ${fileIndex}: Tamano ${this.formatFileSize(file.size)} excede el limite de ${this.formatFileSize(MAX_FILE_SIZE)}.`,
         );
         continue;
       }
 
-      this.logger.debug(`Validando archivo ${fileIndex}/${processedFiles.length}:`, {
-        decodedName,
-        extension: extension || '(sin extension)',
-        mimeType: file.mimetype,
-        size: this.formatFileSize(file.size)
-      });
+      this.logger.debug(
+        `Validando archivo ${fileIndex}/${processedFiles.length}:`,
+        {
+          decodedName,
+          extension: extension || '(sin extension)',
+          mimeType: file.mimetype,
+          size: this.formatFileSize(file.size),
+        },
+      );
 
       const isMimeAllowed = allowedMimeTypes.has(file.mimetype?.toLowerCase());
       const isExtAllowed = extension ? allowedExtensions.has(extension) : false;
@@ -176,7 +212,7 @@ export class BlacklistService {
       if (!isMimeAllowed) {
         errors.push(
           `Archivo ${fileIndex} (${decodedName}): Tipo MIME no permitido. ` +
-          `Recibido: ${file.mimetype || 'desconocido'}`
+            `Recibido: ${file.mimetype || 'desconocido'}`,
         );
         continue;
       }
@@ -184,33 +220,33 @@ export class BlacklistService {
       if (!isExtAllowed) {
         errors.push(
           `Archivo ${fileIndex} (${decodedName}): Extension no permitida. ` +
-          `Recibida: ${extension || 'sin extension'}`
+            `Recibida: ${extension || 'sin extension'}`,
         );
         continue;
       }
 
       if (!this.isMimeExtensionMatch(file.mimetype, extension)) {
         errors.push(
-          `Archivo ${fileIndex} (${decodedName}): La extension "${extension}" no coincide con el tipo MIME "${file.mimetype}".`
+          `Archivo ${fileIndex} (${decodedName}): La extension "${extension}" no coincide con el tipo MIME "${file.mimetype}".`,
         );
         continue;
       }
 
       validFiles++;
       this.logger.log(
-        `Archivo ${fileIndex} validado: ${decodedName} (${file.mimetype}, ${this.formatFileSize(file.size)})`
+        `Archivo ${fileIndex} validado: ${decodedName} (${file.mimetype}, ${this.formatFileSize(file.size)})`,
       );
     }
 
     this.logger.log(
       `Validacion completada: ${validFiles}/${processedFiles.length} archivos validos` +
-      (errors.length > 0 ? `, ${errors.length} errores` : '')
+        (errors.length > 0 ? `, ${errors.length} errores` : ''),
     );
 
     return {
       isValid: errors.length === 0,
       errors,
-      validFiles
+      validFiles,
     };
   }
 
@@ -221,10 +257,12 @@ export class BlacklistService {
     blacklistId: number,
     status: number,
     changedBy: string,
-    changeReason?: string
+    changeReason?: string,
   ): Promise<void> {
     if (!changedBy || changedBy.trim() === '') {
-      throw new BadRequestException('El campo changedBy es obligatorio para el historial.');
+      throw new BadRequestException(
+        'El campo changedBy es obligatorio para el historial.',
+      );
     }
 
     try {
@@ -235,13 +273,13 @@ export class BlacklistService {
         status,
         changedBy: changedBy.trim(),
         changeDateTime,
-        changeReason
+        changeReason,
       });
 
       await this.historyRepository.save(historyEntry);
-      
+
       this.logger.debug(
-        `Status change logged: Blacklist ${blacklistId}, Status: ${status}, By: ${changedBy}, DateTime: ${changeDateTime.toISOString()}`
+        `Status change logged: Blacklist ${blacklistId}, Status: ${status}, By: ${changedBy}, DateTime: ${changeDateTime.toISOString()}`,
       );
     } catch (error) {
       this.logger.error('Error logging status change:', error);
@@ -253,16 +291,16 @@ export class BlacklistService {
    */
   private normalizeTextForEmail(text: string | null | undefined): string {
     if (!text) return 'No especificado';
-    
+
     let cleaned = text.trim();
     cleaned = cleaned.replace(/[_-]/g, ' ');
     cleaned = cleaned.replace(/([a-z])([A-Z])/g, '$1 $2');
     cleaned = cleaned.replace(/\s{2,}/g, ' ').trim();
-    
+
     return cleaned
       .toLowerCase()
       .split(' ')
-      .map(word => {
+      .map((word) => {
         if (word.length === 0) return word;
         return word.charAt(0).toUpperCase() + word.slice(1);
       })
@@ -276,44 +314,46 @@ export class BlacklistService {
     blacklistEntry: BlacklistDrivers,
     newStatus: BlacklistStatus,
     changedBy: string,
-    changeReason?: string
+    changeReason?: string,
   ): Promise<BlacklistDrivers> {
     if (!changedBy || changedBy.trim() === '') {
       throw new BadRequestException('El campo changedBy es obligatorio.');
     }
 
     const previousStatus = blacklistEntry.statusBlacklist;
-    
+
     blacklistEntry.statusBlacklist = newStatus;
     const updatedEntry = await this.blacklistRepository.save(blacklistEntry);
-    
+
     await this.logStatusChange(
       blacklistEntry.id,
       newStatus,
       changedBy,
-      changeReason
+      changeReason,
     );
-    
+
     return updatedEntry;
   }
 
   /**
    * Obtener historial de cambios de estado para un registro
    */
-  async getStatusHistory(blacklistId: number): Promise<BlacklistStatusHistoryDto[]> {
+  async getStatusHistory(
+    blacklistId: number,
+  ): Promise<BlacklistStatusHistoryDto[]> {
     const history = await this.historyRepository.find({
       where: { blacklistId },
-      order: { changeDateTime: 'ASC' }
+      order: { changeDateTime: 'ASC' },
     });
 
-    return history.map(entry => ({
+    return history.map((entry) => ({
       id: entry.id,
       blacklistId: entry.blacklistId,
       status: entry.status,
       statusText: this.getStatusText(entry.status),
       changedBy: entry.changedBy,
       changeDateTime: entry.changeDateTime,
-      changeReason: entry.changeReason
+      changeReason: entry.changeReason,
     }));
   }
 
@@ -338,7 +378,7 @@ export class BlacklistService {
    */
   private getProductNameByCode(productCode: string): string {
     const productName = Object.keys(ProductType).find(
-      key => ProductType[key as keyof typeof ProductType] === productCode
+      (key) => ProductType[key as keyof typeof ProductType] === productCode,
     );
     if (productName) return productName;
     return 'N/A';
@@ -348,9 +388,11 @@ export class BlacklistService {
    * Formatear fecha en formato dd/mm/yyyy HH:mm (24 horas)
    */
   private formatDateSV(date: Date): string {
-    const salvadorTime = new Date(date.toLocaleString('en-US', { 
-      timeZone: 'America/El_Salvador' 
-    }));
+    const salvadorTime = new Date(
+      date.toLocaleString('en-US', {
+        timeZone: 'America/El_Salvador',
+      }),
+    );
 
     const day = salvadorTime.getDate().toString().padStart(2, '0');
     const month = (salvadorTime.getMonth() + 1).toString().padStart(2, '0');
@@ -364,7 +406,10 @@ export class BlacklistService {
   /**
    * Crear un nuevo reporte de incidente (Status 1)
    */
-  async createReport(createReportDto: CreateReportDto, evidenceFiles?: Express.Multer.File[]): Promise<BlacklistReportResponseDto> {
+  async createReport(
+    createReportDto: CreateReportDto,
+    evidenceFiles?: Express.Multer.File[],
+  ): Promise<BlacklistReportResponseDto> {
     const {
       license,
       reportDatetime,
@@ -373,7 +418,7 @@ export class BlacklistService {
       eventLocation,
       description,
       shipmentId,
-      reportedBy
+      reportedBy,
     } = createReportDto;
 
     if (!reportedBy || reportedBy.trim() === '') {
@@ -387,7 +432,7 @@ export class BlacklistService {
 
     const shipment = await this.shipmentsRepository.findOne({
       where: { id: shipmentId },
-      relations: ['ingenio', 'driver']
+      relations: ['ingenio', 'driver'],
     });
     if (!shipment) {
       throw new NotFoundException('Envio no encontrado.');
@@ -399,15 +444,15 @@ export class BlacklistService {
 
     if (shipment.driver.license !== license) {
       throw new BadRequestException(
-        `El motorista ${license} no pertenece al envio ${shipment.codeGen}.`
+        `El motorista ${license} no pertenece al envio ${shipment.codeGen}.`,
       );
     }
 
     const existingReport = await this.blacklistRepository.findOne({
       where: {
-        shipment: { id: shipmentId }
+        shipment: { id: shipmentId },
       },
-      relations: ['driver', 'shipment']
+      relations: ['driver', 'shipment'],
     });
 
     if (existingReport) {
@@ -416,7 +461,7 @@ export class BlacklistService {
         existingReportId: existingReport.id,
         existingReportDriver: existingReport.driver.license,
         existingReportStatus: existingReport.statusBlacklist,
-        shipmentCode: shipment.codeGen
+        shipmentCode: shipment.codeGen,
       });
     }
 
@@ -424,14 +469,15 @@ export class BlacklistService {
 
     if (evidenceFiles && evidenceFiles.length > 0) {
       const processedFiles = this.processFiles(evidenceFiles);
-      const validationResult = await this.validateProcessedFiles(processedFiles);
+      const validationResult =
+        await this.validateProcessedFiles(processedFiles);
 
       if (!validationResult.isValid) {
         throw new BadRequestException({
           message: 'Error en los archivos de evidencia',
           errors: validationResult.errors,
           totalFiles: evidenceFiles.length,
-          validFiles: validationResult.validFiles
+          validFiles: validationResult.validFiles,
         });
       }
 
@@ -448,18 +494,22 @@ export class BlacklistService {
         const tempReportId = Date.now();
 
         for (let i = 0; i < processedFiles.length; i++) {
-          const { original: file, extension, sanitizedBaseName } = processedFiles[i];
-          
+          const {
+            original: file,
+            extension,
+            sanitizedBaseName,
+          } = processedFiles[i];
+
           const filename = `${dateTimeCompact}-R${tempReportId}-${i + 1}-${sanitizedBaseName}${extension}`;
 
           this.logger.log(
-            `Subiendo ${i + 1}/${processedFiles.length}: "${filename}"`
+            `Subiendo ${i + 1}/${processedFiles.length}: "${filename}"`,
           );
 
           const uploadResult = await this.oneDriveService.uploadFile(
             file.buffer,
             filename,
-            file.mimetype
+            file.mimetype,
           );
 
           evidenceFilesData.push({
@@ -470,27 +520,37 @@ export class BlacklistService {
             uploadedAt: new Date().toISOString(),
             internalPath: uploadResult.internalPath,
           });
-          
+
           this.logger.log(
-            `Archivo subido: ${filename} (ID: ${uploadResult.fileId.substring(0, 15)}..., ${this.formatFileSize(file.size)})`
+            `Archivo subido: ${filename} (ID: ${uploadResult.fileId.substring(0, 15)}..., ${this.formatFileSize(file.size)})`,
           );
         }
-
       } catch (uploadError) {
-        this.logger.error('Error subiendo archivos, iniciando limpieza:', uploadError);
+        this.logger.error(
+          'Error subiendo archivos, iniciando limpieza:',
+          uploadError,
+        );
 
         for (const evidence of evidenceFilesData) {
           try {
             await this.oneDriveService.deleteFile(evidence.fileId);
-            this.logger.log(`Archivo limpiado: ${evidence.fileId.substring(0, 15)}...`);
+            this.logger.log(
+              `Archivo limpiado: ${evidence.fileId.substring(0, 15)}...`,
+            );
           } catch (cleanupError) {
-            this.logger.error(`Error limpiando archivo ${evidence.fileId}:`, cleanupError);
+            this.logger.error(
+              `Error limpiando archivo ${evidence.fileId}:`,
+              cleanupError,
+            );
           }
         }
 
         throw new BadRequestException({
           message: 'Error al subir archivos a OneDrive. No se creo el reporte.',
-          originalError: uploadError instanceof Error ? uploadError.message : 'Error desconocido'
+          originalError:
+            uploadError instanceof Error
+              ? uploadError.message
+              : 'Error desconocido',
         });
       }
     }
@@ -521,36 +581,43 @@ export class BlacklistService {
         savedReport.id,
         BlacklistStatus.REPORT_APPLIED,
         reportedBy.trim(),
-        'Reportado'
+        'Reportado',
       );
-
     } catch (dbError) {
       this.logger.error('Error guardando en BD, limpiando archivos:', dbError);
 
       for (const evidence of evidenceFilesData) {
         try {
           await this.oneDriveService.deleteFile(evidence.fileId);
-          this.logger.log(`Archivo limpiado por error de BD: ${evidence.fileId.substring(0, 15)}...`);
+          this.logger.log(
+            `Archivo limpiado por error de BD: ${evidence.fileId.substring(0, 15)}...`,
+          );
         } catch (cleanupError) {
-          this.logger.error(`Error limpiando archivo ${evidence.fileId}:`, cleanupError);
+          this.logger.error(
+            `Error limpiando archivo ${evidence.fileId}:`,
+            cleanupError,
+          );
         }
       }
 
       throw new BadRequestException({
         message: 'Error guardando reporte en base de datos',
-        originalError: dbError instanceof Error ? dbError.message : 'Error desconocido'
+        originalError:
+          dbError instanceof Error ? dbError.message : 'Error desconocido',
       });
     }
 
-    const formattedDate = this.formatDateSV(new Date(savedReport.reportDatetime));
+    const formattedDate = this.formatDateSV(
+      new Date(savedReport.reportDatetime),
+    );
 
     const emailData = {
       templateName: 'incident-report-notification',
       subject: 'Nuevo Reporte de Incidente',
       roles: [2, 5],
       templatesByRole: {
-            2: 'incident-report-notification',
-            5: 'incident-report-supervisor'
+        2: 'incident-report-notification',
+        5: 'incident-report-supervisor',
       },
       templateData: {
         reportId: savedReport.id.toString(),
@@ -563,27 +630,34 @@ export class BlacklistService {
         driverLicense: driver.license,
         shipmentCode: shipment.codeGen,
         transportista: shipment.transporter,
-        ingenioName: this.normalizeTextForEmail(shipment.ingenio?.name) || 'No especificado',
+        ingenioName:
+          this.normalizeTextForEmail(shipment.ingenio?.name) ||
+          'No especificado',
       },
       priority: 'normal' as const,
     };
 
-    this.notificacionesService.emit({
-      type: 'email',
-      eventName: 'incident-report.email',
-      data: emailData,
-      metadata: {
-        referenceId: savedReport.id,
-        referenceType: 'incident-report',
-        priority: 'high',
-      },
-    }).catch(err => {
-      this.logger.error('Error emitiendo notificacion (no critico):', err.message);
-    });
+    this.notificacionesService
+      .emit({
+        type: 'email',
+        eventName: 'incident-report.email',
+        data: emailData,
+        metadata: {
+          referenceId: savedReport.id,
+          referenceType: 'incident-report',
+          priority: 'high',
+        },
+      })
+      .catch((err) => {
+        this.logger.error(
+          'Error emitiendo notificacion (no critico):',
+          err.message,
+        );
+      });
 
     this.logger.log(
       `Reporte creado por ${reportedBy} - ID: ${savedReport.id}, ` +
-      `Conductor: ${license}, Envio: ${shipment.codeGen}, Archivos: ${evidenceFilesData.length}`
+        `Conductor: ${license}, Envio: ${shipment.codeGen}, Archivos: ${evidenceFilesData.length}`,
     );
 
     return await this.mapToReportResponseDto(savedReport);
@@ -619,7 +693,9 @@ export class BlacklistService {
     };
 
     const allowedExtensions = mimeExtensionMap[mimeType.toLowerCase()];
-    return allowedExtensions ? allowedExtensions.includes(extension.toLowerCase()) : false;
+    return allowedExtensions
+      ? allowedExtensions.includes(extension.toLowerCase())
+      : false;
   }
 
   /**
@@ -632,7 +708,7 @@ export class BlacklistService {
     eventType?: string,
     shipmentId?: number,
     includeAttachments?: boolean,
-    search?: string
+    search?: string,
   ): Promise<{ data: BlacklistReportResponseDto[]; pagination: Pagination }> {
     const offset = (page - 1) * size;
     const queryBuilder = this.blacklistRepository
@@ -641,11 +717,14 @@ export class BlacklistService {
       .leftJoinAndSelect('blacklist.shipment', 'shipment')
       .leftJoinAndSelect('shipment.ingenio', 'client')
       .where('blacklist.statusBlacklist = :status', {
-        status: BlacklistStatus.REPORT_APPLIED
+        status: BlacklistStatus.REPORT_APPLIED,
       });
 
     if (includeAttachments) {
-      queryBuilder.leftJoinAndSelect('shipment.shipmentAttachments', 'attachments');
+      queryBuilder.leftJoinAndSelect(
+        'shipment.shipmentAttachments',
+        'attachments',
+      );
     }
 
     if (license) {
@@ -657,33 +736,34 @@ export class BlacklistService {
     }
 
     if (shipmentId) {
-      queryBuilder.andWhere('blacklist.shipment.id = :shipmentId', { shipmentId });
+      queryBuilder.andWhere('blacklist.shipment.id = :shipmentId', {
+        shipmentId,
+      });
     }
 
     if (search) {
       const searchTerm = `%${search}%`;
       queryBuilder.andWhere(
         '(driver.license LIKE :search OR ' +
-        'driver.name LIKE :search OR ' +
-        'shipment.codeGen LIKE :search OR ' +
-        'client.name LIKE :search OR ' +
-        'blacklist.eventType LIKE :search OR ' +
-        'blacklist.faultType LIKE :search OR ' +
-        'blacklist.eventLocation LIKE :search OR ' +
-        'blacklist.description LIKE :search)',
-        { search: searchTerm }
+          'driver.name LIKE :search OR ' +
+          'shipment.codeGen LIKE :search OR ' +
+          'client.name LIKE :search OR ' +
+          'blacklist.eventType LIKE :search OR ' +
+          'blacklist.faultType LIKE :search OR ' +
+          'blacklist.eventLocation LIKE :search OR ' +
+          'blacklist.description LIKE :search)',
+        { search: searchTerm },
       );
     }
 
-    queryBuilder
-      .skip(offset)
-      .take(size)
-      .orderBy('blacklist.createdAt', 'DESC');
+    queryBuilder.skip(offset).take(size).orderBy('blacklist.createdAt', 'DESC');
 
     const [blacklistEntries, totalCount] = await queryBuilder.getManyAndCount();
-    
+
     const data = await Promise.all(
-      blacklistEntries.map(entry => this.mapToReportResponseDto(entry, includeAttachments))
+      blacklistEntries.map((entry) =>
+        this.mapToReportResponseDto(entry, includeAttachments),
+      ),
     );
 
     return {
@@ -699,7 +779,9 @@ export class BlacklistService {
   /**
    * Aplicar amonestacion del gerente sobre un reporte (Status 1 -> Status 2 o Status 3)
    */
-  async applyManagerDecision(createPenaltyDto: CreatePenaltyDto): Promise<BlacklistReportResponseDto> {
+  async applyManagerDecision(
+    createPenaltyDto: CreatePenaltyDto,
+  ): Promise<BlacklistReportResponseDto> {
     const {
       license,
       penaltyType,
@@ -707,7 +789,7 @@ export class BlacklistService {
       penaltyEndDate,
       observation,
       reportId,
-      appliedBy
+      appliedBy,
     } = createPenaltyDto;
 
     if (!penaltyType) {
@@ -721,17 +803,21 @@ export class BlacklistService {
     const existingReport = await this.blacklistRepository.findOne({
       where: {
         id: reportId,
-        statusBlacklist: BlacklistStatus.REPORT_APPLIED
+        statusBlacklist: BlacklistStatus.REPORT_APPLIED,
       },
-      relations: ['driver', 'shipment', 'shipment.ingenio']
+      relations: ['driver', 'shipment', 'shipment.ingenio'],
     });
 
     if (!existingReport) {
-      throw new NotFoundException('Reporte no encontrado o ya tiene amonestacion aplicada.');
+      throw new NotFoundException(
+        'Reporte no encontrado o ya tiene amonestacion aplicada.',
+      );
     }
 
     if (existingReport.driver.license !== license) {
-      throw new BadRequestException('El reporte no corresponde al conductor especificado.');
+      throw new BadRequestException(
+        'El reporte no corresponde al conductor especificado.',
+      );
     }
 
     this.validatePenaltyDates(penaltyType, penaltyStartDate, penaltyEndDate);
@@ -745,14 +831,22 @@ export class BlacklistService {
         newStatus = BlacklistStatus.LIBERATION;
         calculatedDays = '0';
         changeReason = 'No Aplicada';
-        this.logger.log(`Amonestacion: NO APLICADO - Reporte liberado directamente`);
+        this.logger.log(
+          `Amonestacion: NO APLICADO - Reporte liberado directamente`,
+        );
         break;
 
       case PenaltyType.TEMPORAL:
         newStatus = BlacklistStatus.PENALTY_APPLIED;
-        calculatedDays = this.calculateDurationInDays(penaltyType, penaltyStartDate, penaltyEndDate);
+        calculatedDays = this.calculateDurationInDays(
+          penaltyType,
+          penaltyStartDate,
+          penaltyEndDate,
+        );
         changeReason = 'Temporal';
-        this.logger.log(`Amonestacion: TEMPORAL - ${calculatedDays} dias de castigo`);
+        this.logger.log(
+          `Amonestacion: TEMPORAL - ${calculatedDays} dias de castigo`,
+        );
         break;
 
       case PenaltyType.PERMANENTE:
@@ -763,14 +857,16 @@ export class BlacklistService {
         break;
 
       default:
-        throw new BadRequestException('Tipo de amonestacion no valido para gerente.');
+        throw new BadRequestException(
+          'Tipo de amonestacion no valido para gerente.',
+        );
     }
 
     this.logger.debug(
       `Fecha inicio: ${penaltyStartDate}, Fecha fin: ${penaltyEndDate}, ` +
-      `Status: ${newStatus}, Dias: ${calculatedDays}`
+        `Status: ${newStatus}, Dias: ${calculatedDays}`,
     );
-    
+
     existingReport.penaltyType = penaltyType;
     existingReport.penaltyStartDate = penaltyStartDate;
     existingReport.penaltyEndDate = penaltyEndDate || null;
@@ -784,29 +880,37 @@ export class BlacklistService {
       existingReport,
       newStatus,
       appliedBy.trim(),
-      changeReason
+      changeReason,
     );
 
     this.logger.log(
       `Amonestacion aplicada por ${appliedBy} - Reporte ID: ${reportId}, ` +
-      `Conductor: ${license}, Tipo: ${penaltyType}, Status: ${newStatus}`
+        `Conductor: ${license}, Tipo: ${penaltyType}, Status: ${newStatus}`,
     );
 
     if (penaltyType) {
       try {
         const ingenioCode = existingReport.shipment?.ingenio?.ingenioCode;
-        
+
         if (!ingenioCode) {
-          this.logger.warn('No se encontro ingenioCode para el envio, no se enviara notificacion a rol 4');
+          this.logger.warn(
+            'No se encontro ingenioCode para el envio, no se enviara notificacion a rol 4',
+          );
         }
 
-        const incidentDate = this.formatDateSV(new Date(existingReport.reportDatetime));
+        const incidentDate = this.formatDateSV(
+          new Date(existingReport.reportDatetime),
+        );
         const applicationDate = this.formatDateSV(new Date());
-        
+
         let penaltyPeriod = 'N/A';
         if (updatedEntry.penaltyStartDate && updatedEntry.penaltyEndDate) {
-          const startDate = this.formatDateSV(new Date(updatedEntry.penaltyStartDate));
-          const endDate = this.formatDateSV(new Date(updatedEntry.penaltyEndDate));
+          const startDate = this.formatDateSV(
+            new Date(updatedEntry.penaltyStartDate),
+          );
+          const endDate = this.formatDateSV(
+            new Date(updatedEntry.penaltyEndDate),
+          );
           penaltyPeriod = `${startDate} - ${endDate}`;
         } else if (updatedEntry.penaltyStartDate) {
           penaltyPeriod = `Desde ${this.formatDateSV(new Date(updatedEntry.penaltyStartDate))}`;
@@ -815,7 +919,10 @@ export class BlacklistService {
         let penaltyDays = 'N/A';
         if (penaltyType === PenaltyType.PERMANENTE) {
           penaltyDays = 'Indefinido';
-        } else if (penaltyType === PenaltyType.TEMPORAL && updatedEntry.banDurationDays) {
+        } else if (
+          penaltyType === PenaltyType.TEMPORAL &&
+          updatedEntry.banDurationDays
+        ) {
           penaltyDays = `${updatedEntry.banDurationDays} dias`;
         }
 
@@ -823,7 +930,10 @@ export class BlacklistService {
           reportId: updatedEntry.id.toString(),
           reportDate: incidentDate,
           shipmentCode: existingReport.shipment?.codeGen || 'N/A',
-          ingenioName: this.normalizeTextForEmail(existingReport.shipment?.ingenio?.name) || 'No especificado',
+          ingenioName:
+            this.normalizeTextForEmail(
+              existingReport.shipment?.ingenio?.name,
+            ) || 'No especificado',
           driverName: this.normalizeTextForEmail(existingReport.driver.name),
           driverLicense: existingReport.driver.license,
           transportista: existingReport.shipment?.transporter,
@@ -844,36 +954,46 @@ export class BlacklistService {
 
         if (ingenioCode) {
           mixedTargets.specificUsers = {
-            4: [ingenioCode]
+            4: [ingenioCode],
           };
         }
 
-        this.notificacionesService.emit({
-          type: 'email',
-          eventName: 'penalty-applied.email',
-          data: {
-            templatesByRole: {
-              3: 'penalty-applied-association',
-              4: 'penalty-applied-association',
-              5: 'penalty-applied-supervisor'
+        this.notificacionesService
+          .emit({
+            type: 'email',
+            eventName: 'penalty-applied.email',
+            data: {
+              templatesByRole: {
+                3: 'penalty-applied-association',
+                4: 'penalty-applied-association',
+                5: 'penalty-applied-supervisor',
+              },
+              subject: 'Resolución de Incidente',
+              mixedTargets,
+              templateData: commonTemplateData,
+              priority: 'normal' as const,
             },
-            subject: 'Resolución de Incidente',
-            mixedTargets,
-            templateData: commonTemplateData,
-            priority: 'normal' as const,
-          },
-          metadata: {
-            referenceId: updatedEntry.id,
-            referenceType: 'penalty-applied',
-            priority: 'normal',
-          },
-        }).catch(err => {
-          this.logger.error('Error emitiendo notificacion de amonestacion (no critico):', err.message);
-        });
+            metadata: {
+              referenceId: updatedEntry.id,
+              referenceType: 'penalty-applied',
+              priority: 'normal',
+            },
+          })
+          .catch((err) => {
+            this.logger.error(
+              'Error emitiendo notificacion de amonestacion (no critico):',
+              err.message,
+            );
+          });
 
-        this.logger.debug(`Notificacion de amonestacion encolada para reporte ID: ${updatedEntry.id}`);
+        this.logger.debug(
+          `Notificacion de amonestacion encolada para reporte ID: ${updatedEntry.id}`,
+        );
       } catch (notificationError) {
-        this.logger.error('Error al preparar notificacion de amonestacion:', notificationError);
+        this.logger.error(
+          'Error al preparar notificacion de amonestacion:',
+          notificationError,
+        );
       }
     }
 
@@ -883,7 +1003,10 @@ export class BlacklistService {
   /**
    * Modificar amonestacion activa (Status 2)
    */
-  async updateActivePenalty(penaltyId: number, updatePenaltyDto: UpdatePenaltyDto): Promise<BlacklistReportResponseDto> {
+  async updateActivePenalty(
+    penaltyId: number,
+    updatePenaltyDto: UpdatePenaltyDto,
+  ): Promise<BlacklistReportResponseDto> {
     const { modifiedBy, ...updateData } = updatePenaltyDto;
 
     if (!modifiedBy || modifiedBy.trim() === '') {
@@ -893,13 +1016,15 @@ export class BlacklistService {
     const existingPenalty = await this.blacklistRepository.findOne({
       where: {
         id: penaltyId,
-        statusBlacklist: BlacklistStatus.PENALTY_APPLIED
+        statusBlacklist: BlacklistStatus.PENALTY_APPLIED,
       },
-      relations: ['driver', 'shipment', 'shipment.ingenio']
+      relations: ['driver', 'shipment', 'shipment.ingenio'],
     });
 
     if (!existingPenalty) {
-      throw new NotFoundException('Amonestacion no encontrada o ya fue liberada.');
+      throw new NotFoundException(
+        'Amonestacion no encontrada o ya fue liberada.',
+      );
     }
 
     const originalPenaltyType = existingPenalty.penaltyType;
@@ -923,7 +1048,11 @@ export class BlacklistService {
 
     const penaltyType = existingPenalty.penaltyType as PenaltyType;
 
-    this.validatePenaltyDates(penaltyType, existingPenalty.penaltyStartDate, existingPenalty.penaltyEndDate);
+    this.validatePenaltyDates(
+      penaltyType,
+      existingPenalty.penaltyStartDate,
+      existingPenalty.penaltyEndDate,
+    );
 
     let newStatus = BlacklistStatus.PENALTY_APPLIED;
     let changeReason: string;
@@ -933,10 +1062,12 @@ export class BlacklistService {
         existingPenalty.banDurationDays = this.calculateDurationInDays(
           penaltyType,
           existingPenalty.penaltyStartDate,
-          existingPenalty.penaltyEndDate
+          existingPenalty.penaltyEndDate,
         );
         changeReason = 'Temporal';
-        this.logger.log(`Modificado a TEMPORAL - ${existingPenalty.banDurationDays} dias`);
+        this.logger.log(
+          `Modificado a TEMPORAL - ${existingPenalty.banDurationDays} dias`,
+        );
         break;
 
       case PenaltyType.PERMANENTE:
@@ -950,47 +1081,59 @@ export class BlacklistService {
         newStatus = BlacklistStatus.LIBERATION;
         existingPenalty.banDurationDays = '0';
         changeReason = 'Finalizado';
-        this.logger.log(`Modificado a FINALIZADO - Acuerdo con ingenio, liberado`);
+        this.logger.log(
+          `Modificado a FINALIZADO - Acuerdo con ingenio, liberado`,
+        );
         break;
 
       default:
-        throw new BadRequestException('Tipo de modificacion no valido para amonestaciones activas.');
+        throw new BadRequestException(
+          'Tipo de modificacion no valido para amonestaciones activas.',
+        );
     }
 
     const updatedPenalty = await this.updateStatusWithLogging(
       existingPenalty,
       newStatus,
       modifiedBy.trim(),
-      changeReason
+      changeReason,
     );
 
     this.logger.log(
       `Amonestacion modificada por ${modifiedBy} - ID: ${penaltyId}, ` +
-      `Conductor: ${existingPenalty.driver.license}`
+        `Conductor: ${existingPenalty.driver.license}`,
     );
     this.logger.debug(
       `Cambios: ${originalPenaltyType} -> ${penaltyType}, ` +
-      `Status: ${originalStatus} -> ${newStatus}`
+        `Status: ${originalStatus} -> ${newStatus}`,
     );
 
     if (penaltyType === PenaltyType.FINALIZADO) {
-      this.logger.log(`CONDUCTOR LIBERADO POR ACUERDO: ${existingPenalty.driver.license}`);
+      this.logger.log(
+        `CONDUCTOR LIBERADO POR ACUERDO: ${existingPenalty.driver.license}`,
+      );
     }
 
     try {
       const ingenioCode = existingPenalty.shipment?.ingenio?.ingenioCode;
-      
+
       if (!ingenioCode) {
         this.logger.warn('No se encontro ingenioCode para el envio');
       }
 
-      const incidentDate = this.formatDateSV(new Date(existingPenalty.reportDatetime));
+      const incidentDate = this.formatDateSV(
+        new Date(existingPenalty.reportDatetime),
+      );
       const modificationDate = this.formatDateSV(new Date());
-      
+
       let penaltyPeriod = 'N/A';
       if (updatedPenalty.penaltyStartDate && updatedPenalty.penaltyEndDate) {
-        const startDate = this.formatDateSV(new Date(updatedPenalty.penaltyStartDate));
-        const endDate = this.formatDateSV(new Date(updatedPenalty.penaltyEndDate));
+        const startDate = this.formatDateSV(
+          new Date(updatedPenalty.penaltyStartDate),
+        );
+        const endDate = this.formatDateSV(
+          new Date(updatedPenalty.penaltyEndDate),
+        );
         penaltyPeriod = `${startDate} - ${endDate}`;
       } else if (updatedPenalty.penaltyStartDate) {
         penaltyPeriod = `Desde ${this.formatDateSV(new Date(updatedPenalty.penaltyStartDate))}`;
@@ -999,7 +1142,10 @@ export class BlacklistService {
       let penaltyDays = 'N/A';
       if (penaltyType === PenaltyType.PERMANENTE) {
         penaltyDays = 'Indefinido';
-      } else if (penaltyType === PenaltyType.TEMPORAL && updatedPenalty.banDurationDays) {
+      } else if (
+        penaltyType === PenaltyType.TEMPORAL &&
+        updatedPenalty.banDurationDays
+      ) {
         penaltyDays = `${updatedPenalty.banDurationDays} dias`;
       } else if (penaltyType === PenaltyType.FINALIZADO) {
         penaltyDays = '0 dias (Finalizado)';
@@ -1009,7 +1155,9 @@ export class BlacklistService {
         reportId: updatedPenalty.id.toString(),
         reportDate: incidentDate,
         shipmentCode: existingPenalty.shipment?.codeGen || 'N/A',
-        ingenioName: this.normalizeTextForEmail(existingPenalty.shipment?.ingenio?.name) || 'No especificado',
+        ingenioName:
+          this.normalizeTextForEmail(existingPenalty.shipment?.ingenio?.name) ||
+          'No especificado',
         driverName: this.normalizeTextForEmail(existingPenalty.driver.name),
         driverLicense: existingPenalty.driver.license,
         transportista: existingPenalty.shipment?.transporter,
@@ -1031,36 +1179,46 @@ export class BlacklistService {
 
       if (ingenioCode) {
         mixedTargets.specificUsers = {
-          4: [ingenioCode]
+          4: [ingenioCode],
         };
       }
 
-      this.notificacionesService.emit({
-        type: 'email',
-        eventName: 'penalty-modified.email',
-        data: {
-          templatesByRole: {
-            3: 'penalty-modified-association',
-            4: 'penalty-modified-association',
-            5: 'penalty-modified-supervisor'
+      this.notificacionesService
+        .emit({
+          type: 'email',
+          eventName: 'penalty-modified.email',
+          data: {
+            templatesByRole: {
+              3: 'penalty-modified-association',
+              4: 'penalty-modified-association',
+              5: 'penalty-modified-supervisor',
+            },
+            subject: 'Modificacion de Sanción',
+            mixedTargets,
+            templateData: commonTemplateData,
+            priority: 'normal' as const,
           },
-          subject: 'Modificacion de Sanción',
-          mixedTargets,
-          templateData: commonTemplateData,
-          priority: 'normal' as const,
-        },
-        metadata: {
-          referenceId: updatedPenalty.id,
-          referenceType: 'penalty-modified',
-          priority: 'normal',
-        },
-      }).catch(err => {
-        this.logger.error('Error emitiendo notificacion de modificacion (no critico):', err.message);
-      });
+          metadata: {
+            referenceId: updatedPenalty.id,
+            referenceType: 'penalty-modified',
+            priority: 'normal',
+          },
+        })
+        .catch((err) => {
+          this.logger.error(
+            'Error emitiendo notificacion de modificacion (no critico):',
+            err.message,
+          );
+        });
 
-      this.logger.debug(`Notificacion de modificacion encolada para reporte ID: ${updatedPenalty.id}`);
+      this.logger.debug(
+        `Notificacion de modificacion encolada para reporte ID: ${updatedPenalty.id}`,
+      );
     } catch (notificationError) {
-      this.logger.error('Error al preparar notificacion de modificacion:', notificationError);
+      this.logger.error(
+        'Error al preparar notificacion de modificacion:',
+        notificationError,
+      );
     }
 
     return await this.mapToReportResponseDto(updatedPenalty);
@@ -1076,7 +1234,7 @@ export class BlacklistService {
     penaltyType?: PenaltyType,
     isActive?: boolean,
     includeAttachments?: boolean,
-    search?: string
+    search?: string,
   ): Promise<{ data: BlacklistReportResponseDto[]; pagination: Pagination }> {
     const offset = (page - 1) * size;
     const queryBuilder = this.blacklistRepository
@@ -1085,11 +1243,14 @@ export class BlacklistService {
       .leftJoinAndSelect('blacklist.shipment', 'shipment')
       .leftJoinAndSelect('shipment.ingenio', 'client')
       .where('blacklist.statusBlacklist = :status', {
-        status: BlacklistStatus.PENALTY_APPLIED
+        status: BlacklistStatus.PENALTY_APPLIED,
       });
 
     if (includeAttachments) {
-      queryBuilder.leftJoinAndSelect('shipment.shipmentAttachments', 'attachments');
+      queryBuilder.leftJoinAndSelect(
+        'shipment.shipmentAttachments',
+        'attachments',
+      );
     }
 
     if (license) {
@@ -1097,7 +1258,9 @@ export class BlacklistService {
     }
 
     if (penaltyType) {
-      queryBuilder.andWhere('blacklist.penaltyType = :penaltyType', { penaltyType });
+      queryBuilder.andWhere('blacklist.penaltyType = :penaltyType', {
+        penaltyType,
+      });
     }
 
     if (isActive !== undefined) {
@@ -1105,12 +1268,16 @@ export class BlacklistService {
       if (isActive) {
         queryBuilder.andWhere(
           '(blacklist.penaltyType = :permanente OR (blacklist.penaltyType = :temporal AND blacklist.penaltyEndDate > :now))',
-          { permanente: PenaltyType.PERMANENTE, temporal: PenaltyType.TEMPORAL, now }
+          {
+            permanente: PenaltyType.PERMANENTE,
+            temporal: PenaltyType.TEMPORAL,
+            now,
+          },
         );
       } else {
         queryBuilder.andWhere(
           '(blacklist.penaltyType = :temporal AND blacklist.penaltyEndDate <= :now)',
-          { temporal: PenaltyType.TEMPORAL, now }
+          { temporal: PenaltyType.TEMPORAL, now },
         );
       }
     }
@@ -1119,15 +1286,15 @@ export class BlacklistService {
       const searchTerm = `%${search}%`;
       queryBuilder.andWhere(
         '(driver.license LIKE :search OR ' +
-        'driver.name LIKE :search OR ' +
-        'shipment.codeGen LIKE :search OR ' +
-        'client.name LIKE :search OR ' +
-        'blacklist.eventType LIKE :search OR ' +
-        'blacklist.faultType LIKE :search OR ' +
-        'blacklist.eventLocation LIKE :search OR ' +
-        'blacklist.description LIKE :search OR ' +
-        'blacklist.observation LIKE :search)',
-        { search: searchTerm }
+          'driver.name LIKE :search OR ' +
+          'shipment.codeGen LIKE :search OR ' +
+          'client.name LIKE :search OR ' +
+          'blacklist.eventType LIKE :search OR ' +
+          'blacklist.faultType LIKE :search OR ' +
+          'blacklist.eventLocation LIKE :search OR ' +
+          'blacklist.description LIKE :search OR ' +
+          'blacklist.observation LIKE :search)',
+        { search: searchTerm },
       );
     }
 
@@ -1137,9 +1304,11 @@ export class BlacklistService {
       .orderBy('blacklist.penaltyStartDate', 'DESC');
 
     const [blacklistEntries, totalCount] = await queryBuilder.getManyAndCount();
-    
+
     const data = await Promise.all(
-      blacklistEntries.map(entry => this.mapToReportResponseDto(entry, includeAttachments))
+      blacklistEntries.map((entry) =>
+        this.mapToReportResponseDto(entry, includeAttachments),
+      ),
     );
 
     return {
@@ -1160,7 +1329,7 @@ export class BlacklistService {
     size: number,
     license?: string,
     liberationType?: 'NO_APLICADO' | 'FINALIZADO',
-    includeAttachments?: boolean
+    includeAttachments?: boolean,
   ): Promise<{ data: BlacklistReportResponseDto[]; pagination: Pagination }> {
     const offset = (page - 1) * size;
     const queryBuilder = this.blacklistRepository
@@ -1169,11 +1338,14 @@ export class BlacklistService {
       .leftJoinAndSelect('blacklist.shipment', 'shipment')
       .leftJoinAndSelect('shipment.ingenio', 'client')
       .where('blacklist.statusBlacklist = :status', {
-        status: BlacklistStatus.LIBERATION
+        status: BlacklistStatus.LIBERATION,
       });
 
     if (includeAttachments) {
-      queryBuilder.leftJoinAndSelect('shipment.shipmentAttachments', 'attachments');
+      queryBuilder.leftJoinAndSelect(
+        'shipment.shipmentAttachments',
+        'attachments',
+      );
     }
 
     if (license) {
@@ -1182,21 +1354,24 @@ export class BlacklistService {
 
     if (liberationType) {
       if (liberationType === 'NO_APLICADO') {
-        queryBuilder.andWhere('blacklist.penaltyType = :noAplicado', { noAplicado: PenaltyType.NO_APLICADO });
+        queryBuilder.andWhere('blacklist.penaltyType = :noAplicado', {
+          noAplicado: PenaltyType.NO_APLICADO,
+        });
       } else if (liberationType === 'FINALIZADO') {
-        queryBuilder.andWhere('blacklist.penaltyType = :finalizado', { finalizado: PenaltyType.FINALIZADO });
+        queryBuilder.andWhere('blacklist.penaltyType = :finalizado', {
+          finalizado: PenaltyType.FINALIZADO,
+        });
       }
     }
 
-    queryBuilder
-      .skip(offset)
-      .take(size)
-      .orderBy('blacklist.updatedAt', 'DESC');
+    queryBuilder.skip(offset).take(size).orderBy('blacklist.updatedAt', 'DESC');
 
     const [blacklistEntries, totalCount] = await queryBuilder.getManyAndCount();
-    
+
     const data = await Promise.all(
-      blacklistEntries.map(entry => this.mapToReportResponseDto(entry, includeAttachments))
+      blacklistEntries.map((entry) =>
+        this.mapToReportResponseDto(entry, includeAttachments),
+      ),
     );
 
     return {
@@ -1220,7 +1395,7 @@ export class BlacklistService {
     statusBlacklist?: BlacklistStatus,
     shipmentId?: number,
     clientId?: number,
-    includeAttachments?: boolean
+    includeAttachments?: boolean,
   ): Promise<{ data: BlacklistReportResponseDto[]; pagination: Pagination }> {
     const offset = (page - 1) * size;
     const queryBuilder = this.blacklistRepository
@@ -1230,7 +1405,10 @@ export class BlacklistService {
       .leftJoinAndSelect('shipment.ingenio', 'client');
 
     if (includeAttachments) {
-      queryBuilder.leftJoinAndSelect('shipment.shipmentAttachments', 'attachments');
+      queryBuilder.leftJoinAndSelect(
+        'shipment.shipmentAttachments',
+        'attachments',
+      );
     }
 
     if (license) {
@@ -1242,26 +1420,29 @@ export class BlacklistService {
     }
 
     if (statusBlacklist !== undefined) {
-      queryBuilder.andWhere('blacklist.statusBlacklist = :statusBlacklist', { statusBlacklist });
+      queryBuilder.andWhere('blacklist.statusBlacklist = :statusBlacklist', {
+        statusBlacklist,
+      });
     }
 
     if (shipmentId) {
-      queryBuilder.andWhere('blacklist.shipment.id = :shipmentId', { shipmentId });
+      queryBuilder.andWhere('blacklist.shipment.id = :shipmentId', {
+        shipmentId,
+      });
     }
 
     if (clientId) {
       queryBuilder.andWhere('client.id = :clientId', { clientId });
     }
 
-    queryBuilder
-      .skip(offset)
-      .take(size)
-      .orderBy('blacklist.createdAt', 'DESC');
+    queryBuilder.skip(offset).take(size).orderBy('blacklist.createdAt', 'DESC');
 
     const [blacklistEntries, totalCount] = await queryBuilder.getManyAndCount();
-    
+
     const data = await Promise.all(
-      blacklistEntries.map(entry => this.mapToReportResponseDto(entry, includeAttachments))
+      blacklistEntries.map((entry) =>
+        this.mapToReportResponseDto(entry, includeAttachments),
+      ),
     );
 
     return {
@@ -1277,7 +1458,10 @@ export class BlacklistService {
   /**
    * Obtener registro por ID
    */
-  async getRecordById(id: number, includeAttachments?: boolean): Promise<BlacklistReportResponseDto> {
+  async getRecordById(
+    id: number,
+    includeAttachments?: boolean,
+  ): Promise<BlacklistReportResponseDto> {
     const queryBuilder = this.blacklistRepository
       .createQueryBuilder('blacklist')
       .leftJoinAndSelect('blacklist.driver', 'driver')
@@ -1286,7 +1470,10 @@ export class BlacklistService {
       .where('blacklist.id = :id', { id });
 
     if (includeAttachments) {
-      queryBuilder.leftJoinAndSelect('shipment.shipmentAttachments', 'attachments');
+      queryBuilder.leftJoinAndSelect(
+        'shipment.shipmentAttachments',
+        'attachments',
+      );
     }
 
     const blacklistEntry = await queryBuilder.getOne();
@@ -1295,13 +1482,19 @@ export class BlacklistService {
       throw new NotFoundException('Registro no encontrado.');
     }
 
-    return await this.mapToReportResponseDto(blacklistEntry, includeAttachments);
+    return await this.mapToReportResponseDto(
+      blacklistEntry,
+      includeAttachments,
+    );
   }
 
   /**
    * Obtener registros por shipment
    */
-  async getRecordsByShipment(shipmentId: number, includeAttachments?: boolean): Promise<BlacklistReportResponseDto[]> {
+  async getRecordsByShipment(
+    shipmentId: number,
+    includeAttachments?: boolean,
+  ): Promise<BlacklistReportResponseDto[]> {
     const queryBuilder = this.blacklistRepository
       .createQueryBuilder('blacklist')
       .leftJoinAndSelect('blacklist.driver', 'driver')
@@ -1311,13 +1504,18 @@ export class BlacklistService {
       .orderBy('blacklist.createdAt', 'DESC');
 
     if (includeAttachments) {
-      queryBuilder.leftJoinAndSelect('shipment.shipmentAttachments', 'attachments');
+      queryBuilder.leftJoinAndSelect(
+        'shipment.shipmentAttachments',
+        'attachments',
+      );
     }
 
     const blacklistEntries = await queryBuilder.getMany();
 
     return await Promise.all(
-      blacklistEntries.map(entry => this.mapToReportResponseDto(entry, includeAttachments))
+      blacklistEntries.map((entry) =>
+        this.mapToReportResponseDto(entry, includeAttachments),
+      ),
     );
   }
 
@@ -1328,7 +1526,7 @@ export class BlacklistService {
     clientId: number,
     page: number,
     size: number,
-    includeAttachments?: boolean
+    includeAttachments?: boolean,
   ): Promise<{ data: BlacklistReportResponseDto[]; pagination: Pagination }> {
     const offset = (page - 1) * size;
     const queryBuilder = this.blacklistRepository
@@ -1339,18 +1537,20 @@ export class BlacklistService {
       .where('client.id = :clientId', { clientId });
 
     if (includeAttachments) {
-      queryBuilder.leftJoinAndSelect('shipment.shipmentAttachments', 'attachments');
+      queryBuilder.leftJoinAndSelect(
+        'shipment.shipmentAttachments',
+        'attachments',
+      );
     }
 
-    queryBuilder
-      .skip(offset)
-      .take(size)
-      .orderBy('blacklist.createdAt', 'DESC');
+    queryBuilder.skip(offset).take(size).orderBy('blacklist.createdAt', 'DESC');
 
     const [blacklistEntries, totalCount] = await queryBuilder.getManyAndCount();
-    
+
     const data = await Promise.all(
-      blacklistEntries.map(entry => this.mapToReportResponseDto(entry, includeAttachments))
+      blacklistEntries.map((entry) =>
+        this.mapToReportResponseDto(entry, includeAttachments),
+      ),
     );
 
     return {
@@ -1366,7 +1566,9 @@ export class BlacklistService {
   /**
    * Obtener detalles del conductor (solo amonestaciones activas Status 2)
    */
-  async getBlacklistDetails(license: string): Promise<BlacklistDetailsResponseDto> {
+  async getBlacklistDetails(
+    license: string,
+  ): Promise<BlacklistDetailsResponseDto> {
     const driver = await this.driversRepository.findOne({
       where: { license },
     });
@@ -1374,23 +1576,23 @@ export class BlacklistService {
     if (!driver) {
       return {
         isBanEnded: true,
-        message: 'Conductor no encontrado'
+        message: 'Conductor no encontrado',
       };
     }
 
     const activePenalties = await this.blacklistRepository.find({
       where: {
         driver,
-        statusBlacklist: BlacklistStatus.PENALTY_APPLIED
+        statusBlacklist: BlacklistStatus.PENALTY_APPLIED,
       },
       relations: ['shipment', 'shipment.ingenio'],
-      order: { penaltyStartDate: 'DESC' }
+      order: { penaltyStartDate: 'DESC' },
     });
 
     if (activePenalties.length === 0) {
       return {
         isBanEnded: true,
-        message: 'Conductor sin amonestaciones activas'
+        message: 'Conductor sin amonestaciones activas',
       };
     }
 
@@ -1405,7 +1607,13 @@ export class BlacklistService {
     const now = new Date();
 
     for (const penalty of activePenalties) {
-      const { observation, banDurationDays, penaltyStartDate, penaltyEndDate, penaltyType } = penalty;
+      const {
+        observation,
+        banDurationDays,
+        penaltyStartDate,
+        penaltyEndDate,
+        penaltyType,
+      } = penalty;
 
       const banStartDate = new Date(penaltyStartDate || penalty.createdAt);
       let currentBanEndDate: Date | null = penaltyEndDate;
@@ -1441,27 +1649,36 @@ export class BlacklistService {
       if (isPermanent || (currentBanEndDate && currentBanEndDate > now)) {
         activeAmonestaciones.push({
           penaltyType: penaltyType as PenaltyType,
-          penaltyTypeDescription: this.getPenaltyTypeDescription(penaltyType as PenaltyType),
+          penaltyTypeDescription: this.getPenaltyTypeDescription(
+            penaltyType as PenaltyType,
+          ),
           penaltyStartDate: banStartDate,
           penaltyEndDate: currentBanEndDate,
           calculatedDays,
           observation,
           shipmentCode: penalty.shipment?.codeGen || null,
           clientName: penalty.shipment?.ingenio?.name || null,
-          shipmentProduct: this.getProductNameByCode(penalty.shipment?.product) || null,
+          shipmentProduct:
+            this.getProductNameByCode(penalty.shipment?.product) || null,
           isPermanent,
-          isActive
+          isActive,
         });
       }
     }
 
     if (hasActiveBan) {
-      banStatus = totalBanDuration === 0 ? 'Castigo permanente activo' : 'Castigo temporal activo';
+      banStatus =
+        totalBanDuration === 0
+          ? 'Castigo permanente activo'
+          : 'Castigo temporal activo';
       if (totalBanDuration > 0) {
-        const msRemaining = banEndDate ? banEndDate.getTime() - now.getTime() : 0;
-        const hoursRemaining = msRemaining > 0 ? msRemaining / (1000 * 60 * 60) : 0;
+        const msRemaining = banEndDate
+          ? banEndDate.getTime() - now.getTime()
+          : 0;
+        const hoursRemaining =
+          msRemaining > 0 ? msRemaining / (1000 * 60 * 60) : 0;
         const daysRemaining = hoursRemaining / 24;
-        
+
         if (daysRemaining >= 1) {
           timeRemaining = `${Math.ceil(daysRemaining)} dias restantes`;
         } else if (hoursRemaining >= 1) {
@@ -1487,13 +1704,19 @@ export class BlacklistService {
         name: driver.name,
       },
       blacklistDetails: {
-        observations: activePenalties.map(penalty => penalty.observation).filter(obs => obs),
+        observations: activePenalties
+          .map((penalty) => penalty.observation)
+          .filter((obs) => obs),
         banStatus,
-        totalBanDuration: totalBanDuration === 0 && hasActiveBan ? 'Permanente' : totalBanDuration,
+        totalBanDuration:
+          totalBanDuration === 0 && hasActiveBan
+            ? 'Permanente'
+            : totalBanDuration,
         timeRemaining,
-        banStartDate: activePenalties[0]?.penaltyStartDate || activePenalties[0]?.createdAt,
+        banStartDate:
+          activePenalties[0]?.penaltyStartDate || activePenalties[0]?.createdAt,
         banEndDate: banEndDate ? banEndDate.toISOString() : null,
-        activeAmonestaciones
+        activeAmonestaciones,
       },
     };
   }
@@ -1501,7 +1724,11 @@ export class BlacklistService {
   /**
    * Validar fechas segun el tipo de castigo
    */
-  private validatePenaltyDates(penaltyType: PenaltyType, startDate: Date | null, endDate: Date | null): void {
+  private validatePenaltyDates(
+    penaltyType: PenaltyType,
+    startDate: Date | null,
+    endDate: Date | null,
+  ): void {
     switch (penaltyType) {
       case PenaltyType.NO_APLICADO:
       case PenaltyType.FINALIZADO:
@@ -1509,16 +1736,22 @@ export class BlacklistService {
 
       case PenaltyType.TEMPORAL:
         if (!startDate || !endDate) {
-          throw new BadRequestException('Los castigos temporales requieren fecha y hora de inicio y fin.');
+          throw new BadRequestException(
+            'Los castigos temporales requieren fecha y hora de inicio y fin.',
+          );
         }
         if (new Date(endDate) <= new Date(startDate)) {
-          throw new BadRequestException('La fecha y hora de fin debe ser posterior a la fecha y hora de inicio.');
+          throw new BadRequestException(
+            'La fecha y hora de fin debe ser posterior a la fecha y hora de inicio.',
+          );
         }
         break;
 
       case PenaltyType.PERMANENTE:
         if (!startDate) {
-          throw new BadRequestException('Los castigos permanentes requieren fecha y hora de inicio.');
+          throw new BadRequestException(
+            'Los castigos permanentes requieren fecha y hora de inicio.',
+          );
         }
         break;
 
@@ -1530,7 +1763,11 @@ export class BlacklistService {
   /**
    * Calcular duracion en dias basado en fechas con hora incluida
    */
-  private calculateDurationInDays(penaltyType: PenaltyType, startDate: Date | null, endDate?: Date | null): string {
+  private calculateDurationInDays(
+    penaltyType: PenaltyType,
+    startDate: Date | null,
+    endDate?: Date | null,
+  ): string {
     switch (penaltyType) {
       case PenaltyType.NO_APLICADO:
       case PenaltyType.FINALIZADO:
@@ -1553,9 +1790,11 @@ export class BlacklistService {
         }
 
         const diffTime = end.getTime() - start.getTime();
-        
+
         if (diffTime <= 0) {
-          this.logger.error('La fecha de fin debe ser posterior a la fecha de inicio');
+          this.logger.error(
+            'La fecha de fin debe ser posterior a la fecha de inicio',
+          );
           return '0';
         }
 
@@ -1567,7 +1806,7 @@ export class BlacklistService {
           endDate: end.toISOString(),
           diffMilliseconds: diffTime,
           diffHours: diffHours.toFixed(2),
-          diffDays: diffDays
+          diffDays: diffDays,
         });
 
         return diffDays.toString();
@@ -1600,41 +1839,44 @@ export class BlacklistService {
    */
   private async mapToReportResponseDto(
     blacklistEntry: BlacklistDrivers,
-    includeAttachments: boolean = false
+    includeAttachments: boolean = false,
   ): Promise<BlacklistReportResponseDto> {
     let evidenceFiles: EvidenceFile[] = [];
 
     if (blacklistEntry.evidenceUrls) {
       try {
         const parsed = JSON.parse(blacklistEntry.evidenceUrls);
-        
+
         if (Array.isArray(parsed)) {
-          evidenceFiles = parsed.filter(item => 
-            item && typeof item === 'object' && item.fileId
+          evidenceFiles = parsed.filter(
+            (item) => item && typeof item === 'object' && item.fileId,
           );
         }
       } catch (error) {
         this.logger.error(
-          `Error al parsear evidenceUrls para registro ${blacklistEntry.id}:`, 
-          error
+          `Error al parsear evidenceUrls para registro ${blacklistEntry.id}:`,
+          error,
         );
         evidenceFiles = [];
       }
     }
 
     const signedEvidenceUrls: string[] = [];
-    
+
     evidenceFiles.forEach((evidence) => {
       const signedUrl = makeSignedMediaUrl(
-        evidence.fileId,evidence.fileName, 
-        this.MEDIA_URL_TTL_SECONDS
+        evidence.fileId,
+        evidence.fileName,
+        this.MEDIA_URL_TTL_SECONDS,
       );
-      
+
       signedEvidenceUrls.push(signedUrl);
-      
-      const mediaType = evidence.mimeType.startsWith('video/') ? 'video' : 'imagen';
+
+      const mediaType = evidence.mimeType.startsWith('video/')
+        ? 'video'
+        : 'imagen';
       this.logger.debug(
-        `URL generada: ${evidence.fileName} (${mediaType}, ${this.formatFileSize(evidence.fileSize)})`
+        `URL generada: ${evidence.fileName} (${mediaType}, ${this.formatFileSize(evidence.fileSize)})`,
       );
     });
 
@@ -1668,37 +1910,52 @@ export class BlacklistService {
           ingenioCode: blacklistEntry.shipment.ingenio.ingenioCode,
           ingenioNavCode: blacklistEntry.shipment.ingenio.ingenioNavCode,
           name: blacklistEntry.shipment.ingenio.name,
-        }
+        },
       };
 
-      if (includeAttachments && blacklistEntry.shipment.shipmentAttachments && blacklistEntry.shipment.shipmentAttachments.length > 0) {
-        const latestAttachment = blacklistEntry.shipment.shipmentAttachments
-          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+      if (
+        includeAttachments &&
+        blacklistEntry.shipment.shipmentAttachments &&
+        blacklistEntry.shipment.shipmentAttachments.length > 0
+      ) {
+        const latestAttachment =
+          blacklistEntry.shipment.shipmentAttachments.sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          )[0];
 
         if (latestAttachment) {
-          response.shipment.attachments = [{
-            id: latestAttachment.id,
-            shipmentId: blacklistEntry.shipment.id,
-            fileUrl: latestAttachment.fileUrl,
-            fileName: latestAttachment.fileName,
-            fileType: latestAttachment.fileType,
-            attachmentType: latestAttachment.attachmentType,
-          }];
+          response.shipment.attachments = [
+            {
+              id: latestAttachment.id,
+              shipmentId: blacklistEntry.shipment.id,
+              fileUrl: latestAttachment.fileUrl,
+              fileName: latestAttachment.fileName,
+              fileType: latestAttachment.fileType,
+              attachmentType: latestAttachment.attachmentType,
+            },
+          ];
         }
       }
     }
 
-    if (blacklistEntry.penaltyType &&
+    if (
+      blacklistEntry.penaltyType &&
       (blacklistEntry.statusBlacklist === BlacklistStatus.PENALTY_APPLIED ||
-        blacklistEntry.statusBlacklist === BlacklistStatus.LIBERATION)) {
-
+        blacklistEntry.statusBlacklist === BlacklistStatus.LIBERATION)
+    ) {
       const penaltyType = blacklistEntry.penaltyType as PenaltyType;
       let calculatedDays: number | null = null;
       const isPermanent = penaltyType === PenaltyType.PERMANENTE;
-      const isLiberated = blacklistEntry.statusBlacklist === BlacklistStatus.LIBERATION;
+      const isLiberated =
+        blacklistEntry.statusBlacklist === BlacklistStatus.LIBERATION;
       const isTemporal = penaltyType === PenaltyType.TEMPORAL;
 
-      if (isTemporal && blacklistEntry.banDurationDays && !isNaN(Number(blacklistEntry.banDurationDays))) {
+      if (
+        isTemporal &&
+        blacklistEntry.banDurationDays &&
+        !isNaN(Number(blacklistEntry.banDurationDays))
+      ) {
         calculatedDays = Number(blacklistEntry.banDurationDays);
       }
 

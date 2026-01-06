@@ -15,48 +15,42 @@ export class QueueService {
     private readonly queueRepository: Repository<Queue>,
     @InjectRepository(Shipments)
     private readonly shipmentsRepository: Repository<Shipments>,
-    private readonly statusService: StatusService
-  ) { }
-
+    private readonly statusService: StatusService,
+  ) {}
 
   /**
-  * Llama un cupo de un tipo específico creando un registro con estado "waiting_to_send".
-  * Valida que no existan más de 4 registros en total con estado "waiting_to_send".
-  * @param type El tipo de cupo (por ejemplo, "volteo", "plano").
-  */
-    async callQueue(type: string): Promise<Queue> 
-    {
-      if (!Object.values(TipoCamion).includes(type as TipoCamion)) 
-      {
-        throw new BadRequestException('Tipo de camión inválido.');
-      }
-
-      // Contar los registros con estado "waiting_to_send" SOLO de ese tipo
-      const currentCount = await this.queueRepository.count({
-        where: { type, status: 'waiting_to_send' },
-      });
-
-      // Lógica dinámica del límite
-      const maxAllowed = type === TipoCamion.PIPA ? 5 : 4;
-
-      if (currentCount >= maxAllowed) 
-      {
-        throw new BadRequestException(
-          `No se pueden llamar más cupos para el tipo "${type}". Límite de ${maxAllowed} alcanzado.`,
-        );
-      }
-
-      // Crear un nuevo registro en la cola con estado "waiting_to_send"
-      const newQueue = this.queueRepository.create({
-        type,
-        status: 'waiting_to_send',
-        shipmentCodeGen: null,
-      });
-
-      return await this.queueRepository.save(newQueue);
+   * Llama un cupo de un tipo específico creando un registro con estado "waiting_to_send".
+   * Valida que no existan más de 4 registros en total con estado "waiting_to_send".
+   * @param type El tipo de cupo (por ejemplo, "volteo", "plano").
+   */
+  async callQueue(type: string): Promise<Queue> {
+    if (!Object.values(TipoCamion).includes(type as TipoCamion)) {
+      throw new BadRequestException('Tipo de camión inválido.');
     }
 
+    // Contar los registros con estado "waiting_to_send" SOLO de ese tipo
+    const currentCount = await this.queueRepository.count({
+      where: { type, status: 'waiting_to_send' },
+    });
 
+    // Lógica dinámica del límite
+    const maxAllowed = type === TipoCamion.PIPA ? 5 : 4;
+
+    if (currentCount >= maxAllowed) {
+      throw new BadRequestException(
+        `No se pueden llamar más cupos para el tipo "${type}". Límite de ${maxAllowed} alcanzado.`,
+      );
+    }
+
+    // Crear un nuevo registro en la cola con estado "waiting_to_send"
+    const newQueue = this.queueRepository.create({
+      type,
+      status: 'waiting_to_send',
+      shipmentCodeGen: null,
+    });
+
+    return await this.queueRepository.save(newQueue);
+  }
 
   /**
    * Envía un shipment asignándolo a un cupo disponible y cambia el estado a "sended".
@@ -64,32 +58,33 @@ export class QueueService {
   async sendShipment(
     codeGen: string,
     observationsChangeStatus?: string,
-    leveransUsernameChangeStatus?: string
+    leveransUsernameChangeStatus?: string,
   ): Promise<Queue> {
     // Buscar el shipment por su código de generación
     const shipment = await this.shipmentsRepository.findOne({
       where: { codeGen },
-      relations: [
-        "vehicle"
-      ]
+      relations: ['vehicle'],
     });
 
-
     if (!shipment) {
-      throw new BadRequestException(`Shipment con código "${codeGen}" no encontrado.`);
+      throw new BadRequestException(
+        `Shipment con código "${codeGen}" no encontrado.`,
+      );
     }
-
 
     console.log(
-      "esto es la data: ",
-      await this.statusService.getLastStatusByCodeGen(shipment.codeGen)
+      'esto es la data: ',
+      await this.statusService.getLastStatusByCodeGen(shipment.codeGen),
     );
 
-    if ((await this.statusService.getLastStatusByCodeGen(shipment.codeGen)).id >= 4) {
-      throw new BadRequestException("No puede llamar a un envio que ya tiene un status mayor a 4 (trassacion autorizada)");
+    if (
+      (await this.statusService.getLastStatusByCodeGen(shipment.codeGen)).id >=
+      4
+    ) {
+      throw new BadRequestException(
+        'No puede llamar a un envio que ya tiene un status mayor a 4 (trassacion autorizada)',
+      );
     }
-
-
 
     // Determinar el tipo de carga del shipment
     const shipmentType = shipment.vehicle.truckType;
@@ -100,10 +95,10 @@ export class QueueService {
     });
 
     if (!availableQueue) {
-      throw new BadRequestException(`No hay cupos disponibles para el tipo "${shipmentType}".`);
+      throw new BadRequestException(
+        `No hay cupos disponibles para el tipo "${shipmentType}".`,
+      );
     }
-
-
 
     // Asignar el shipment al cupo y cambiar el estado a "sended"
     availableQueue.status = 'sended';
@@ -117,17 +112,17 @@ export class QueueService {
       shipment.codeGen,
       4,
       observationsChangeStatus,
-      leveransUsernameChangeStatus
+      leveransUsernameChangeStatus,
     );
     return await this.queueRepository.save(availableQueue);
   }
 
   /**
- * Obtiene el número de cupos disponibles por tipo, es decir,
- * cuántos registros con estado "waiting_to_send" hay por tipo.
- * @param type El tipo de cupo (por ejemplo, "volteo", "plano").
- * @returns Un objeto con el estado y los cupos disponibles.
- */
+   * Obtiene el número de cupos disponibles por tipo, es decir,
+   * cuántos registros con estado "waiting_to_send" hay por tipo.
+   * @param type El tipo de cupo (por ejemplo, "volteo", "plano").
+   * @returns Un objeto con el estado y los cupos disponibles.
+   */
   async getAvailableSlotsByType(type: string): Promise<{ data: number }> {
     if (!Object.values(TipoCamion).includes(type as TipoCamion)) {
       throw new BadRequestException('Tipo de camión inválido.');
@@ -144,7 +139,9 @@ export class QueueService {
     };
   }
 
-  async getAvailableSlotsForAllTypes(): Promise<{ data: { [type: string]: number } }> {
+  async getAvailableSlotsForAllTypes(): Promise<{
+    data: { [type: string]: number };
+  }> {
     // Obtener todos los tipos posibles definidos en el enum TipoCamion
     const allTypes = Object.values(TipoCamion);
 
@@ -164,17 +161,14 @@ export class QueueService {
     return {
       data: availableSlotsByType, // Objeto con el número de cupos disponibles por tipo
     };
-
-
   }
 
-
   /**
- * Libera un cupo eliminando un registro del tipo especificado con estado "waiting_to_send".
- * Si no hay cupos disponibles para liberar, lanza una excepción.
- * 
- * @param type El tipo de cupo (por ejemplo, "volteo", "plano").
- */
+   * Libera un cupo eliminando un registro del tipo especificado con estado "waiting_to_send".
+   * Si no hay cupos disponibles para liberar, lanza una excepción.
+   *
+   * @param type El tipo de cupo (por ejemplo, "volteo", "plano").
+   */
   async releaseSlot(type: string): Promise<{ message: string }> {
     // Verificar que el tipo es válido
     if (!Object.values(TipoCamion).includes(type as TipoCamion)) {
@@ -189,7 +183,9 @@ export class QueueService {
 
     // Si no se encuentra ningún cupo disponible para liberar, lanzar excepción
     if (!slotToRelease) {
-      throw new BadRequestException(`No hay cupos disponibles para liberar del tipo "${type}".`);
+      throw new BadRequestException(
+        `No hay cupos disponibles para liberar del tipo "${type}".`,
+      );
     }
 
     // Eliminar el registro encontrado
@@ -199,12 +195,15 @@ export class QueueService {
   }
 
   /**
- * Libera múltiples cupos del tipo especificado con estado "waiting_to_send".
- * 
- * @param type El tipo de cupo (por ejemplo, "volteo", "plano").
- * @param quantity La cantidad de cupos a liberar.
- */
-  async releaseMultipleSlots(type: string, quantity: number): Promise<{ released: number }> {
+   * Libera múltiples cupos del tipo especificado con estado "waiting_to_send".
+   *
+   * @param type El tipo de cupo (por ejemplo, "volteo", "plano").
+   * @param quantity La cantidad de cupos a liberar.
+   */
+  async releaseMultipleSlots(
+    type: string,
+    quantity: number,
+  ): Promise<{ released: number }> {
     // Verificar que el tipo es válido
     if (!Object.values(TipoCamion).includes(type as TipoCamion)) {
       throw new BadRequestException('Tipo de camión inválido.');
@@ -220,7 +219,7 @@ export class QueueService {
     // Verificar si hay suficientes registros para liberar
     if (slotsToRelease.length < quantity) {
       throw new BadRequestException(
-        `No hay suficientes cupos disponibles para liberar del tipo "${type}". Solo hay ${slotsToRelease.length} cupos disponibles.`
+        `No hay suficientes cupos disponibles para liberar del tipo "${type}". Solo hay ${slotsToRelease.length} cupos disponibles.`,
       );
     }
 
@@ -229,6 +228,4 @@ export class QueueService {
 
     return { released: slotsToRelease.length };
   }
-
-
 }

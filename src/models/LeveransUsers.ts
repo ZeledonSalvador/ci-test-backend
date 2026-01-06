@@ -4,42 +4,42 @@ import {
   Index,
   OneToMany,
   PrimaryGeneratedColumn,
-} from "typeorm";
-import { LeveransLogger } from "./LeveransLogger";
-import { LeveransUserLoginHistory } from "./LeveransUserLoginHistory";
+} from 'typeorm';
+import { LeveransLogger } from './LeveransLogger';
+import { LeveransUserLoginHistory } from './LeveransUserLoginHistory';
 
-@Index("PK__Leverans__3213E83F5D6D4547", ["id"], { unique: true })
-@Entity("LeveransUsers", { schema: "dbo" })
+@Index('PK__Leverans__3213E83F5D6D4547', ['id'], { unique: true })
+@Entity('LeveransUsers', { schema: 'dbo' })
 export class LeveransUsers {
-  @PrimaryGeneratedColumn({ type: "int", name: "id" })
+  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
-  @Column("nvarchar", { name: "username", length: 100 })
+  @Column('nvarchar', { name: 'username', length: 100 })
   username: string;
 
-  @Column("datetime", {
-    name: "created_at",
+  @Column('datetime', {
+    name: 'created_at',
     nullable: true,
-    default: () => "getdate()",
+    default: () => 'getdate()',
   })
   createdAt: Date | null;
 
-  @Column("datetime", {
-    name: "updated_at",
+  @Column('datetime', {
+    name: 'updated_at',
     nullable: true,
-    default: () => "getdate()",
+    default: () => 'getdate()',
   })
   updatedAt: Date | null;
 
   @OneToMany(
     () => LeveransLogger,
-    (leveransLogger) => leveransLogger.leveransUser
+    (leveransLogger) => leveransLogger.leveransUser,
   )
   leveransLoggers: LeveransLogger[];
 
   @OneToMany(
     () => LeveransUserLoginHistory,
-    (leveransUserLoginHistory) => leveransUserLoginHistory.leveransUser
+    (leveransUserLoginHistory) => leveransUserLoginHistory.leveransUser,
   )
   leveransUserLoginHistories: LeveransUserLoginHistory[];
 }

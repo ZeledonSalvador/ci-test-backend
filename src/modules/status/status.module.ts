@@ -24,10 +24,10 @@ import { ContingencyModule } from '../contingency/contingency.module';
     forwardRef(() => ShipmentsModule),
     LogsModule,
     TimeModule,
-    ContingencyModule
+    ContingencyModule,
   ],
   controllers: [StatusController, StatusClientController],
   providers: [StatusService, HttpManager],
-  exports: [StatusService]
+  exports: [StatusService],
 })
 export class StatusModule {}

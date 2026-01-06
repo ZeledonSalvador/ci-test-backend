@@ -5,7 +5,7 @@ export class TruckEntryReportQueryDto {
   from: string; // YYYY-MM-DD
 
   @IsDateString()
-  to: string;   // YYYY-MM-DD
+  to: string; // YYYY-MM-DD
 }
 
 export class TruckEntryExportQueryDto extends TruckEntryReportQueryDto {

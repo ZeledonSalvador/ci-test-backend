@@ -16,9 +16,9 @@ import { LogsModule } from '../logs/logs.module';
     StatusModule,
     AuthModule,
     ShipmentsModule,
-    LogsModule
+    LogsModule,
   ],
   controllers: [InvalidatedShipmentsController],
-  providers: [InvalidatedShipmentsService]
+  providers: [InvalidatedShipmentsService],
 })
 export class InvalidatedShipmentsModule {}

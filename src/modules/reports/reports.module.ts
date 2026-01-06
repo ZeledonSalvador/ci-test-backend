@@ -8,10 +8,16 @@ import { AuthModule } from 'src/modules/auth/auth.module';
 import { TempBrixChartService } from '../reports/services/temp-brix.service';
 import { RequiresSweepingReportService } from './services/requires-sweeping.report';
 
-
 @Module({
-  imports: [AuthModule], 
+  imports: [AuthModule],
   controllers: [ReportsController],
-  providers: [ReportsService, ExcelExporter, PdfExporter, TruckEntryReportService, TempBrixChartService,RequiresSweepingReportService],
+  providers: [
+    ReportsService,
+    ExcelExporter,
+    PdfExporter,
+    TruckEntryReportService,
+    TempBrixChartService,
+    RequiresSweepingReportService,
+  ],
 })
 export class ReportsModule {}

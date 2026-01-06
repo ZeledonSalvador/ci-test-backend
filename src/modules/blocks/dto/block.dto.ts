@@ -1,7 +1,6 @@
 import { IsBoolean, IsOptional, IsString, Length } from 'class-validator';
 
-export class BlockDto 
-{
+export class BlockDto {
   @IsString()
   @Length(1, 50)
   ingenioCode: string;

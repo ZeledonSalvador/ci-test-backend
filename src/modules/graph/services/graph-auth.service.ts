@@ -1,10 +1,17 @@
 // src/modules/graph/services/graph-auth.service.ts
 
-import { Injectable, Logger, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Client } from '@microsoft/microsoft-graph-client';
 import { ConfidentialClientApplication } from '@azure/msal-node';
-import { ConnectionTestResult, ConfigurationTestResult } from '../interfaces/graph-auth.interface';
+import {
+  ConnectionTestResult,
+  ConfigurationTestResult,
+} from '../interfaces/graph-auth.interface';
 import * as fs from 'fs';
 
 @Injectable()
@@ -18,9 +25,12 @@ export class GraphAuthService {
 
   constructor(private configService: ConfigService) {
     this.fromEmail = this.configService.get<string>('EMAIL_FROM');
-    this.fromName = this.configService.get<string>('FROM_NAME') || 'Notificaciones ALMAPAC';
-    this.templatesDir = this.configService.get<string>('TEMPLATE_DIR') || './src/modules/email/templates';
-    
+    this.fromName =
+      this.configService.get<string>('FROM_NAME') || 'Notificaciones ALMAPAC';
+    this.templatesDir =
+      this.configService.get<string>('TEMPLATE_DIR') ||
+      './src/modules/email/templates';
+
     this.initializeMsalClient();
   }
 
@@ -28,14 +38,16 @@ export class GraphAuthService {
     try {
       const tenantId = this.configService.get<string>('AZURE_TENANT_ID');
       const clientId = this.configService.get<string>('AZURE_CLIENT_ID');
-      const clientSecret = this.configService.get<string>('AZURE_CLIENT_SECRET');
+      const clientSecret = this.configService.get<string>(
+        'AZURE_CLIENT_SECRET',
+      );
 
       if (!tenantId || !clientId || !clientSecret) {
         const missing = [];
         if (!tenantId) missing.push('AZURE_TENANT_ID');
         if (!clientId) missing.push('AZURE_CLIENT_ID');
         if (!clientSecret) missing.push('AZURE_CLIENT_SECRET');
-        
+
         this.logger.error(`Variables faltantes: ${missing.join(', ')}`);
         this.isInitialized = false;
         return;
@@ -63,7 +75,9 @@ export class GraphAuthService {
    */
   async getAccessToken(): Promise<string> {
     if (!this.isInitialized) {
-      throw new InternalServerErrorException('Graph Auth Service no inicializado');
+      throw new InternalServerErrorException(
+        'Graph Auth Service no inicializado',
+      );
     }
 
     try {
@@ -78,7 +92,9 @@ export class GraphAuthService {
       return result.accessToken;
     } catch (error) {
       this.logger.error('Error al obtener token:', error);
-      throw new InternalServerErrorException('Error de autenticación con Microsoft Graph');
+      throw new InternalServerErrorException(
+        'Error de autenticación con Microsoft Graph',
+      );
     }
   }
 
@@ -87,7 +103,9 @@ export class GraphAuthService {
    */
   createGraphClient(): Client {
     if (!this.isInitialized) {
-      throw new InternalServerErrorException('Graph Auth Service no inicializado');
+      throw new InternalServerErrorException(
+        'Graph Auth Service no inicializado',
+      );
     }
 
     return Client.init({
@@ -121,8 +139,8 @@ export class GraphAuthService {
         details: {
           error: 'Servicio no inicializado',
           fromEmail: this.fromEmail || 'No configurado',
-          authProviderExists: !!this.msalClient
-        }
+          authProviderExists: !!this.msalClient,
+        },
       };
     }
 
@@ -142,9 +160,9 @@ export class GraphAuthService {
           .top(1)
           .select('id,userPrincipalName')
           .get();
-        
+
         this.logger.log('Acceso exitoso al endpoint de usuarios de Graph API');
-        
+
         return {
           success: true,
           message: 'Conexión exitosa a Microsoft Graph API',
@@ -156,12 +174,15 @@ export class GraphAuthService {
             templatesDir: this.templatesDir,
             tokenObtained: true,
             graphApiAccess: true,
-            usersFound: response?.value?.length || 0
-          }
+            usersFound: response?.value?.length || 0,
+          },
         };
       } catch (apiError) {
-        this.logger.warn('La llamada a Graph API falló pero el token es válido:', apiError.message);
-        
+        this.logger.warn(
+          'La llamada a Graph API falló pero el token es válido:',
+          apiError.message,
+        );
+
         return {
           success: true,
           message: 'Autenticación exitosa pero acceso limitado a la API',
@@ -173,13 +194,13 @@ export class GraphAuthService {
             templatesDir: this.templatesDir,
             tokenObtained: true,
             graphApiAccess: false,
-            warning: apiError.message
-          }
+            warning: apiError.message,
+          },
         };
       }
     } catch (error) {
       this.logger.error('Prueba de conexión falló:', error);
-      
+
       return {
         success: false,
         message: `Prueba de conexión falló: ${error.message}`,
@@ -187,8 +208,8 @@ export class GraphAuthService {
         details: {
           error: error.message || 'Error desconocido',
           fromEmail: this.fromEmail,
-          authProviderExists: !!this.msalClient
-        }
+          authProviderExists: !!this.msalClient,
+        },
       };
     }
   }
@@ -200,12 +221,14 @@ export class GraphAuthService {
     const config = {
       AZURE_TENANT_ID: this.configService.get<string>('AZURE_TENANT_ID'),
       AZURE_CLIENT_ID: this.configService.get<string>('AZURE_CLIENT_ID'),
-      AZURE_CLIENT_SECRET: this.configService.get<string>('AZURE_CLIENT_SECRET'),
+      AZURE_CLIENT_SECRET: this.configService.get<string>(
+        'AZURE_CLIENT_SECRET',
+      ),
       EMAIL_FROM: this.configService.get<string>('EMAIL_FROM'),
       FROM_NAME: this.configService.get<string>('FROM_NAME'),
       TEMPLATE_DIR: this.configService.get<string>('TEMPLATE_DIR'),
       PORTAL_CLIENTES: this.configService.get<string>('PORTAL_CLIENTES'),
-      QUICKPASS: this.configService.get<string>('QUICKPASS')
+      QUICKPASS: this.configService.get<string>('QUICKPASS'),
     };
 
     const missing = [];
@@ -224,14 +247,16 @@ export class GraphAuthService {
     });
 
     const templatesExist = fs.existsSync(this.templatesDir);
-    const templateFiles = templatesExist ? fs.readdirSync(this.templatesDir).filter(f => f.endsWith('.hbs')) : [];
+    const templateFiles = templatesExist
+      ? fs.readdirSync(this.templatesDir).filter((f) => f.endsWith('.hbs'))
+      : [];
 
     const isValid = missing.length === 0;
 
     return {
       success: isValid,
-      message: isValid 
-        ? 'Todas las variables de configuración requeridas están establecidas' 
+      message: isValid
+        ? 'Todas las variables de configuración requeridas están establecidas'
         : `Configuración faltante requerida: ${missing.join(', ')}`,
       timestamp: new Date(),
       details: {
@@ -243,9 +268,9 @@ export class GraphAuthService {
         templatesDirectory: {
           path: this.templatesDir,
           exists: templatesExist,
-          templateFiles: templateFiles
-        }
-      }
+          templateFiles: templateFiles,
+        },
+      },
     };
   }
 }

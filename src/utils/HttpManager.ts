@@ -5,7 +5,7 @@ import { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 @Injectable()
 export class HttpManager {
-  constructor(private readonly httpService: HttpService) { }
+  constructor(private readonly httpService: HttpService) {}
 
   async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
     try {
@@ -43,7 +43,6 @@ export class HttpManager {
     }
   }
 
-
   async put<T>(
     url: string,
     data: any,
@@ -64,10 +63,7 @@ export class HttpManager {
     }
   }
 
-  async delete<T>(
-    url: string,
-    config?: AxiosRequestConfig,
-  ): Promise<T> {
+  async delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
     try {
       const response: AxiosResponse<T> = await lastValueFrom(
         this.httpService.delete<T>(url, config),
@@ -83,13 +79,15 @@ export class HttpManager {
     }
   }
 
-  private formatHttpResponse(response: AxiosResponse | null, isError: boolean, url: string): void {
+  private formatHttpResponse(
+    response: AxiosResponse | null,
+    isError: boolean,
+    url: string,
+  ): void {
     // Logs desactivados para optimización de memoria
     // Solo logear en caso de error
     if (isError && response?.status) {
       console.error(`[HTTP ERROR] ${response.status} - ${url}`);
     }
   }
-
-
 }

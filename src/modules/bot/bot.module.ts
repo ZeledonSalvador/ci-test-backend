@@ -6,15 +6,10 @@ import { AuthGuard } from '../auth/guards/auth.guard';
 import { UsersService } from '../users/services/users.service';
 import { UsersModule } from '../users/users.module';
 
-
-
 @Module({
-  imports: [
-    UsersModule,
-    AuthModule
-  ],
+  imports: [UsersModule, AuthModule],
   controllers: [BotController],
   providers: [BotService, AuthGuard],
   exports: [BotService],
 })
-export class BotModule { }
+export class BotModule {}

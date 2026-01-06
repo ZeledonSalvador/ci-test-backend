@@ -1,6 +1,11 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
-@Entity('Locations')  // 👈 nombre de la tabla
+@Entity('Locations') // 👈 nombre de la tabla
 export class Locations {
   @PrimaryGeneratedColumn()
   id: number;

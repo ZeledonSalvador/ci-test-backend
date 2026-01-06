@@ -9,18 +9,8 @@ import { NotificationLogs } from '../../models/NotificationLogs';
 
 @Global() // ← IMPORTANTE: Esto hace que los providers estén disponibles globalmente
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([NotificationLogs])
-  ],
-  providers: [
-    NotificationService,
-    NotificationLoggerService,
-    RetryService
-  ],
-  exports: [
-    NotificationService,
-    NotificationLoggerService,
-    RetryService
-  ]
+  imports: [TypeOrmModule.forFeature([NotificationLogs])],
+  providers: [NotificationService, NotificationLoggerService, RetryService],
+  exports: [NotificationService, NotificationLoggerService, RetryService],
 })
 export class NotificationsModule {}

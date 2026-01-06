@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Pagination } from 'src/dto/pagination';
 import { InvalidatedShipments } from 'src/models/InvalidatedShipments';
@@ -69,7 +73,8 @@ export class InvalidatedShipmentsService {
         client: shipment.ingenio,
       });
 
-      const saved = await this.invalidatedShipmentsRepository.save(invalidatedShipment);
+      const saved =
+        await this.invalidatedShipmentsRepository.save(invalidatedShipment);
 
       if (shouldLog) {
         await this.ingenioLogsService.logIngenioSuccess(
@@ -119,9 +124,10 @@ export class InvalidatedShipmentsService {
         );
       }
 
-      const invalidatedShipment = await this.invalidatedShipmentsRepository.findOne({
-        where: { codeGen: invalidatedCodeGen },
-      });
+      const invalidatedShipment =
+        await this.invalidatedShipmentsRepository.findOne({
+          where: { codeGen: invalidatedCodeGen },
+        });
       if (!invalidatedShipment) {
         const msg = 'No se puede validar un envío que no ha sido invalidado.';
         if (shouldLog) {
@@ -153,7 +159,9 @@ export class InvalidatedShipmentsService {
         throw new ConflictException(msg);
       }
 
-      await this.invalidatedShipmentsRepository.delete({ codeGen: invalidatedCodeGen });
+      await this.invalidatedShipmentsRepository.delete({
+        codeGen: invalidatedCodeGen,
+      });
 
       const restored = await this.shipmentsService.createAllRecord(
         JSON.parse(invalidatedShipment.jsonData),
@@ -192,13 +200,17 @@ export class InvalidatedShipmentsService {
   async getAllInvalidatedShipments(
     page: number = 1,
     size: number = 10,
-  ): Promise<{ data: InvalidatedShipmentWithParsedData[]; pagination: Pagination }> {
+  ): Promise<{
+    data: InvalidatedShipmentWithParsedData[];
+    pagination: Pagination;
+  }> {
     const offset = (page - 1) * size;
 
-    const [shipments, totalCount] = await this.invalidatedShipmentsRepository.findAndCount({
-      skip: offset,
-      take: size,
-    });
+    const [shipments, totalCount] =
+      await this.invalidatedShipmentsRepository.findAndCount({
+        skip: offset,
+        take: size,
+      });
 
     const formattedShipments = shipments.map((shipment) => ({
       ...shipment,
@@ -215,13 +227,18 @@ export class InvalidatedShipmentsService {
     };
   }
 
-  async getInvalidatedShipmentByCodeGen(codeGen: string): Promise<InvalidatedShipmentWithParsedData> {
-    const invalidatedShipment = await this.invalidatedShipmentsRepository.findOne({
-      where: { codeGen },
-    });
+  async getInvalidatedShipmentByCodeGen(
+    codeGen: string,
+  ): Promise<InvalidatedShipmentWithParsedData> {
+    const invalidatedShipment =
+      await this.invalidatedShipmentsRepository.findOne({
+        where: { codeGen },
+      });
 
     if (!invalidatedShipment) {
-      throw new NotFoundException(`No se encontró un envío invalidado con el código ${codeGen}.`);
+      throw new NotFoundException(
+        `No se encontró un envío invalidado con el código ${codeGen}.`,
+      );
     }
 
     return {
@@ -235,15 +252,19 @@ export class InvalidatedShipmentsService {
     forClients: boolean = false,
     page: number = 1,
     size: number = 10,
-  ): Promise<{ data: Partial<InvalidatedShipmentWithParsedData>[]; pagination: Pagination }> {
+  ): Promise<{
+    data: Partial<InvalidatedShipmentWithParsedData>[];
+    pagination: Pagination;
+  }> {
     const offset = (page - 1) * size;
 
-    const [shipments, totalCount] = await this.invalidatedShipmentsRepository.findAndCount({
-      where: { client: { ingenioCode } },
-      relations: ['client'],
-      skip: offset,
-      take: size,
-    });
+    const [shipments, totalCount] =
+      await this.invalidatedShipmentsRepository.findAndCount({
+        where: { client: { ingenioCode } },
+        relations: ['client'],
+        skip: offset,
+        take: size,
+      });
 
     const config = {
       keysToRemove: {
@@ -254,7 +275,11 @@ export class InvalidatedShipmentsService {
 
     const formattedShipments = shipments.map((shipment) => {
       const parsedData = JSON.parse(shipment.jsonData) as Shipments;
-      const processedData = this.shipmentsService.normalizeShipment(parsedData, forClients, config);
+      const processedData = this.shipmentsService.normalizeShipment(
+        parsedData,
+        forClients,
+        config,
+      );
 
       if (forClients) {
         return {

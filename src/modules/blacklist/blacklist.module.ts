@@ -17,10 +17,10 @@ import { OneDriveService } from './services/onedrive.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      Drivers, 
+      Drivers,
       BlacklistDrivers,
-      BlacklistDriversHistory, 
-      Shipments, 
+      BlacklistDriversHistory,
+      Shipments,
       ShipmentAttachments,
       Clients,
     ]),
@@ -31,4 +31,4 @@ import { OneDriveService } from './services/onedrive.service';
   providers: [BlacklistService, AuthGuard, OneDriveService],
   exports: [BlacklistService],
 })
-export class BlacklistModule { }
+export class BlacklistModule {}

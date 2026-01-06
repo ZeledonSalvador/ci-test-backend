@@ -14,18 +14,20 @@ if (typeof globalThis.crypto === 'undefined') {
   (globalThis as any).crypto = crypto.webcrypto || crypto;
 }
 
-// Variable global para el servicio de logs 
+// Variable global para el servicio de logs
 let globalLogsService: LogsSystemService | null = null;
 
 // Manejadores globales de errores no capturados
 process.on('uncaughtException', (error: Error) => {
-  console.error('❌ UNCAUGHT EXCEPTION - La aplicación continuará ejecutándose:');
+  console.error(
+    '❌ UNCAUGHT EXCEPTION - La aplicación continuará ejecutándose:',
+  );
   console.error('Error:', error.message);
   console.error('Stack:', error.stack);
 
   // Intentar guardar en BD si el servicio está disponible
   if (globalLogsService) {
-    globalLogsService.logUncaughtException(error).catch(err => {
+    globalLogsService.logUncaughtException(error).catch((err) => {
       console.error('Error al guardar log en BD:', err);
     });
   }
@@ -34,13 +36,15 @@ process.on('uncaughtException', (error: Error) => {
 });
 
 process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
-  console.error('❌ UNHANDLED REJECTION - La aplicación continuará ejecutándose:');
+  console.error(
+    '❌ UNHANDLED REJECTION - La aplicación continuará ejecutándose:',
+  );
   console.error('Promesa:', promise);
   console.error('Razón:', reason);
 
   // Intentar guardar en BD si el servicio está disponible
   if (globalLogsService) {
-    globalLogsService.logUnhandledRejection(reason, promise).catch(err => {
+    globalLogsService.logUnhandledRejection(reason, promise).catch((err) => {
       console.error('Error al guardar log en BD:', err);
     });
   }
@@ -61,7 +65,10 @@ async function bootstrap() {
     globalLogsService = app.get(LogsSystemService);
     console.log('✅ LogsSystemService inicializado correctamente');
   } catch (error) {
-    console.error('⚠️  No se pudo inicializar LogsSystemService:', error.message);
+    console.error(
+      '⚠️  No se pudo inicializar LogsSystemService:',
+      error.message,
+    );
     console.error('La aplicación continuará sin sistema de logs en BD');
   }
 
@@ -84,12 +91,14 @@ async function bootstrap() {
 
   console.log('✅ CORS configurado');
 
-  app.useGlobalPipes(new ValidationPipe({
-    transform: true,
-    whitelist: true,
-    forbidNonWhitelisted: false,
-    skipMissingProperties: false,
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: false,
+      skipMissingProperties: false,
+    }),
+  );
   console.log('✅ ValidationPipe configurado');
 
   const config = new DocumentBuilder()

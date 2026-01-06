@@ -7,7 +7,7 @@ import {
   UseGuards,
   Query,
   Patch,
-  ParseIntPipe
+  ParseIntPipe,
 } from '@nestjs/common';
 import { IngenioLogsService } from '../services/ingenio-logs.service';
 import { IngenioLogEntity } from 'src/models/IngenioLogEntity';
@@ -22,7 +22,9 @@ export class IngenioLogsController {
 
   @Post()
   @Roles(Role.ADMIN, Role.BOT)
-  async create(@Body() data: Partial<IngenioLogEntity>): Promise<IngenioLogEntity> {
+  async create(
+    @Body() data: Partial<IngenioLogEntity>,
+  ): Promise<IngenioLogEntity> {
     return this.logsService.createLog(data);
   }
 
@@ -30,7 +32,7 @@ export class IngenioLogsController {
   @Roles(Role.ADMIN, Role.BOT)
   async getAllLogs(
     @Query('page') page: string = '1',
-    @Query('limit') limit: string = '50'
+    @Query('limit') limit: string = '50',
   ) {
     return this.logsService.getAllLogs(parseInt(page), parseInt(limit));
   }
@@ -39,26 +41,32 @@ export class IngenioLogsController {
   @Roles(Role.ADMIN, Role.BOT)
   async getLogsByDateRange(
     @Query('fechaInicio') fechaInicio: string,
-    @Query('fechaFin') fechaFin: string
+    @Query('fechaFin') fechaFin: string,
   ) {
     return this.logsService.getLogsByDateRange(fechaInicio, fechaFin);
   }
 
   @Get('usuario/:usuario')
   @Roles(Role.ADMIN, Role.BOT)
-  async getByUsuario(@Param('usuario') usuario: string): Promise<IngenioLogEntity[]> {
+  async getByUsuario(
+    @Param('usuario') usuario: string,
+  ): Promise<IngenioLogEntity[]> {
     return this.logsService.getLogsByUsuario(usuario);
   }
 
   @Get('estatus/:estatus')
   @Roles(Role.ADMIN, Role.BOT)
-  async getByEstatus(@Param('estatus') estatus: string): Promise<IngenioLogEntity[]> {
+  async getByEstatus(
+    @Param('estatus') estatus: string,
+  ): Promise<IngenioLogEntity[]> {
     return this.logsService.getLogsByEstatus(estatus);
   }
 
   @Get('code/:code_gen')
   @Roles(Role.ADMIN, Role.BOT)
-  async getByCodeGen(@Param('code_gen') codeGen: string): Promise<IngenioLogEntity[]> {
+  async getByCodeGen(
+    @Param('code_gen') codeGen: string,
+  ): Promise<IngenioLogEntity[]> {
     return this.logsService.getLogsByCodeGen(codeGen);
   }
 
@@ -66,8 +74,12 @@ export class IngenioLogsController {
   @Roles(Role.ADMIN)
   async updateEstatus(
     @Param('id', ParseIntPipe) id: number,
-    @Body() data: { estatus: string; motivo_invalidacion?: string }
+    @Body() data: { estatus: string; motivo_invalidacion?: string },
   ): Promise<IngenioLogEntity> {
-    return this.logsService.updateLogEstatus(id, data.estatus, data.motivo_invalidacion);
+    return this.logsService.updateLogEstatus(
+      id,
+      data.estatus,
+      data.motivo_invalidacion,
+    );
   }
 }

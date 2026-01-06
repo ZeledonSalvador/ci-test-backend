@@ -1,4 +1,11 @@
-import { IsInt, IsOptional, IsString, Min, Matches, IsNumber } from 'class-validator';
+import {
+  IsInt,
+  IsOptional,
+  IsString,
+  Min,
+  Matches,
+  IsNumber,
+} from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 
 export class BrixEligibleQueryDto {

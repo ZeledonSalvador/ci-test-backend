@@ -16,7 +16,9 @@ export class RequiresSweepingReportService {
         FROM ingenioapi.dbo.Clients
         WHERE ingenio_code = @0
       `;
-      const [ingenioResult] = await this.dataSource.query(sqlIngenioName, [q.ingenioCode]);
+      const [ingenioResult] = await this.dataSource.query(sqlIngenioName, [
+        q.ingenioCode,
+      ]);
       ingenioName = ingenioResult?.ingenio_name || q.ingenioCode;
     }
 
@@ -70,7 +72,11 @@ export class RequiresSweepingReportService {
       ORDER BY sf.fecha_entrada_planta, sf.fecha_salida_planta;
     `;
 
-    const rows = await this.dataSource.query(sqlRows, [q.ingenioCode, q.from, q.to]);
+    const rows = await this.dataSource.query(sqlRows, [
+      q.ingenioCode,
+      q.from,
+      q.to,
+    ]);
 
     const sqlSummary = `
       WITH StatusFechas AS (
@@ -104,7 +110,11 @@ export class RequiresSweepingReportService {
         AND CONVERT(date, sf.fecha_salida_planta) BETWEEN CAST(@1 AS date) AND CAST(@2 AS date);
     `;
 
-    const [summaryRaw] = await this.dataSource.query(sqlSummary, [q.ingenioCode, q.from, q.to]);
+    const [summaryRaw] = await this.dataSource.query(sqlSummary, [
+      q.ingenioCode,
+      q.from,
+      q.to,
+    ]);
 
     return {
       rows,

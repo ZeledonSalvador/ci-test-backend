@@ -9,7 +9,7 @@ export class OperationTimesService {
   constructor(
     @InjectRepository(OperationTime)
     private readonly repo: Repository<OperationTime>,
-  ) { }
+  ) {}
 
   async create(dto: CreateOperationTimeDto): Promise<OperationTime> {
     const newRecord = this.repo.create(dto);
@@ -17,7 +17,6 @@ export class OperationTimesService {
   }
 
   async findAll(): Promise<OperationTime[]> {
-    return this.repo.find({ order: { createdAt: 'DESC' } }); 
+    return this.repo.find({ order: { createdAt: 'DESC' } });
   }
-
 }

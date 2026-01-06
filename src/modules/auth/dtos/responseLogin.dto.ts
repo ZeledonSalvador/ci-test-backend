@@ -1,3 +1,3 @@
 export class resLogin {
-    access_token: string;
+  access_token: string;
 }

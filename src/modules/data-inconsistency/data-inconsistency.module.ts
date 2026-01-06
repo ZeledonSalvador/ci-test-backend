@@ -13,20 +13,20 @@ import { PredefinedStatuses } from 'src/models/PredefinedStatuses';
 import { LogsModule } from '../logs/logs.module';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([
-            DataInconsistency, 
-            Shipments, 
-            Users, 
-            ShipmentSeals,
-            Status,
-            PredefinedStatuses
-        ]),
-        AuthModule,
-        LogsModule
-    ],
-    controllers: [DataInconsistencyController],
-    providers: [DataInconsistencyService, AuthGuard],
-    exports: [DataInconsistencyService, TypeOrmModule]
+  imports: [
+    TypeOrmModule.forFeature([
+      DataInconsistency,
+      Shipments,
+      Users,
+      ShipmentSeals,
+      Status,
+      PredefinedStatuses,
+    ]),
+    AuthModule,
+    LogsModule,
+  ],
+  controllers: [DataInconsistencyController],
+  providers: [DataInconsistencyService, AuthGuard],
+  exports: [DataInconsistencyService, TypeOrmModule],
 })
-export class DataInconsistencyModule { }
+export class DataInconsistencyModule {}

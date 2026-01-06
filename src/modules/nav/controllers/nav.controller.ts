@@ -20,9 +20,9 @@ export class NavController {
     @Body()
     payload: {
       idTransaccionNav: string; // ID único de la transacción
-      codeGen: string;          // Código de generación
-      status: string;           // Nuevo estado (NAV)
-      changeDate: string;       // Fecha del cambio
+      codeGen: string; // Código de generación
+      status: string; // Nuevo estado (NAV)
+      changeDate: string; // Fecha del cambio
     },
   ): Promise<{ message: string; record?: any; weights?: any }> {
     // 1) Lógica actual: cambio de estado

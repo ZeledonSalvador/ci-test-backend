@@ -30,8 +30,6 @@ type RequiresSweepingRow = {
   fecha_salida_planta: any;
 };
 
-
-
 @Injectable()
 export class ExcelExporter {
   private toDate(value: any): Date | null {
@@ -42,7 +40,12 @@ export class ExcelExporter {
   }
 
   private addLogo(workbook: ExcelJS.Workbook, ws: ExcelJS.Worksheet) {
-    const logoPath = path.join(process.cwd(), 'src', 'assets', 'almepac-logo.png');
+    const logoPath = path.join(
+      process.cwd(),
+      'src',
+      'assets',
+      'almepac-logo.png',
+    );
     if (!fs.existsSync(logoPath)) return;
 
     const imageId = workbook.addImage({
@@ -67,15 +70,15 @@ export class ExcelExporter {
   }
 
   private colLetter(n: number) {
-  // 1 -> A
-  let s = '';
-  while (n > 0) {
-    const m = (n - 1) % 26;
-    s = String.fromCharCode(65 + m) + s;
-    n = Math.floor((n - 1) / 26);
+    // 1 -> A
+    let s = '';
+    while (n > 0) {
+      const m = (n - 1) % 26;
+      s = String.fromCharCode(65 + m) + s;
+      n = Math.floor((n - 1) / 26);
+    }
+    return s;
   }
-  return s;
-}
 
   async buildTruckEntryWorkbook(params: {
     rows: TruckEntryRow[];
@@ -92,7 +95,7 @@ export class ExcelExporter {
     // Columnas B..J según tu screenshot (10 columnas)
     // Nota: dejamos columna A vacía para que arranque en B (más parecido a tu diseño)
     ws.getColumn(1).width = 2; // A (padding)
-    ws.getColumn(2).width = 6;  // B: N°
+    ws.getColumn(2).width = 6; // B: N°
     ws.getColumn(3).width = 22; // C: ingreso
     ws.getColumn(4).width = 22; // D: salida
     ws.getColumn(5).width = 22; // E: motorista
@@ -174,8 +177,16 @@ export class ExcelExporter {
       const cell = ws.getCell(6, 2 + i);
       cell.value = headers[i];
       cell.font = { bold: true, size: 10 };
-      cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
-      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'EDEDED' } };
+      cell.alignment = {
+        horizontal: 'center',
+        vertical: 'middle',
+        wrapText: true,
+      };
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'EDEDED' },
+      };
       this.setBorder(cell);
     }
 
@@ -186,7 +197,7 @@ export class ExcelExporter {
       const ingreso = this.toDate(row.fechayhora_ingreso);
       const salida = this.toDate(row.fechayhora_salida);
 
-      const isAlt = (i % 2 === 0); // zebra: primera amarilla suave
+      const isAlt = i % 2 === 0; // zebra: primera amarilla suave
       const fill: ExcelJS.Fill = isAlt
         ? { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF9C4' } } // amarillo suave
         : { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFF' } };
@@ -210,13 +221,25 @@ export class ExcelExporter {
         // formatos fecha
         if (c === 1 || c === 2) {
           cell.numFmt = 'dd/mm/yyyy hh:mm';
-          cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+          cell.alignment = {
+            horizontal: 'center',
+            vertical: 'middle',
+            wrapText: true,
+          };
         } else if (c === 0) {
           cell.alignment = { horizontal: 'center', vertical: 'middle' };
         } else if (c === 4 || c === 5 || c === 6) {
-          cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+          cell.alignment = {
+            horizontal: 'center',
+            vertical: 'middle',
+            wrapText: true,
+          };
         } else {
-          cell.alignment = { horizontal: 'left', vertical: 'middle', wrapText: true };
+          cell.alignment = {
+            horizontal: 'left',
+            vertical: 'middle',
+            wrapText: true,
+          };
         }
 
         cell.font = { size: 10 };
@@ -237,175 +260,201 @@ export class ExcelExporter {
     return Buffer.from(buffer);
   }
 
-
-
   async buildRequiresSweepingWorkbook(params: {
-  rows: RequiresSweepingRow[];
-  meta?: Record<string, any>;
-}): Promise<Buffer> {
-  const wb = new ExcelJS.Workbook();
-  wb.creator = 'QuickPass';
-  wb.created = new Date();
+    rows: RequiresSweepingRow[];
+    meta?: Record<string, any>;
+  }): Promise<Buffer> {
+    const wb = new ExcelJS.Workbook();
+    wb.creator = 'QuickPass';
+    wb.created = new Date();
 
-  const ws = wb.addWorksheet('Requiere barrido', {
-    views: [{ state: 'frozen', ySplit: 6 }],
-  });
+    const ws = wb.addWorksheet('Requiere barrido', {
+      views: [{ state: 'frozen', ySplit: 6 }],
+    });
 
-  // Config columnas: dejamos A de padding, arrancamos en B
-  ws.getColumn(1).width = 2;
+    // Config columnas: dejamos A de padding, arrancamos en B
+    ws.getColumn(1).width = 2;
 
-  const headers = [
-    'N°',
-    'Ingenio',
-    'Código Generación',
-    'ID NAV',
-    'Licencia',
-    'Motorista',
-    'Placa Cabezal',
-    'Placa Remolque',
-    'Solicitó Barrido',
-    'Tipo Barrido',
-    'Fecha Prechequeo',
-    'Fecha Entrada Planta',
-    'Fecha Salida Planta',
-  ];
-
-  // Ajuste widths (columnas más anchas para mejor legibilidad)
-  const widths = [6, 22, 25, 14, 14, 28, 16, 16, 16, 16, 22, 22, 22];
-  for (let i = 0; i < widths.length; i++) {
-    ws.getColumn(2 + i).width = widths[i];
-  }
-
-  // Header heights
-  ws.getRow(3).height = 30;
-  ws.getRow(4).height = 24;
-  ws.getRow(5).height = 24;
-  ws.getRow(6).height = 35;
-
-  const startCol = 2; // B
-  const endCol = startCol + headers.length - 1; // columna final
-  const titleEndCol = endCol - 2; // dejamos 2 cols a la derecha para “generación”
-  const genLabelCol = endCol - 1;
-  const genValueCol = endCol;
-
-  // Merges: título/intervalo/rango
-  ws.mergeCells(3, startCol, 3, titleEndCol);
-  ws.mergeCells(4, startCol, 4, titleEndCol);
-  ws.mergeCells(5, startCol, 5, titleEndCol);
-
-  // Bordes bloque superior (fila 3..5, col start..end)
-  for (let r = 3; r <= 5; r++) {
-    for (let c = startCol; c <= endCol; c++) {
-      this.setBorder(ws.getCell(r, c));
-    }
-  }
-
-  // Title
-  const titleCell = ws.getCell(3, startCol);
-  titleCell.value = 'REQUIERE BARRIDO';
-  titleCell.font = { bold: true, size: 14 };
-  titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
-
-  const from = params.meta?.from ?? '';
-  const to = params.meta?.to ?? '';
-  const ingenioName = params.meta?.ingenioname ?? '';
-
-  const intervalCell = ws.getCell(4, startCol);
-  intervalCell.value = `Cliente: ${ingenioName}  |  Del ${from} al ${to}`;
-  intervalCell.font = { size: 11 };
-  intervalCell.alignment = { horizontal: 'center', vertical: 'middle' };
-
-  const rangeCell = ws.getCell(5, startCol);
-  rangeCell.value = `Generado por QuickPass`;
-  rangeCell.font = { size: 10 };
-  rangeCell.alignment = { horizontal: 'center', vertical: 'middle' };
-
-  // “Fecha de generación” a la derecha (genLabelCol/genValueCol)
-  ws.getCell(5, genLabelCol).value = 'Fecha de generación';
-  ws.getCell(5, genLabelCol).font = { bold: true, size: 10 };
-  ws.getCell(5, genLabelCol).alignment = { horizontal: 'center', vertical: 'middle' };
-  this.setBorder(ws.getCell(5, genLabelCol));
-
-  const genCell = ws.getCell(5, genValueCol);
-  genCell.value = new Date();
-  genCell.numFmt = 'dd/mm/yyyy hh:mm';
-  genCell.font = { bold: true, size: 10 };
-  genCell.alignment = { horizontal: 'center', vertical: 'middle' };
-  this.setBorder(genCell);
-
-  // Logo arriba derecha (reusamos addLogo, pero ubicándolo relativo al final)
-  // El addLogo existente lo ubica fijo. Si quieres que quede bien aquí también,
-  // lo más simple es dejarlo igual por ahora:
-  this.addLogo(wb, ws);
-
-  // Header tabla (fila 6)
-  for (let i = 0; i < headers.length; i++) {
-    const cell = ws.getCell(6, startCol + i);
-    cell.value = headers[i];
-    cell.font = { bold: true, size: 10 };
-    cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
-    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'EDEDED' } };
-    this.setBorder(cell);
-  }
-
-  // Data desde fila 7
-  let rr = 7;
-  for (let i = 0; i < params.rows.length; i++, rr++) {
-    const row = params.rows[i];
-
-    const isAlt = i % 2 === 0;
-    const fill: ExcelJS.Fill = isAlt
-      ? { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF9C4' } }
-      : { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFF' } };
-
-    const values = [
-      i + 1,
-      row.ingenio ?? '',
-      row.codigo_generacion ?? '',
-      row.id_nav ?? '',
-      row.licencia ?? '',
-      row.motorista ?? '',
-      row.placa_cabezal ?? '',
-      row.placa_remolque ?? '',
-      row.solicito_barrido ?? '',
-      row.tipo_barrido ?? '',
-      this.toDate(row.fecha_prechequeo),
-      this.toDate(row.fecha_entrada_planta),
-      this.toDate(row.fecha_salida_planta),
+    const headers = [
+      'N°',
+      'Ingenio',
+      'Código Generación',
+      'ID NAV',
+      'Licencia',
+      'Motorista',
+      'Placa Cabezal',
+      'Placa Remolque',
+      'Solicitó Barrido',
+      'Tipo Barrido',
+      'Fecha Prechequeo',
+      'Fecha Entrada Planta',
+      'Fecha Salida Planta',
     ];
 
-    for (let c = 0; c < values.length; c++) {
-      const cell = ws.getCell(rr, startCol + c);
-      cell.value = values[c] as any;
+    // Ajuste widths (columnas más anchas para mejor legibilidad)
+    const widths = [6, 22, 25, 14, 14, 28, 16, 16, 16, 16, 22, 22, 22];
+    for (let i = 0; i < widths.length; i++) {
+      ws.getColumn(2 + i).width = widths[i];
+    }
 
-      // formatos fechas (últimas 3 columnas)
-      if (c >= 10) {
-        cell.numFmt = 'dd/mm/yyyy hh:mm';
-        cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
-      } else if (c === 0) {
-        cell.alignment = { horizontal: 'center', vertical: 'middle' };
-      } else if (c === 3 || c === 4 || c === 6 || c === 7 || c === 8 || c === 9) {
-        cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
-      } else {
-        cell.alignment = { horizontal: 'left', vertical: 'middle', wrapText: true };
+    // Header heights
+    ws.getRow(3).height = 30;
+    ws.getRow(4).height = 24;
+    ws.getRow(5).height = 24;
+    ws.getRow(6).height = 35;
+
+    const startCol = 2; // B
+    const endCol = startCol + headers.length - 1; // columna final
+    const titleEndCol = endCol - 2; // dejamos 2 cols a la derecha para “generación”
+    const genLabelCol = endCol - 1;
+    const genValueCol = endCol;
+
+    // Merges: título/intervalo/rango
+    ws.mergeCells(3, startCol, 3, titleEndCol);
+    ws.mergeCells(4, startCol, 4, titleEndCol);
+    ws.mergeCells(5, startCol, 5, titleEndCol);
+
+    // Bordes bloque superior (fila 3..5, col start..end)
+    for (let r = 3; r <= 5; r++) {
+      for (let c = startCol; c <= endCol; c++) {
+        this.setBorder(ws.getCell(r, c));
       }
+    }
 
-      cell.font = { size: 10 };
-      cell.fill = fill;
+    // Title
+    const titleCell = ws.getCell(3, startCol);
+    titleCell.value = 'REQUIERE BARRIDO';
+    titleCell.font = { bold: true, size: 14 };
+    titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+
+    const from = params.meta?.from ?? '';
+    const to = params.meta?.to ?? '';
+    const ingenioName = params.meta?.ingenioname ?? '';
+
+    const intervalCell = ws.getCell(4, startCol);
+    intervalCell.value = `Cliente: ${ingenioName}  |  Del ${from} al ${to}`;
+    intervalCell.font = { size: 11 };
+    intervalCell.alignment = { horizontal: 'center', vertical: 'middle' };
+
+    const rangeCell = ws.getCell(5, startCol);
+    rangeCell.value = `Generado por QuickPass`;
+    rangeCell.font = { size: 10 };
+    rangeCell.alignment = { horizontal: 'center', vertical: 'middle' };
+
+    // “Fecha de generación” a la derecha (genLabelCol/genValueCol)
+    ws.getCell(5, genLabelCol).value = 'Fecha de generación';
+    ws.getCell(5, genLabelCol).font = { bold: true, size: 10 };
+    ws.getCell(5, genLabelCol).alignment = {
+      horizontal: 'center',
+      vertical: 'middle',
+    };
+    this.setBorder(ws.getCell(5, genLabelCol));
+
+    const genCell = ws.getCell(5, genValueCol);
+    genCell.value = new Date();
+    genCell.numFmt = 'dd/mm/yyyy hh:mm';
+    genCell.font = { bold: true, size: 10 };
+    genCell.alignment = { horizontal: 'center', vertical: 'middle' };
+    this.setBorder(genCell);
+
+    // Logo arriba derecha (reusamos addLogo, pero ubicándolo relativo al final)
+    // El addLogo existente lo ubica fijo. Si quieres que quede bien aquí también,
+    // lo más simple es dejarlo igual por ahora:
+    this.addLogo(wb, ws);
+
+    // Header tabla (fila 6)
+    for (let i = 0; i < headers.length; i++) {
+      const cell = ws.getCell(6, startCol + i);
+      cell.value = headers[i];
+      cell.font = { bold: true, size: 10 };
+      cell.alignment = {
+        horizontal: 'center',
+        vertical: 'middle',
+        wrapText: true,
+      };
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'EDEDED' },
+      };
       this.setBorder(cell);
     }
 
-    ws.getRow(rr).height = 30;
+    // Data desde fila 7
+    let rr = 7;
+    for (let i = 0; i < params.rows.length; i++, rr++) {
+      const row = params.rows[i];
+
+      const isAlt = i % 2 === 0;
+      const fill: ExcelJS.Fill = isAlt
+        ? { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF9C4' } }
+        : { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFF' } };
+
+      const values = [
+        i + 1,
+        row.ingenio ?? '',
+        row.codigo_generacion ?? '',
+        row.id_nav ?? '',
+        row.licencia ?? '',
+        row.motorista ?? '',
+        row.placa_cabezal ?? '',
+        row.placa_remolque ?? '',
+        row.solicito_barrido ?? '',
+        row.tipo_barrido ?? '',
+        this.toDate(row.fecha_prechequeo),
+        this.toDate(row.fecha_entrada_planta),
+        this.toDate(row.fecha_salida_planta),
+      ];
+
+      for (let c = 0; c < values.length; c++) {
+        const cell = ws.getCell(rr, startCol + c);
+        cell.value = values[c] as any;
+
+        // formatos fechas (últimas 3 columnas)
+        if (c >= 10) {
+          cell.numFmt = 'dd/mm/yyyy hh:mm';
+          cell.alignment = {
+            horizontal: 'center',
+            vertical: 'middle',
+            wrapText: true,
+          };
+        } else if (c === 0) {
+          cell.alignment = { horizontal: 'center', vertical: 'middle' };
+        } else if (
+          c === 3 ||
+          c === 4 ||
+          c === 6 ||
+          c === 7 ||
+          c === 8 ||
+          c === 9
+        ) {
+          cell.alignment = {
+            horizontal: 'center',
+            vertical: 'middle',
+            wrapText: true,
+          };
+        } else {
+          cell.alignment = {
+            horizontal: 'left',
+            vertical: 'middle',
+            wrapText: true,
+          };
+        }
+
+        cell.font = { size: 10 };
+        cell.fill = fill;
+        this.setBorder(cell);
+      }
+
+      ws.getRow(rr).height = 30;
+    }
+
+    ws.autoFilter = {
+      from: { row: 6, column: startCol },
+      to: { row: 6, column: endCol },
+    };
+
+    const buffer = await wb.xlsx.writeBuffer();
+    return Buffer.from(buffer);
   }
-
-  ws.autoFilter = {
-    from: { row: 6, column: startCol },
-    to: { row: 6, column: endCol },
-  };
-
-  const buffer = await wb.xlsx.writeBuffer();
-  return Buffer.from(buffer);
-}
-
-  
 }

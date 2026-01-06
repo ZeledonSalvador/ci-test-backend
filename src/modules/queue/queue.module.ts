@@ -12,9 +12,9 @@ import { StatusModule } from '../status/status.module';
   imports: [
     TypeOrmModule.forFeature([Queue, Shipments]),
     AuthModule,
-    StatusModule
+    StatusModule,
   ],
   controllers: [QueueController],
-  providers: [QueueService, AuthGuard]
+  providers: [QueueService, AuthGuard],
 })
-export class QueueModule { }
+export class QueueModule {}

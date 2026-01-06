@@ -1,5 +1,16 @@
 // src/modules/blocks/blocks.controller.ts
-import { Controller, Post, Patch, Delete, Get, Body, Param, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Patch,
+  Delete,
+  Get,
+  Body,
+  Param,
+  Query,
+  ParseIntPipe,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from 'src/modules/auth/guards/auth.guard';
 import { Role } from 'src/modules/auth/enums/roles.enum';
 import { Roles } from 'src/modules/auth/decorators/roles.decorator';
@@ -10,7 +21,7 @@ import { UnblockDto } from './dto/unblock.dto';
 @Controller('shipping/blocks')
 @UseGuards(AuthGuard)
 export class BlocksController {
-  constructor(private readonly blocks: BlocksService) { }
+  constructor(private readonly blocks: BlocksService) {}
 
   // Bloquear (o desbloquear si envías active=false) por par
   @Post('product-ingenio/block')
@@ -36,12 +47,19 @@ export class BlocksController {
     @Query('active') active?: 'true' | 'false',
     @Query('page') page = '1',
     @Query('pageSize') pageSize = '50',
-    @Query('sort') sort: 'ingenioCode' | 'productCode' | 'createdAt' | 'active' = 'ingenioCode',
+    @Query('sort')
+    sort:
+      | 'ingenioCode'
+      | 'productCode'
+      | 'createdAt'
+      | 'active' = 'ingenioCode',
     @Query('order') order: 'asc' | 'desc' = 'asc',
   ) {
     if (view === 'status') {
       if (!ingenioCode || !productCode) {
-        return { error: "ingenioCode y productCode son requeridos para view=status" };
+        return {
+          error: 'ingenioCode y productCode son requeridos para view=status',
+        };
       }
       const blocked = await this.blocks.isBlocked(ingenioCode, productCode);
       return { ingenioCode, productCode, blocked };

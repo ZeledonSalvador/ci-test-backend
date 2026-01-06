@@ -1,5 +1,9 @@
 // src/modules/blocks/blocks.service.ts
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOptionsWhere } from 'typeorm';
 import { ProductIngenioBlock } from './entities/product-ingenio-block.entity';
@@ -11,7 +15,7 @@ export class BlocksService {
   constructor(
     @InjectRepository(ProductIngenioBlock)
     private readonly repo: Repository<ProductIngenioBlock>,
-  ) { }
+  ) {}
 
   /**
    * Upsert para bloquear/desbloquear por par (ingenioCode, productCode).
@@ -22,7 +26,9 @@ export class BlocksService {
     const active = dto.active ?? true; // por defecto bloquear
 
     // busca existente por par
-    let entity = await this.repo.findOne({ where: { ingenioCode, productCode } });
+    let entity = await this.repo.findOne({
+      where: { ingenioCode, productCode },
+    });
     if (!entity) {
       entity = this.repo.create({ ingenioCode, productCode, active });
     } else {
@@ -35,7 +41,9 @@ export class BlocksService {
    * Desbloquear por id (marca active=false, no borra).
    */
   async unblockByPair(ingenioCode: string, productCode: string) {
-    let entity = await this.repo.findOne({ where: { ingenioCode, productCode } });
+    let entity = await this.repo.findOne({
+      where: { ingenioCode, productCode },
+    });
 
     if (!entity) {
       // Política A: crear explícitamente como desbloqueado (recomendada)
@@ -51,12 +59,19 @@ export class BlocksService {
     return this.repo.save(entity);
   }
 
-
   /**
    * Listado con filtros, orden y paginación.
    */
   async list(q: ListQueryDto) {
-    const { ingenioCode, productCode, active, page = 1, pageSize = 50, sort = 'ingenioCode', order = 'asc' } = q;
+    const {
+      ingenioCode,
+      productCode,
+      active,
+      page = 1,
+      pageSize = 50,
+      sort = 'ingenioCode',
+      order = 'asc',
+    } = q;
 
     const where: FindOptionsWhere<ProductIngenioBlock> = {};
     if (ingenioCode) where.ingenioCode = ingenioCode;
@@ -87,14 +102,19 @@ export class BlocksService {
    * Estado (bloqueado/desbloqueado) de un par. Si no existe, se asume desbloqueado.
    */
   async isBlocked(ingenioCode: string, productCode: string): Promise<boolean> {
-    const found = await this.repo.findOne({ where: { ingenioCode, productCode } });
+    const found = await this.repo.findOne({
+      where: { ingenioCode, productCode },
+    });
     return found?.active === true;
   }
 
   /**
    * Lanza BadRequest si está bloqueado.
    */
-  async assertNotBlocked(ingenioCode: string, productCode: string): Promise<void> {
+  async assertNotBlocked(
+    ingenioCode: string,
+    productCode: string,
+  ): Promise<void> {
     const blocked = await this.isBlocked(ingenioCode, productCode);
     if (blocked) {
       throw new BadRequestException(
@@ -115,15 +135,26 @@ export class BlocksService {
     const totalDesbloqueados = totalFlags - totalBloqueados;
 
     // porIngenio (solo si no filtras por uno)
-    let porIngenio: Array<{ ingenioCode: string; bloqueados: number; desbloqueados: number }> = [];
+    let porIngenio: Array<{
+      ingenioCode: string;
+      bloqueados: number;
+      desbloqueados: number;
+    }> = [];
     if (!ingenioCode) {
-      const rows = await this.repo.createQueryBuilder('b3')
+      const rows = await this.repo
+        .createQueryBuilder('b3')
         .select('b3.ingenioCode', 'ingenioCode')
-        .addSelect('SUM(CASE WHEN b3.active = 1 THEN 1 ELSE 0 END)', 'bloqueados')
-        .addSelect('SUM(CASE WHEN b3.active = 1 THEN 0 ELSE 1 END)', 'desbloqueados')
+        .addSelect(
+          'SUM(CASE WHEN b3.active = 1 THEN 1 ELSE 0 END)',
+          'bloqueados',
+        )
+        .addSelect(
+          'SUM(CASE WHEN b3.active = 1 THEN 0 ELSE 1 END)',
+          'desbloqueados',
+        )
         .groupBy('b3.ingenioCode')
         .getRawMany();
-      porIngenio = rows.map(r => ({
+      porIngenio = rows.map((r) => ({
         ingenioCode: r.ingenioCode,
         bloqueados: Number(r.bloqueados),
         desbloqueados: Number(r.desbloqueados),

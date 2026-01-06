@@ -6,57 +6,57 @@ import {
   ManyToOne,
   JoinColumn,
   PrimaryGeneratedColumn,
-} from "typeorm";
-import { Roles } from "./Roles";
-import { Permissions } from "./Permissions";
-import { UserWeighbridges } from "./UserWeighbridges";
-import { SessionsLogs } from "./SessionsLogs";
+} from 'typeorm';
+import { Roles } from './Roles';
+import { Permissions } from './Permissions';
+import { UserWeighbridges } from './UserWeighbridges';
+import { SessionsLogs } from './SessionsLogs';
 
-@Index("PK_InternalUsers", ["id"], { unique: true })
-@Index("UQ_InternalUsers_Username", ["username"], { unique: true })
-@Index("IX_InternalUsers_Email", ["email"])
-@Index("IX_InternalUsers_Active", ["active"])
-@Index("IX_InternalUsers_Role", ["idRole"])
-@Entity("InternalUsers", { schema: "dbo" })
+@Index('PK_InternalUsers', ['id'], { unique: true })
+@Index('UQ_InternalUsers_Username', ['username'], { unique: true })
+@Index('IX_InternalUsers_Email', ['email'])
+@Index('IX_InternalUsers_Active', ['active'])
+@Index('IX_InternalUsers_Role', ['idRole'])
+@Entity('InternalUsers', { schema: 'dbo' })
 export class InternalUsers {
-  @PrimaryGeneratedColumn({ type: "int", name: "id" })
+  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
-  @Column("nvarchar", { name: "username", unique: true, length: 50 })
+  @Column('nvarchar', { name: 'username', unique: true, length: 50 })
   username: string;
 
-  @Column("nvarchar", { name: "email", nullable: true, length: 255 })
+  @Column('nvarchar', { name: 'email', nullable: true, length: 255 })
   email: string | null;
 
-  @Column("nvarchar", { name: "full_name", nullable: true, length: 100 })
+  @Column('nvarchar', { name: 'full_name', nullable: true, length: 100 })
   fullName: string | null;
 
-  @Column("int", { name: "id_role" })
+  @Column('int', { name: 'id_role' })
   idRole: number;
 
-  @Column("varbinary", { name: "password" })
+  @Column('varbinary', { name: 'password' })
   password: Buffer;
 
-  @Column("bit", { name: "active", default: true })
+  @Column('bit', { name: 'active', default: true })
   active: boolean;
 
-  @Column("datetime", { name: "last_access", nullable: true })
+  @Column('datetime', { name: 'last_access', nullable: true })
   lastAccess: Date | null;
 
-  @Column("datetime", {
-    name: "created_at",
-    default: () => "getdate()",
+  @Column('datetime', {
+    name: 'created_at',
+    default: () => 'getdate()',
   })
   createdAt: Date;
 
-  @Column("datetime", {
-    name: "updated_at",
-    default: () => "getdate()",
+  @Column('datetime', {
+    name: 'updated_at',
+    default: () => 'getdate()',
   })
   updatedAt: Date;
 
   @ManyToOne(() => Roles, (role) => role.internalUsers)
-  @JoinColumn({ name: "id_role" })
+  @JoinColumn({ name: 'id_role' })
   role: Roles;
 
   @OneToMany(() => Permissions, (permission) => permission.user)

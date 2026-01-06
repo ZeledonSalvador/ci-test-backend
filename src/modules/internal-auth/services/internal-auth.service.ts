@@ -51,13 +51,16 @@ export class InternalAuthService {
       });
       console.log(`[INTERNAL-AUTH] Session log guardado - ${data.message}`);
     } catch (error) {
-      console.log(`[INTERNAL-AUTH] Error guardando session log: ${error.message}`);
+      console.log(
+        `[INTERNAL-AUTH] Error guardando session log: ${error.message}`,
+      );
     }
   }
 
   private async getPermissions(userId: number) {
     // Raw SQL para máximo rendimiento
-    const permissionsData = await this.permissionsRepository.query(`
+    const permissionsData = await this.permissionsRepository.query(
+      `
       SELECT
         m.name as module,
         m.display_name as displayName,
@@ -69,14 +72,19 @@ export class InternalAuthService {
       WHERE p.id_user = @0
         AND m.active = 1
       ORDER BY m.order_index ASC
-    `, [userId]);
+    `,
+      [userId],
+    );
 
     return permissionsData.map((p: any) => {
       let actions = [];
       try {
         actions = JSON.parse(p.actions);
       } catch (error) {
-        console.error(`⚠️ Error al parsear actions para el módulo ${p.module}:`, error.message);
+        console.error(
+          `⚠️ Error al parsear actions para el módulo ${p.module}:`,
+          error.message,
+        );
         actions = []; // Valor por defecto si falla el parse
       }
 
@@ -106,14 +114,25 @@ export class InternalAuthService {
         .createQueryBuilder('user')
         .leftJoinAndSelect('user.role', 'role')
         .leftJoinAndSelect('role.category', 'category')
-        .leftJoinAndSelect('user.weighbridges', 'weighbridges', 'weighbridges.active = :wActive', { wActive: true })
-        .where('user.username = :username COLLATE Latin1_General_CS_AS', { username })
+        .leftJoinAndSelect(
+          'user.weighbridges',
+          'weighbridges',
+          'weighbridges.active = :wActive',
+          { wActive: true },
+        )
+        .where('user.username = :username COLLATE Latin1_General_CS_AS', {
+          username,
+        })
         .andWhere('user.active = :active', { active: true })
         .getOne();
-      console.log(`[INTERNAL-AUTH] Query usuario: ${Date.now() - queryStart}ms`);
+      console.log(
+        `[INTERNAL-AUTH] Query usuario: ${Date.now() - queryStart}ms`,
+      );
 
       if (!user) {
-        console.log(`[INTERNAL-AUTH] FALLO - Usuario no encontrado: ${username}`);
+        console.log(
+          `[INTERNAL-AUTH] FALLO - Usuario no encontrado: ${username}`,
+        );
 
         // Log intento fallido
         this.logSessionAttempt({
@@ -124,15 +143,21 @@ export class InternalAuthService {
           message: 'Usuario no encontrado o inactivo',
         });
 
-        throw new UnauthorizedException('Usuario o contraseña incorrectos. Por favor verifica tus credenciales.');
+        throw new UnauthorizedException(
+          'Usuario o contraseña incorrectos. Por favor verifica tus credenciales.',
+        );
       }
 
       console.log(`[INTERNAL-AUTH] Usuario encontrado - ID: ${user.id}`);
-      console.log(`[INTERNAL-AUTH] Username DB: ${user.username} | Username Request: ${username}`);
+      console.log(
+        `[INTERNAL-AUTH] Username DB: ${user.username} | Username Request: ${username}`,
+      );
 
       // 2. Validar que el rol esté activo
       if (!user.role || !user.role.active) {
-        console.log(`[INTERNAL-AUTH] FALLO - Rol inactivo para usuario: ${username}`);
+        console.log(
+          `[INTERNAL-AUTH] FALLO - Rol inactivo para usuario: ${username}`,
+        );
 
         // Log intento fallido
         this.logSessionAttempt({
@@ -144,12 +169,16 @@ export class InternalAuthService {
           message: 'Rol inactivo',
         });
 
-        throw new UnauthorizedException('Usuario o contraseña incorrectos. Por favor verifica tus credenciales.');
+        throw new UnauthorizedException(
+          'Usuario o contraseña incorrectos. Por favor verifica tus credenciales.',
+        );
       }
 
       // 3. Validar que la categoría esté activa
       if (!user.role.category || !user.role.category.active) {
-        console.log(`[INTERNAL-AUTH] FALLO - Categoria inactiva para usuario: ${username}`);
+        console.log(
+          `[INTERNAL-AUTH] FALLO - Categoria inactiva para usuario: ${username}`,
+        );
 
         // Log intento fallido
         this.logSessionAttempt({
@@ -161,7 +190,9 @@ export class InternalAuthService {
           message: 'Categoría inactiva',
         });
 
-        throw new UnauthorizedException('Usuario o contraseña incorrectos. Por favor verifica tus credenciales.');
+        throw new UnauthorizedException(
+          'Usuario o contraseña incorrectos. Por favor verifica tus credenciales.',
+        );
       }
 
       console.log(`[INTERNAL-AUTH] Rol y categoría activos`);
@@ -172,10 +203,14 @@ export class InternalAuthService {
         password,
         user.password.toString(),
       );
-      console.log(`[INTERNAL-AUTH] Bcrypt compare: ${Date.now() - bcryptStart}ms`);
+      console.log(
+        `[INTERNAL-AUTH] Bcrypt compare: ${Date.now() - bcryptStart}ms`,
+      );
 
       if (!isPasswordValid) {
-        console.log(`[INTERNAL-AUTH] FALLO - Contraseña incorrecta para usuario: ${username}`);
+        console.log(
+          `[INTERNAL-AUTH] FALLO - Contraseña incorrecta para usuario: ${username}`,
+        );
 
         // Log intento fallido
         this.logSessionAttempt({
@@ -187,14 +222,19 @@ export class InternalAuthService {
           message: 'Contraseña inválida',
         });
 
-        throw new UnauthorizedException('Usuario o contraseña incorrectos. Por favor verifica tus credenciales.');
+        throw new UnauthorizedException(
+          'Usuario o contraseña incorrectos. Por favor verifica tus credenciales.',
+        );
       }
 
       console.log(`[INTERNAL-AUTH] Contraseña validada correctamente`);
 
       // 5. Extraer weighbridgeIds de la relación cargada
-      const weighbridgeIds = user.weighbridges?.map((w) => w.weighbridgeId) || [];
-      console.log(`[INTERNAL-AUTH] Basculas asignadas: [${weighbridgeIds.join(', ')}]`);
+      const weighbridgeIds =
+        user.weighbridges?.map((w) => w.weighbridgeId) || [];
+      console.log(
+        `[INTERNAL-AUTH] Basculas asignadas: [${weighbridgeIds.join(', ')}]`,
+      );
 
       // 6. Verificar acceso a báscula (si se proporciona) usando datos ya cargados
       if (bascula) {
@@ -202,7 +242,9 @@ export class InternalAuthService {
         const hasWeighbridgeAccess = weighbridgeIds.includes(weighbridgeId);
 
         if (!hasWeighbridgeAccess) {
-          console.log(`[INTERNAL-AUTH] FALLO - Usuario ${username} sin acceso a bascula ${bascula}`);
+          console.log(
+            `[INTERNAL-AUTH] FALLO - Usuario ${username} sin acceso a bascula ${bascula}`,
+          );
 
           // Log intento fallido
           this.logSessionAttempt({
@@ -214,7 +256,9 @@ export class InternalAuthService {
             message: `No tiene acceso a la báscula ${bascula}`,
           });
 
-          throw new UnauthorizedException('No tienes acceso a la báscula seleccionada');
+          throw new UnauthorizedException(
+            'No tienes acceso a la báscula seleccionada',
+          );
         }
 
         console.log(`[INTERNAL-AUTH] Acceso a bascula ${bascula} validado`);
@@ -223,12 +267,18 @@ export class InternalAuthService {
       // 7. Obtener permisos del usuario
       const permStart = Date.now();
       const permissions = await this.getPermissions(user.id);
-      console.log(`[INTERNAL-AUTH] Query permisos: ${Date.now() - permStart}ms`);
-      console.log(`[INTERNAL-AUTH] Permisos cargados: ${permissions.length} modulos`);
+      console.log(
+        `[INTERNAL-AUTH] Query permisos: ${Date.now() - permStart}ms`,
+      );
+      console.log(
+        `[INTERNAL-AUTH] Permisos cargados: ${permissions.length} modulos`,
+      );
 
       // 8. Validar que el usuario tenga al menos un módulo activo
       if (permissions.length === 0) {
-        console.log(`[INTERNAL-AUTH] FALLO - Usuario sin permisos activos: ${username}`);
+        console.log(
+          `[INTERNAL-AUTH] FALLO - Usuario sin permisos activos: ${username}`,
+        );
 
         // Log intento fallido
         this.logSessionAttempt({
@@ -240,7 +290,9 @@ export class InternalAuthService {
           message: 'Sin permisos activos',
         });
 
-        throw new UnauthorizedException('No tienes permisos asignados. Contacta al administrador');
+        throw new UnauthorizedException(
+          'No tienes permisos asignados. Contacta al administrador',
+        );
       }
 
       // 9. Actualizar último acceso (async sin await para no bloquear)
@@ -260,10 +312,14 @@ export class InternalAuthService {
 
       const totalTime = Date.now() - startTime;
       console.log(`[INTERNAL-AUTH] TIEMPO TOTAL LOGIN: ${totalTime}ms`);
-      console.log(`[INTERNAL-AUTH] EXITO - Login completado para usuario: ${username}`);
+      console.log(
+        `[INTERNAL-AUTH] EXITO - Login completado para usuario: ${username}`,
+      );
       console.log(`[INTERNAL-AUTH] Rol: ${user.role.name}`);
       console.log(`[INTERNAL-AUTH] Categoria: ${user.role.category.name}`);
-      console.log(`[INTERNAL-AUTH] Token expira: ${tokenExpiration.toISOString()}`);
+      console.log(
+        `[INTERNAL-AUTH] Token expira: ${tokenExpiration.toISOString()}`,
+      );
       if (turno) console.log(`[INTERNAL-AUTH] Turno: ${turno}`);
 
       // 11. Preparar response exitoso
@@ -332,8 +388,12 @@ export class InternalAuthService {
   async createUser(createUserDto: CreateUserDto): Promise<any> {
     console.log('[INTERNAL-AUTH] Intento de crear usuario');
     console.log(`[INTERNAL-AUTH] Username: ${createUserDto.username}`);
-    console.log(`[INTERNAL-AUTH] Email: ${createUserDto.email || 'No especificado'}`);
-    console.log(`[INTERNAL-AUTH] Full Name: ${createUserDto.fullName || 'No especificado'}`);
+    console.log(
+      `[INTERNAL-AUTH] Email: ${createUserDto.email || 'No especificado'}`,
+    );
+    console.log(
+      `[INTERNAL-AUTH] Full Name: ${createUserDto.fullName || 'No especificado'}`,
+    );
 
     // Verificar si el usuario ya existe
     const existingUser = await this.userRepository.findOne({
@@ -341,7 +401,9 @@ export class InternalAuthService {
     });
 
     if (existingUser) {
-      console.log(`[INTERNAL-AUTH] FALLO - Usuario ya existe: ${createUserDto.username}`);
+      console.log(
+        `[INTERNAL-AUTH] FALLO - Usuario ya existe: ${createUserDto.username}`,
+      );
       throw new ConflictException('El nombre de usuario ya existe');
     }
 
@@ -372,7 +434,9 @@ export class InternalAuthService {
         }),
       );
       await this.weighbridgesRepository.save(weighbridges);
-      console.log(`[INTERNAL-AUTH] Basculas asignadas: [${createUserDto.weighbridges.join(', ')}]`);
+      console.log(
+        `[INTERNAL-AUTH] Basculas asignadas: [${createUserDto.weighbridges.join(', ')}]`,
+      );
     }
 
     // Asignar permisos si existen
@@ -385,10 +449,14 @@ export class InternalAuthService {
         }),
       );
       await this.permissionsRepository.save(permissions);
-      console.log(`[INTERNAL-AUTH] Permisos asignados: ${createUserDto.permissions.length} modulos`);
+      console.log(
+        `[INTERNAL-AUTH] Permisos asignados: ${createUserDto.permissions.length} modulos`,
+      );
     }
 
-    console.log(`[INTERNAL-AUTH] EXITO - Usuario creado completamente: ${createUserDto.username}`);
+    console.log(
+      `[INTERNAL-AUTH] EXITO - Usuario creado completamente: ${createUserDto.username}`,
+    );
 
     // Retornar respuesta sin password
     return {
@@ -430,11 +498,18 @@ export class InternalAuthService {
         .createQueryBuilder('user')
         .leftJoinAndSelect('user.role', 'role')
         .leftJoinAndSelect('role.category', 'category')
-        .leftJoinAndSelect('user.weighbridges', 'weighbridges', 'weighbridges.active = :wActive', { wActive: true })
+        .leftJoinAndSelect(
+          'user.weighbridges',
+          'weighbridges',
+          'weighbridges.active = :wActive',
+          { wActive: true },
+        )
         .where('user.id = :userId', { userId: payload.userId })
         .andWhere('user.active = :active', { active: true })
         .getOne();
-      console.log(`[INTERNAL-AUTH] Query usuario+weighbridges: ${Date.now() - queryStart}ms`);
+      console.log(
+        `[INTERNAL-AUTH] Query usuario+weighbridges: ${Date.now() - queryStart}ms`,
+      );
 
       if (!user) {
         console.log('[INTERNAL-AUTH] FALLO - Usuario no encontrado o inactivo');
@@ -444,10 +519,13 @@ export class InternalAuthService {
       // 3. Obtener permisos actualizados
       const permStart = Date.now();
       const permissions = await this.getPermissions(user.id);
-      console.log(`[INTERNAL-AUTH] Query permisos: ${Date.now() - permStart}ms`);
+      console.log(
+        `[INTERNAL-AUTH] Query permisos: ${Date.now() - permStart}ms`,
+      );
 
       // 4. Extraer weighbridgeIds de la relación ya cargada
-      const weighbridgeIds = user.weighbridges?.map((w) => w.weighbridgeId) || [];
+      const weighbridgeIds =
+        user.weighbridges?.map((w) => w.weighbridgeId) || [];
 
       const totalTime = Date.now() - startTime;
       console.log(`[INTERNAL-AUTH] TIEMPO TOTAL VERIFY-TOKEN: ${totalTime}ms`);
@@ -478,7 +556,9 @@ export class InternalAuthService {
         },
       };
     } catch (error) {
-      console.log(`[INTERNAL-AUTH] FALLO - Error al validar token: ${error.message}`);
+      console.log(
+        `[INTERNAL-AUTH] FALLO - Error al validar token: ${error.message}`,
+      );
       throw new UnauthorizedException('Token inválido o expirado');
     }
   }
@@ -507,7 +587,9 @@ export class InternalAuthService {
       });
 
       if (existingUser && existingUser.id !== userId) {
-        console.log(`[INTERNAL-AUTH] FALLO - Username ya existe: ${updateUserDto.username}`);
+        console.log(
+          `[INTERNAL-AUTH] FALLO - Username ya existe: ${updateUserDto.username}`,
+        );
         throw new ConflictException('El nombre de usuario ya está en uso');
       }
       updateData.username = updateUserDto.username;
@@ -554,7 +636,9 @@ export class InternalAuthService {
           }),
         );
         await this.weighbridgesRepository.save(weighbridges);
-        console.log(`[INTERNAL-AUTH] Basculas actualizadas: [${updateUserDto.weighbridges.join(', ')}]`);
+        console.log(
+          `[INTERNAL-AUTH] Basculas actualizadas: [${updateUserDto.weighbridges.join(', ')}]`,
+        );
       }
     }
 
@@ -571,7 +655,9 @@ export class InternalAuthService {
           }),
         );
         await this.permissionsRepository.save(permissions);
-        console.log(`[INTERNAL-AUTH] Permisos actualizados: ${updateUserDto.permissions.length} modulos`);
+        console.log(
+          `[INTERNAL-AUTH] Permisos actualizados: ${updateUserDto.permissions.length} modulos`,
+        );
       }
     }
 
@@ -592,7 +678,9 @@ export class InternalAuthService {
     // Obtener permisos
     const permissions = await this.getPermissions(userId);
 
-    console.log(`[INTERNAL-AUTH] EXITO - Usuario actualizado: ${updatedUser.username}`);
+    console.log(
+      `[INTERNAL-AUTH] EXITO - Usuario actualizado: ${updatedUser.username}`,
+    );
 
     return {
       success: true,

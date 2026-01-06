@@ -9,7 +9,7 @@ import { AuthModule } from '../auth/auth.module';
 @Module({
   imports: [ConfigModule, AuthModule],
   controllers: [GraphController],
-  providers: [GraphAuthService,AuthGuard],
+  providers: [GraphAuthService, AuthGuard],
   exports: [GraphAuthService],
 })
 export class GraphModule {}

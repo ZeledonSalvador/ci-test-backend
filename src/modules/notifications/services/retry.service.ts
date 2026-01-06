@@ -19,7 +19,7 @@ export class RetryService {
   async executeWithRetry<T>(
     operation: () => Promise<T>,
     context: string,
-    options: RetryOptions = {}
+    options: RetryOptions = {},
   ): Promise<T> {
     const {
       maxAttempts = 3,
@@ -43,7 +43,7 @@ export class RetryService {
             : delayMs;
 
           this.logger.warn(
-            `[${context}] Attempt ${attempt}/${maxAttempts} failed. Retrying in ${delay}ms...`
+            `[${context}] Attempt ${attempt}/${maxAttempts} failed. Retrying in ${delay}ms...`,
           );
 
           if (onRetry) {
@@ -65,6 +65,6 @@ export class RetryService {
   }
 
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }

@@ -1,8 +1,8 @@
-import { createEnumMap } from "src/utils/functions.util";
+import { createEnumMap } from 'src/utils/functions.util';
 
 export enum InconsistencyType {
-    PRECHECK = 'PRECHECK',
-    SEALS = 'SEALS'
+  PRECHECK = 'PRECHECK',
+  SEALS = 'SEALS',
 }
 
 /* 

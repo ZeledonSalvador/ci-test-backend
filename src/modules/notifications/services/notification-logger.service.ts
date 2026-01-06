@@ -42,7 +42,7 @@ export class NotificationLoggerService {
         });
 
         await this.notificationLogsRepository.save(log);
-        
+
         this.logToConsole(params);
       } catch (error) {
         this.logger.error(`Error al guardar log de email: ${error.message}`);
@@ -52,9 +52,13 @@ export class NotificationLoggerService {
 
   private logToConsole(params: LogEmailParams): void {
     if (params.status === 'sent') {
-      this.logger.log(`✓ ENVIADO: ${params.sentTo} - "${params.subject}" (Intentos: ${params.attempts})`);
+      this.logger.log(
+        `✓ ENVIADO: ${params.sentTo} - "${params.subject}" (Intentos: ${params.attempts})`,
+      );
     } else {
-      this.logger.error(`✗ FALLÓ: ${params.sentTo} - "${params.subject}" - ${params.errorMessage || 'Error desconocido'}`);
+      this.logger.error(
+        `✗ FALLÓ: ${params.sentTo} - "${params.subject}" - ${params.errorMessage || 'Error desconocido'}`,
+      );
     }
   }
 
@@ -70,14 +74,17 @@ export class NotificationLoggerService {
     endDate?: Date;
     limit?: number;
   }): Promise<NotificationLogs[]> {
-    const queryBuilder = this.notificationLogsRepository.createQueryBuilder('log');
+    const queryBuilder =
+      this.notificationLogsRepository.createQueryBuilder('log');
 
     if (filters.sentBy) {
       queryBuilder.andWhere('log.sentBy = :sentBy', { sentBy: filters.sentBy });
     }
 
     if (filters.sentTo) {
-      queryBuilder.andWhere('log.sentTo LIKE :sentTo', { sentTo: `%${filters.sentTo}%` });
+      queryBuilder.andWhere('log.sentTo LIKE :sentTo', {
+        sentTo: `%${filters.sentTo}%`,
+      });
     }
 
     if (filters.status) {
@@ -85,20 +92,24 @@ export class NotificationLoggerService {
     }
 
     if (filters.referenceId) {
-      queryBuilder.andWhere('log.referenceId = :referenceId', { referenceId: filters.referenceId });
+      queryBuilder.andWhere('log.referenceId = :referenceId', {
+        referenceId: filters.referenceId,
+      });
     }
 
     if (filters.startDate) {
-      queryBuilder.andWhere('log.createdAt >= :startDate', { startDate: filters.startDate });
+      queryBuilder.andWhere('log.createdAt >= :startDate', {
+        startDate: filters.startDate,
+      });
     }
 
     if (filters.endDate) {
-      queryBuilder.andWhere('log.createdAt <= :endDate', { endDate: filters.endDate });
+      queryBuilder.andWhere('log.createdAt <= :endDate', {
+        endDate: filters.endDate,
+      });
     }
 
-    queryBuilder
-      .orderBy('log.createdAt', 'DESC')
-      .take(filters.limit || 100);
+    queryBuilder.orderBy('log.createdAt', 'DESC').take(filters.limit || 100);
 
     return queryBuilder.getMany();
   }
@@ -116,24 +127,29 @@ export class NotificationLoggerService {
     failed: number;
     successRate: number;
   }> {
-    const queryBuilder = this.notificationLogsRepository.createQueryBuilder('log');
+    const queryBuilder =
+      this.notificationLogsRepository.createQueryBuilder('log');
 
     if (filters.sentBy) {
       queryBuilder.andWhere('log.sentBy = :sentBy', { sentBy: filters.sentBy });
     }
 
     if (filters.startDate) {
-      queryBuilder.andWhere('log.createdAt >= :startDate', { startDate: filters.startDate });
+      queryBuilder.andWhere('log.createdAt >= :startDate', {
+        startDate: filters.startDate,
+      });
     }
 
     if (filters.endDate) {
-      queryBuilder.andWhere('log.createdAt <= :endDate', { endDate: filters.endDate });
+      queryBuilder.andWhere('log.createdAt <= :endDate', {
+        endDate: filters.endDate,
+      });
     }
 
     const [logs, total] = await queryBuilder.getManyAndCount();
 
-    const sent = logs.filter(log => log.status === 'sent').length;
-    const failed = logs.filter(log => log.status === 'failed').length;
+    const sent = logs.filter((log) => log.status === 'sent').length;
+    const failed = logs.filter((log) => log.status === 'failed').length;
     const successRate = total > 0 ? (sent / total) * 100 : 0;
 
     return {
@@ -150,7 +166,7 @@ export class NotificationLoggerService {
   async getLogsByReference(referenceId: number): Promise<NotificationLogs[]> {
     return this.notificationLogsRepository.find({
       where: { referenceId },
-      order: { createdAt: 'DESC' }
+      order: { createdAt: 'DESC' },
     });
   }
 }

@@ -1,7 +1,13 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { SerialComprobante } from './SerialComprobante';
 
-@Entity('Comprobante', { schema: 'dbo' })  // 👈 coincide con ingenioapi.dbo.Comprobante
+@Entity('Comprobante', { schema: 'dbo' }) // 👈 coincide con ingenioapi.dbo.Comprobante
 export class Comprobante {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;

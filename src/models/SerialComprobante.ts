@@ -1,5 +1,10 @@
 // src/models/SerialComprobante.ts
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity({ name: 'SerialComprobante' })
 export class SerialComprobante {

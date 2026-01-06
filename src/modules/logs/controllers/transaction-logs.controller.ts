@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Get,
-  Param,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, UseGuards } from '@nestjs/common';
 import { TransactionLogsService } from '../services/transaction-logs.service';
 import { TransactionLogEntity } from 'src/models/TransactionLogEntity';
 import { AuthGuard } from 'src/modules/auth/guards/auth.guard';
@@ -19,26 +12,27 @@ export class TransactionLogsController {
   constructor(private readonly logsService: TransactionLogsService) {}
 
   @Post()
-  @Roles(Role.ADMIN, Role.BOT) 
-  async create(@Body() data: Partial<TransactionLogEntity>): Promise<TransactionLogEntity> {
+  @Roles(Role.ADMIN, Role.BOT)
+  async create(
+    @Body() data: Partial<TransactionLogEntity>,
+  ): Promise<TransactionLogEntity> {
     return this.logsService.createLog(data);
   }
 
   @Get('rango-fechas')
-    @Roles(Role.ADMIN, Role.BOT)
-    async getLogsByDateRange(
+  @Roles(Role.ADMIN, Role.BOT)
+  async getLogsByDateRange(
     @Query('fechaInicio') fechaInicio: string,
-    @Query('fechaFin') fechaFin: string
-    ) {
+    @Query('fechaFin') fechaFin: string,
+  ) {
     return this.logsService.getLogsByDateRange(fechaInicio, fechaFin);
-    }
+  }
 
   @Get(':code_gen')
   @Roles(Role.ADMIN, Role.BOT)
-  async getByCodeGen(@Param('code_gen') codeGen: string): Promise<TransactionLogEntity[]> {
+  async getByCodeGen(
+    @Param('code_gen') codeGen: string,
+  ): Promise<TransactionLogEntity[]> {
     return this.logsService.getLogsByCodeGen(codeGen);
   }
-
-  
-  
 }

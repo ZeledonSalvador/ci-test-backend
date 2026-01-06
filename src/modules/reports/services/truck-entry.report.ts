@@ -59,7 +59,10 @@ export class TruckEntryReportService {
         AND fechayhora_ingreso < DATEADD(DAY, 1, CAST(@1 AS date));
     `;
 
-    const [summaryRaw] = await this.dataSource.query(sqlSummary, [range.from, range.to]);
+    const [summaryRaw] = await this.dataSource.query(sqlSummary, [
+      range.from,
+      range.to,
+    ]);
 
     return {
       rows,

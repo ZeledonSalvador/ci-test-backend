@@ -1,8 +1,8 @@
-import { createEnumMap } from "src/utils/functions.util";
+import { createEnumMap } from 'src/utils/functions.util';
 
 export enum TipoCarga {
-    GRANEL = 'G',
-    SACOS = 'S',
+  GRANEL = 'G',
+  SACOS = 'S',
 }
 
-export const TipoCargaMap = createEnumMap(TipoCarga)
+export const TipoCargaMap = createEnumMap(TipoCarga);

@@ -5,9 +5,8 @@ import { TimeService } from './services/time.service';
 @Module({
   controllers: [TimeController],
   providers: [TimeService],
-  exports : [TimeService]
+  exports: [TimeService],
 })
 export class TimeModule {}
 
-
-// 232401 ARRIBO 
+// 232401 ARRIBO

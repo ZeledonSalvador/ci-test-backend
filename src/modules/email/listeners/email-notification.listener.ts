@@ -19,7 +19,8 @@ export class EmailNotificationListener {
     private readonly notificationLogger: NotificationLoggerService,
     private readonly configService: ConfigService,
   ) {
-    this.emailFrom = this.configService.get<string>('EMAIL_FROM') || 'sistema@almapac.com';
+    this.emailFrom =
+      this.configService.get<string>('EMAIL_FROM') || 'sistema@almapac.com';
   }
 
   /**
@@ -27,7 +28,9 @@ export class EmailNotificationListener {
    * Patrón '**.email' captura cualquier evento que termine en .email
    */
   @OnEvent('**.email', { async: true })
-  async handleEmailNotification(event: NotificationEvent<EmailNotificationData>) {
+  async handleEmailNotification(
+    event: NotificationEvent<EmailNotificationData>,
+  ) {
     const { eventName, data, metadata } = event;
     const maxAttempts = 3;
     let currentAttempt = 0;
@@ -38,12 +41,14 @@ export class EmailNotificationListener {
       await this.retryService.executeWithRetry(
         async () => {
           currentAttempt++;
-          this.logger.log(`[Email Listener] Enviando notificación... (Intento ${currentAttempt}/${maxAttempts})`);
-          
+          this.logger.log(
+            `[Email Listener] Enviando notificación... (Intento ${currentAttempt}/${maxAttempts})`,
+          );
+
           const result = await this.emailService.sendNotification(data);
-          
+
           this.logger.log(`[Email Listener] Notificación enviada exitosamente`);
-          
+
           // LOG DE CADA EMAIL INDIVIDUAL
           if (result.details && result.details.length > 0) {
             for (const detail of result.details) {
@@ -68,15 +73,22 @@ export class EmailNotificationListener {
           delayMs: 2000,
           exponentialBackoff: true,
           onRetry: async (attempt, error) => {
-            this.logger.warn(`[Email Listener] Reintento ${attempt + 1}/${maxAttempts}: ${error.message}`);
+            this.logger.warn(
+              `[Email Listener] Reintento ${attempt + 1}/${maxAttempts}: ${error.message}`,
+            );
           },
           onFinalFailure: async (error) => {
-            this.logger.error(`[Email Listener] Error final después de ${maxAttempts} intentos: ${error.message}`);
+            this.logger.error(
+              `[Email Listener] Error final después de ${maxAttempts} intentos: ${error.message}`,
+            );
           },
-        }
+        },
       );
     } catch (error) {
-      this.logger.error(`[Email Listener] Error no recuperable para ${eventName}:`, error.stack);
+      this.logger.error(
+        `[Email Listener] Error no recuperable para ${eventName}:`,
+        error.stack,
+      );
     }
   }
 }

@@ -9,7 +9,9 @@ describe('PreTransactionsLeveransController', () => {
       controllers: [PreTransactionsLeveransController],
     }).compile();
 
-    controller = module.get<PreTransactionsLeveransController>(PreTransactionsLeveransController);
+    controller = module.get<PreTransactionsLeveransController>(
+      PreTransactionsLeveransController,
+    );
   });
 
   it('should be defined', () => {

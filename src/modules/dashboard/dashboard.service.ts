@@ -4,15 +4,21 @@ import { DataSource } from 'typeorm';
 function secToHHMMSS(totalSec?: number | null): string | 0 {
   if (totalSec == null) return 0;
   const sec = Math.max(0, Math.floor(totalSec));
-  const h = Math.floor(sec / 3600).toString().padStart(2, '0');
-  const m = Math.floor((sec % 3600) / 60).toString().padStart(2, '0');
-  const s = Math.floor(sec % 60).toString().padStart(2, '0');
+  const h = Math.floor(sec / 3600)
+    .toString()
+    .padStart(2, '0');
+  const m = Math.floor((sec % 3600) / 60)
+    .toString()
+    .padStart(2, '0');
+  const s = Math.floor(sec % 60)
+    .toString()
+    .padStart(2, '0');
   return `${h}:${m}:${s}`;
 }
 
 @Injectable()
 export class DashboardService {
-  constructor(private readonly dataSource: DataSource) { }
+  constructor(private readonly dataSource: DataSource) {}
 
   // Valida que existan en la BD los valores de product/ingenioId.
   private async assertFilterValuesExist(product?: string, ingenioId?: string) {
@@ -180,17 +186,48 @@ ORDER BY g.fecha, g.statusKey;
 
     const rows: Array<{
       fecha: string | Date;
-      statusKey: 'EnTransito' | 'Prechequeado' | 'Autorizado' | 'EnProceso' | 'Finalizado' | 'Pendiente' | 'Anulado' | 'EnEnfriamiento' | 'Otro';
-      Planas: number; Volteo: number; Pipa: number; Otro: number; TotalDia: number;
-    }> = await this.dataSource.query(sql, [start, end, product ?? null, ingenioId ?? null]);
+      statusKey:
+        | 'EnTransito'
+        | 'Prechequeado'
+        | 'Autorizado'
+        | 'EnProceso'
+        | 'Finalizado'
+        | 'Pendiente'
+        | 'Anulado'
+        | 'EnEnfriamiento'
+        | 'Otro';
+      Planas: number;
+      Volteo: number;
+      Pipa: number;
+      Otro: number;
+      TotalDia: number;
+    }> = await this.dataSource.query(sql, [
+      start,
+      end,
+      product ?? null,
+      ingenioId ?? null,
+    ]);
 
     // ---- post-procesado (igual que ya tenías) ----
-    const statusKeys = ['EnTransito', 'Prechequeado', 'Autorizado', 'EnProceso', 'Finalizado', 'Pendiente', 'Anulado', 'EnEnfriamiento'] as const;
+    const statusKeys = [
+      'EnTransito',
+      'Prechequeado',
+      'Autorizado',
+      'EnProceso',
+      'Finalizado',
+      'Pendiente',
+      'Anulado',
+      'EnEnfriamiento',
+    ] as const;
 
     const startDate = new Date(start);
     const endDate = new Date(end);
     const dayList: string[] = [];
-    for (let d = new Date(startDate); d < endDate; d.setUTCDate(d.getUTCDate() + 1)) {
+    for (
+      let d = new Date(startDate);
+      d < endDate;
+      d.setUTCDate(d.getUTCDate() + 1)
+    ) {
       const y = d.getUTCFullYear();
       const m = String(d.getUTCMonth() + 1).padStart(2, '0');
       const dd = String(d.getUTCDate()).padStart(2, '0');
@@ -201,11 +238,27 @@ ORDER BY g.fecha, g.statusKey;
       return `${d}-${m}-${y.slice(2)}`;
     };
 
-    const map = new Map<string, { Planas: number; Volteo: number; Pipa: number; Otro: number; TotalDia: number; }>();
+    const map = new Map<
+      string,
+      {
+        Planas: number;
+        Volteo: number;
+        Pipa: number;
+        Otro: number;
+        TotalDia: number;
+      }
+    >();
     for (const r of rows) {
-      const dt = (r.fecha instanceof Date) ? r.fecha.toISOString().slice(0, 10) : new Date(r.fecha).toISOString().slice(0, 10);
+      const dt =
+        r.fecha instanceof Date
+          ? r.fecha.toISOString().slice(0, 10)
+          : new Date(r.fecha).toISOString().slice(0, 10);
       map.set(`${dt}|${r.statusKey}`, {
-        Planas: +r['Planas'] || 0, Volteo: +r['Volteo'] || 0, Pipa: +r['Pipa'] || 0, Otro: +r['Otro'] || 0, TotalDia: +r['TotalDia'] || 0
+        Planas: +r['Planas'] || 0,
+        Volteo: +r['Volteo'] || 0,
+        Pipa: +r['Pipa'] || 0,
+        Otro: +r['Otro'] || 0,
+        TotalDia: +r['TotalDia'] || 0,
       });
     }
 
@@ -219,12 +272,23 @@ ORDER BY g.fecha, g.statusKey;
       const dias = [];
       let totalStatus = 0;
       for (const ymd of dayList) {
-        const found = map.get(`${ymd}|${sk}`) ?? { Planas: 0, Volteo: 0, Pipa: 0, Otro: 0, TotalDia: 0 };
+        const found = map.get(`${ymd}|${sk}`) ?? {
+          Planas: 0,
+          Volteo: 0,
+          Pipa: 0,
+          Otro: 0,
+          TotalDia: 0,
+        };
         totalStatus += found.TotalDia;
         dias.push({
           Fecha: toDDMMYY(ymd),
           Total: found.TotalDia,
-          TruckType: { Planas: found.Planas, Volteo: found.Volteo, Pipa: found.Pipa, Otro: found.Otro },
+          TruckType: {
+            Planas: found.Planas,
+            Volteo: found.Volteo,
+            Pipa: found.Pipa,
+            Otro: found.Otro,
+          },
         });
       }
       result[sk] = { Total: totalStatus, Dias: dias };
@@ -236,31 +300,39 @@ ORDER BY g.fecha, g.statusKey;
   async getResumenHoyPorHora(
     product?: string,
     ingenioId?: string,
-    horaDesde?: string,   // "HH:mm" o "H"
-    horaHasta?: string    // "HH:mm" o "H"
+    horaDesde?: string, // "HH:mm" o "H"
+    horaHasta?: string, // "HH:mm" o "H"
   ) {
     await this.assertFilterValuesExist(product, ingenioId);
 
     const params: any[] = [];
-    const addParam = (v: any) => { const i = params.length; params.push(v); return `@${i}`; };
+    const addParam = (v: any) => {
+      const i = params.length;
+      params.push(v);
+      return `@${i}`;
+    };
 
     // Filtros
     let filterSh = '';
-    if (product) filterSh += ` AND UPPER(LTRIM(RTRIM(sh.product)))    = UPPER(LTRIM(RTRIM(${addParam(product)})))`;
-    if (ingenioId) filterSh += ` AND UPPER(LTRIM(RTRIM(sh.ingenio_id))) = UPPER(LTRIM(RTRIM(${addParam(ingenioId)})))`;
+    if (product)
+      filterSh += ` AND UPPER(LTRIM(RTRIM(sh.product)))    = UPPER(LTRIM(RTRIM(${addParam(product)})))`;
+    if (ingenioId)
+      filterSh += ` AND UPPER(LTRIM(RTRIM(sh.ingenio_id))) = UPPER(LTRIM(RTRIM(${addParam(ingenioId)})))`;
 
     // ===== Rango hora local -> UTC; ventana semiabierta [from, to) =====
     function parseHHmm(s?: string): { h: number; m: number } | null {
       if (!s) return null;
       const m = /^(\d{1,2})(?::([0-5]\d))?$/.exec(s.trim());
       if (!m) throw new Error('Formato de hora inválido. Use "HH:mm".');
-      const h = +m[1], mm = +(m[2] ?? 0);
+      const h = +m[1],
+        mm = +(m[2] ?? 0);
       if (h < 0 || h > 23) throw new Error('Hora fuera de rango (0–23).');
       return { h, m: mm };
     }
 
     const tzOffsetMin = new Date().getTimezoneOffset(); // típicamente 360 en UTC-6
-    const todayLocal = new Date(); todayLocal.setHours(0, 0, 0, 0);
+    const todayLocal = new Date();
+    todayLocal.setHours(0, 0, 0, 0);
 
     const fromParts = parseHHmm(horaDesde);
     const toParts = parseHHmm(horaHasta);
@@ -283,8 +355,10 @@ ORDER BY g.fecha, g.statusKey;
       toLocal.setDate(toLocal.getDate() + 1);
     }
 
-
-    if (fromLocal >= toLocal) throw new Error('Rango de minutos inválido: "horaDesde" debe ser < "horaHasta".');
+    if (fromLocal >= toLocal)
+      throw new Error(
+        'Rango de minutos inválido: "horaDesde" debe ser < "horaHasta".',
+      );
 
     // a UTC real (lo que compara SQL Server)
     const fromDt = fromLocal;
@@ -351,24 +425,54 @@ ORDER BY g.fecha, g.statusKey;
 
     const firstHour = fromParts ? fromParts.h : 0;
     const lastHour = toParts
-      ? Math.max(firstHour, toParts.h)  // INCLUSIVO
-      : (fromParts ? firstHour : 23);
+      ? Math.max(firstHour, toParts.h) // INCLUSIVO
+      : fromParts
+        ? firstHour
+        : 23;
 
     const makeHoras = (h0: number, h1: number) => {
-      const arr: Array<{ Hora: string; Total: number; TruckType: { Planas: number; Volteo: number; Pipa: number; Otro: number } }> = [];
+      const arr: Array<{
+        Hora: string;
+        Total: number;
+        TruckType: {
+          Planas: number;
+          Volteo: number;
+          Pipa: number;
+          Otro: number;
+        };
+      }> = [];
       for (let h = h0; h <= h1; h++) {
         arr.push({
           Hora: `${h.toString().padStart(2, '0')}:00`,
           Total: 0,
-          TruckType: { Planas: 0, Volteo: 0, Pipa: 0, Otro: 0 }
+          TruckType: { Planas: 0, Volteo: 0, Pipa: 0, Otro: 0 },
         });
       }
       return arr;
     };
 
     const bloques: Record<
-      'EnTransito' | 'Prechequeado' | 'Autorizado' | 'EnProceso' | 'Finalizado' | 'Pendiente' | 'Anulado' | 'EnEnfriamiento',
-      { Total: number; Horas: Array<{ Hora: string; Total: number; TruckType: { Planas: number; Volteo: number; Pipa: number; Otro: number } }> }
+      | 'EnTransito'
+      | 'Prechequeado'
+      | 'Autorizado'
+      | 'EnProceso'
+      | 'Finalizado'
+      | 'Pendiente'
+      | 'Anulado'
+      | 'EnEnfriamiento',
+      {
+        Total: number;
+        Horas: Array<{
+          Hora: string;
+          Total: number;
+          TruckType: {
+            Planas: number;
+            Volteo: number;
+            Pipa: number;
+            Otro: number;
+          };
+        }>;
+      }
     > = {
       EnTransito: { Total: 0, Horas: makeHoras(firstHour, lastHour) },
       Prechequeado: { Total: 0, Horas: makeHoras(firstHour, lastHour) },
@@ -392,13 +496,17 @@ ORDER BY g.fecha, g.statusKey;
       slot.TruckType.Volteo += Number(r.Volteo) || 0;
       slot.TruckType.Pipa += Number(r.Pipa) || 0;
       slot.TruckType.Otro += Number(r.Otro) || 0;
-      slot.Total = slot.TruckType.Planas + slot.TruckType.Volteo + slot.TruckType.Pipa + slot.TruckType.Otro;
+      slot.Total =
+        slot.TruckType.Planas +
+        slot.TruckType.Volteo +
+        slot.TruckType.Pipa +
+        slot.TruckType.Otro;
       bloques[key].Total += slot.Total;
     }
 
     // ===== TotalDB derivado DIRECTO de los bloques (consistencia 1:1) =====
     const TotalDB = {
-      Total: (
+      Total:
         bloques.EnTransito.Total +
         bloques.Prechequeado.Total +
         bloques.Autorizado.Total +
@@ -406,8 +514,7 @@ ORDER BY g.fecha, g.statusKey;
         bloques.Finalizado.Total +
         bloques.Pendiente.Total +
         bloques.Anulado.Total +
-        bloques.EnEnfriamiento.Total
-      ),
+        bloques.EnEnfriamiento.Total,
       EnTransito: bloques.EnTransito.Total,
       Prechequeado: bloques.Prechequeado.Total,
       Autorizado: bloques.Autorizado.Total,
@@ -434,7 +541,6 @@ ORDER BY g.fecha, g.statusKey;
     };
   }
 
-
   async getPromediosAtencion(
     start?: Date,
     end?: Date,
@@ -445,21 +551,31 @@ ORDER BY g.fecha, g.statusKey;
 
     // Parámetros posicionales (@0, @1, ...)
     const params: any[] = [];
-    const add = (v: any) => { const i = params.length; params.push(v); return `@${i}`; };
+    const add = (v: any) => {
+      const i = params.length;
+      params.push(v);
+      return `@${i}`;
+    };
 
     // Filtros opcionales por producto/ingenio (sobre Shipments)
     let filterShip = '';
-    if (product) filterShip += ` AND UPPER(LTRIM(RTRIM( Shipments.product)))    = UPPER(LTRIM(RTRIM(${add(product)})))`;
-    if (ingenioId) filterShip += ` AND UPPER(LTRIM(RTRIM( Shipments.ingenio_id))) = UPPER(LTRIM(RTRIM(${add(ingenioId)})))`;
+    if (product)
+      filterShip += ` AND UPPER(LTRIM(RTRIM( Shipments.product)))    = UPPER(LTRIM(RTRIM(${add(product)})))`;
+    if (ingenioId)
+      filterShip += ` AND UPPER(LTRIM(RTRIM( Shipments.ingenio_id))) = UPPER(LTRIM(RTRIM(${add(ingenioId)})))`;
 
     // Ventanas (HAVING) sobre el estado destino
     let having24 = ''; // destino = 4
-    if (start) having24 += ` AND MIN(CASE WHEN  Status.predefined_status_id = 4  THEN  Status.created_at END) >= ${add(start)}`;
-    if (end) having24 += ` AND MIN(CASE WHEN  Status.predefined_status_id = 4  THEN  Status.created_at END) <  ${add(end)}`;
+    if (start)
+      having24 += ` AND MIN(CASE WHEN  Status.predefined_status_id = 4  THEN  Status.created_at END) >= ${add(start)}`;
+    if (end)
+      having24 += ` AND MIN(CASE WHEN  Status.predefined_status_id = 4  THEN  Status.created_at END) <  ${add(end)}`;
 
     let having511 = ''; // destino = 11
-    if (start) having511 += ` AND MIN(CASE WHEN  Status.predefined_status_id = 11 THEN  Status.created_at END) >= ${add(start)}`;
-    if (end) having511 += ` AND MIN(CASE WHEN  Status.predefined_status_id = 11 THEN  Status.created_at END) <  ${add(end)}`;
+    if (start)
+      having511 += ` AND MIN(CASE WHEN  Status.predefined_status_id = 11 THEN  Status.created_at END) >= ${add(start)}`;
+    if (end)
+      having511 += ` AND MIN(CASE WHEN  Status.predefined_status_id = 11 THEN  Status.created_at END) <  ${add(end)}`;
 
     const sql = `
 /* ===== Tramo 2 -> 4 (ESPERA) ===== */
@@ -588,34 +704,42 @@ ORDER BY tramo, nivel, fecha, producto;
       nivel: 'GLOBAL' | 'DIA';
       fecha: Date | string | null;
       producto: string | null;
-      total_pares: number | null;   // GLOBAL
-      cantidad: number | null;      // GLOBAL = promedio; DIA = suma
+      total_pares: number | null; // GLOBAL
+      cantidad: number | null; // GLOBAL = promedio; DIA = suma
       promedio_seg: number;
       promedio_hhmmss: string;
     };
 
     const toYMD = (d: Date | string | null) =>
-      typeof d === 'string' ? d.slice(0, 10) : (d ? new Date(d).toISOString().slice(0, 10) : null);
+      typeof d === 'string'
+        ? d.slice(0, 10)
+        : d
+          ? new Date(d).toISOString().slice(0, 10)
+          : null;
 
-    const esperaGlobal = (rows as Row[]).find(r => r.tramo === '2-4' && r.nivel === 'GLOBAL') || null;
-    const atencionGlobal = (rows as Row[]).find(r => r.tramo === '5-11' && r.nivel === 'GLOBAL') || null;
+    const esperaGlobal =
+      (rows as Row[]).find((r) => r.tramo === '2-4' && r.nivel === 'GLOBAL') ||
+      null;
+    const atencionGlobal =
+      (rows as Row[]).find((r) => r.tramo === '5-11' && r.nivel === 'GLOBAL') ||
+      null;
 
     const esperaDias = (rows as Row[])
-      .filter(r => r.tramo === '2-4' && r.nivel === 'DIA')
-      .map(r => ({
+      .filter((r) => r.tramo === '2-4' && r.nivel === 'DIA')
+      .map((r) => ({
         fecha: toYMD(r.fecha)!,
         producto: r.producto,
-        cantidad: r.cantidad ?? 0,               // SUMA por día+producto
+        cantidad: r.cantidad ?? 0, // SUMA por día+producto
         promedio_seg: r.promedio_seg,
         promedio_hhmmss: r.promedio_hhmmss,
       }));
 
     const atencionDias = (rows as Row[])
-      .filter(r => r.tramo === '5-11' && r.nivel === 'DIA')
-      .map(r => ({
+      .filter((r) => r.tramo === '5-11' && r.nivel === 'DIA')
+      .map((r) => ({
         fecha: toYMD(r.fecha)!,
         producto: r.producto,
-        cantidad: r.cantidad ?? 0,               // SUMA por día+producto
+        cantidad: r.cantidad ?? 0, // SUMA por día+producto
         promedio_seg: r.promedio_seg,
         promedio_hhmmss: r.promedio_hhmmss,
       }));
@@ -624,12 +748,17 @@ ORDER BY tramo, nivel, fecha, producto;
       Producto: product ?? null,
       Ingenio: ingenioId ?? null,
       ...(start || end
-        ? { Rango: { Start: start?.toISOString() ?? null, End: end?.toISOString() ?? null } }
+        ? {
+            Rango: {
+              Start: start?.toISOString() ?? null,
+              End: end?.toISOString() ?? null,
+            },
+          }
         : {}),
       PromedioEspera: {
         Global: {
           total_pares: esperaGlobal?.total_pares ?? 0,
-          cantidad_promedio: esperaGlobal?.cantidad ?? 0,   // ← aquí exponemos el PROMEDIO
+          cantidad_promedio: esperaGlobal?.cantidad ?? 0, // ← aquí exponemos el PROMEDIO
           promedio_seg: esperaGlobal?.promedio_seg ?? 0,
           promedio_hhmmss: esperaGlobal?.promedio_hhmmss ?? '00:00:00',
         },
@@ -647,13 +776,15 @@ ORDER BY tramo, nivel, fecha, producto;
     };
   }
 
-
-
   async getPromediosAtencionDelDia(product?: string, ingenioId?: string) {
     await this.assertFilterValuesExist(product, ingenioId);
 
     const params: any[] = [];
-    const addParam = (v: any) => { const i = params.length; params.push(v); return `@${i}`; };
+    const addParam = (v: any) => {
+      const i = params.length;
+      params.push(v);
+      return `@${i}`;
+    };
 
     let filter24 = '';
     let filter5_11 = '';
@@ -825,10 +956,13 @@ OPTION (MAXRECURSION 24);
           data = JSON.parse(firstCell);
         } catch {
           try {
-            const merged = rows.map(r => Object.values(r)[0]).join('');
+            const merged = rows.map((r) => Object.values(r)[0]).join('');
             data = JSON.parse(merged || '{}');
           } catch (error) {
-            console.error('⚠️ Error al parsear datos JSON del dashboard:', error.message);
+            console.error(
+              '⚠️ Error al parsear datos JSON del dashboard:',
+              error.message,
+            );
             data = {}; // Valor por defecto si ambos parse fallan
           }
         }
@@ -837,7 +971,8 @@ OPTION (MAXRECURSION 24);
 
     if (data?.['Rango.Start'] && data?.['Rango.End']) {
       data.Rango = { Start: data['Rango.Start'], End: data['Rango.End'] };
-      delete data['Rango.Start']; delete data['Rango.End'];
+      delete data['Rango.Start'];
+      delete data['Rango.End'];
     }
 
     return {
@@ -847,20 +982,27 @@ OPTION (MAXRECURSION 24);
     };
   }
 
-  private async assertFiltersExistForTimes(product?: string, ingenioId?: string) {
+  private async assertFiltersExistForTimes(
+    product?: string,
+    ingenioId?: string,
+  ) {
     if (product) {
       const r = await this.dataSource.query(
         `SELECT TOP 1 1 FROM  ShipmentsTimes WHERE UPPER(LTRIM(RTRIM(operation_type))) = UPPER(LTRIM(RTRIM(@0)))`,
         [product],
       );
-      if (!r?.length) throw new BadRequestException(`Producto (operation_type) no válido: "${product}".`);
+      if (!r?.length)
+        throw new BadRequestException(
+          `Producto (operation_type) no válido: "${product}".`,
+        );
     }
     if (ingenioId) {
       const r = await this.dataSource.query(
         `SELECT TOP 1 1 FROM  Shipments WHERE UPPER(LTRIM(RTRIM(ingenio_id))) = UPPER(LTRIM(RTRIM(@0)))`,
         [ingenioId],
       );
-      if (!r?.length) throw new BadRequestException(`Ingenio no válido: "${ingenioId}".`);
+      if (!r?.length)
+        throw new BadRequestException(`Ingenio no válido: "${ingenioId}".`);
     }
   }
 
@@ -871,12 +1013,18 @@ OPTION (MAXRECURSION 24);
     ingenioId?: string,
   ) {
     const params: any[] = [];
-    const add = (v: any) => { const i = params.length; params.push(v); return `@${i}`; };
+    const add = (v: any) => {
+      const i = params.length;
+      params.push(v);
+      return `@${i}`;
+    };
 
     // Filtros basados en tu consulta
     let filtersNoDate = ''; // se aplican tanto para bounds como para datos
-    if (product) filtersNoDate += ` AND UPPER(LTRIM(RTRIM(stt.operation_type))) = UPPER(LTRIM(RTRIM(${add(product)})))`;
-    if (ingenioId) filtersNoDate += ` AND UPPER(LTRIM(RTRIM(sh.ingenio_id)))     = UPPER(LTRIM(RTRIM(${add(ingenioId)})))`;
+    if (product)
+      filtersNoDate += ` AND UPPER(LTRIM(RTRIM(stt.operation_type))) = UPPER(LTRIM(RTRIM(${add(product)})))`;
+    if (ingenioId)
+      filtersNoDate += ` AND UPPER(LTRIM(RTRIM(sh.ingenio_id)))     = UPPER(LTRIM(RTRIM(${add(ingenioId)})))`;
 
     const sParam = start ? add(start) : 'NULL';
     const eParam = end ? add(end) : 'NULL';
@@ -960,25 +1108,29 @@ OPTION (MAXRECURSION 0);
     }> = await this.dataSource.query(sql, params);
 
     // Si no hay datos (p.ej. tabla vacía y no enviaste rango), devolvemos shape vacío
-    if (!rows || rows.length === 0 || (!rows[0].start_iso && !rows[0].end_iso)) {
+    if (
+      !rows ||
+      rows.length === 0 ||
+      (!rows[0].start_iso && !rows[0].end_iso)
+    ) {
       return {
         Producto: product ?? null,
         Ingenio: ingenioId ?? null,
-        PromedioDescarga: { Total: 0, Dias: [] }
+        PromedioDescarga: { Total: 0, Dias: [] },
       };
     }
 
     const startIso = rows[0].start_iso;
     const endIso = rows[0].end_iso;
 
-    const dias = rows.map(r => ({
+    const dias = rows.map((r) => ({
       Fecha: r.fecha_txt,
       Total: r.total ?? 0,
       TruckType: {
         Planas: secToHHMMSS(r.avg_planas),
         Volteo: secToHHMMSS(r.avg_volteo),
         Pipa: secToHHMMSS(r.avg_pipa),
-      }
+      },
     }));
 
     const totalGlobal = dias.reduce((acc, d) => acc + (d.Total || 0), 0);
@@ -986,19 +1138,27 @@ OPTION (MAXRECURSION 0);
     return {
       Producto: product ?? null,
       Ingenio: ingenioId ?? null,
-      ...(startIso || endIso ? { Rango: { Start: startIso, End: endIso } } : {}),
-      PromedioDescarga: { Total: totalGlobal, Dias: dias }
+      ...(startIso || endIso
+        ? { Rango: { Start: startIso, End: endIso } }
+        : {}),
+      PromedioDescarga: { Total: totalGlobal, Dias: dias },
     };
   }
 
   async getPromedioDescargaDelDia(product?: string, ingenioId?: string) {
     const params: any[] = [];
-    const add = (v: any) => { const i = params.length; params.push(v); return `@${i}`; };
+    const add = (v: any) => {
+      const i = params.length;
+      params.push(v);
+      return `@${i}`;
+    };
 
     // Filtros opcionales (case-insensitive, trim)
     let where = '';
-    if (product) where += ` AND UPPER(LTRIM(RTRIM(stt.operation_type))) = UPPER(LTRIM(RTRIM(${add(product)})))`;
-    if (ingenioId) where += ` AND UPPER(LTRIM(RTRIM(sh.ingenio_id)))     = UPPER(LTRIM(RTRIM(${add(ingenioId)})))`;
+    if (product)
+      where += ` AND UPPER(LTRIM(RTRIM(stt.operation_type))) = UPPER(LTRIM(RTRIM(${add(product)})))`;
+    if (ingenioId)
+      where += ` AND UPPER(LTRIM(RTRIM(sh.ingenio_id)))     = UPPER(LTRIM(RTRIM(${add(ingenioId)})))`;
 
     const sql = `
 DECLARE @start DATETIME = CONVERT(date, GETDATE());
@@ -1079,18 +1239,19 @@ OPTION (MAXRECURSION 24);
     const rangoStart = rows[0]?.start_iso ?? null;
     const rangoEnd = rows[0]?.end_iso ?? null;
 
-    const horas = rows.map(r => ({
+    const horas = rows.map((r) => ({
       Hora: `${r.hour_bucket.toString().padStart(2, '0')}:00`,
       Total: r.total_hour ?? 0,
       TruckType: {
         Planas: secToHHMMSS(r.avg_planas),
         Volteo: secToHHMMSS(r.avg_volteo),
         Pipa: secToHHMMSS(r.avg_pipa),
-      }
+      },
     }));
 
     // Totales y promedios globales (día)
-    const totalGlobal = rows[0]?.g_total ?? horas.reduce((acc, h) => acc + (h.Total || 0), 0);
+    const totalGlobal =
+      rows[0]?.g_total ?? horas.reduce((acc, h) => acc + (h.Total || 0), 0);
     const promedioActual = {
       Planas: secToHHMMSS(rows[0]?.g_planas ?? null),
       Volteo: secToHHMMSS(rows[0]?.g_volteo ?? null),
@@ -1104,8 +1265,8 @@ OPTION (MAXRECURSION 24);
       PromedioDescarga: {
         Total: totalGlobal ?? 0,
         PromedioActual: promedioActual,
-        Horas: horas
-      }
+        Horas: horas,
+      },
     };
   }
 
@@ -1117,13 +1278,19 @@ OPTION (MAXRECURSION 24);
     minStatus: number = 9, // >= 9 equivale a > 8
   ) {
     const params: any[] = [];
-    const add = (v: any) => { const i = params.length; params.push(v); return `@${i}`; };
+    const add = (v: any) => {
+      const i = params.length;
+      params.push(v);
+      return `@${i}`;
+    };
 
     // WHERE dinámico (el orden de add(...) = orden real de params)
     let where = 'WHERE 1=1';
     where += ` AND st.predefined_status_id >= ${add(minStatus)}`;
-    if (product) where += ` AND UPPER(LTRIM(RTRIM(sh.product)))    = UPPER(LTRIM(RTRIM(${add(product)})))`;
-    if (ingenioId) where += ` AND UPPER(LTRIM(RTRIM(sh.ingenio_id))) = UPPER(LTRIM(RTRIM(${add(ingenioId)})))`;
+    if (product)
+      where += ` AND UPPER(LTRIM(RTRIM(sh.product)))    = UPPER(LTRIM(RTRIM(${add(product)})))`;
+    if (ingenioId)
+      where += ` AND UPPER(LTRIM(RTRIM(sh.ingenio_id))) = UPPER(LTRIM(RTRIM(${add(ingenioId)})))`;
     if (start) where += ` AND st.created_at >= ${add(start)}`;
     if (end) where += ` AND st.created_at <  ${add(end)}`;
 
@@ -1145,35 +1312,48 @@ ORDER BY CAST(st.created_at AS date);
       fecha_txt: string;
       total_registros: number;
       total_ton: number;
-      Product: string;              // ⬅️ viene con este alias
+      Product: string; // ⬅️ viene con este alias
     };
 
     const rows: Row[] = await this.dataSource.query(sql, params);
 
     // Construye "Dias" con Producto incluido (múltiples filas por fecha si hay varios productos)
-    const Dias = rows.map(r => ({
+    const Dias = rows.map((r) => ({
       Fecha: r.fecha_txt,
-      Product: r.Product,                     // ⬅️ ahora se incluye
+      Product: r.Product, // ⬅️ ahora se incluye
       TotalRegistros: r.total_registros ?? 0,
-      TotalKg: r.total_ton ?? 0,              // en toneladas (mantengo el nombre TotalKg para no romper el frontend)
+      TotalKg: r.total_ton ?? 0, // en toneladas (mantengo el nombre TotalKg para no romper el frontend)
     }));
 
     // Totales globales
-    const totalRegistros = rows.reduce((acc, r) => acc + (r.total_registros || 0), 0);
+    const totalRegistros = rows.reduce(
+      (acc, r) => acc + (r.total_registros || 0),
+      0,
+    );
 
     // Promedio diario correcto: sumar por fecha (independiente del producto) y luego promediar
     const tonPorDia = new Map<string, number>();
     for (const r of rows) {
-      tonPorDia.set(r.fecha_txt, (tonPorDia.get(r.fecha_txt) ?? 0) + (r.total_ton || 0));
+      tonPorDia.set(
+        r.fecha_txt,
+        (tonPorDia.get(r.fecha_txt) ?? 0) + (r.total_ton || 0),
+      );
     }
     const daysCount = tonPorDia.size;
-    const sumTonByDay = Array.from(tonPorDia.values()).reduce((a, b) => a + b, 0);
+    const sumTonByDay = Array.from(tonPorDia.values()).reduce(
+      (a, b) => a + b,
+      0,
+    );
     const promedioTon = daysCount > 0 ? sumTonByDay / daysCount : 0;
 
     // Eco de rango (solo si lo enviaste)
-    const rango = (start || end)
-      ? { Start: start?.toISOString().slice(0, 19), End: end?.toISOString().slice(0, 19) }
-      : undefined;
+    const rango =
+      start || end
+        ? {
+            Start: start?.toISOString().slice(0, 19),
+            End: end?.toISOString().slice(0, 19),
+          }
+        : undefined;
 
     return {
       Producto: product ?? null,
@@ -1181,9 +1361,9 @@ ORDER BY CAST(st.created_at AS date);
       ...(rango ? { Rango: rango } : {}),
       PesosPorStatus: {
         TotalRegistros: totalRegistros,
-        TotalKg: promedioTon,   // promedio diario en TONELADAS
-        Dias
-      }
+        TotalKg: promedioTon, // promedio diario en TONELADAS
+        Dias,
+      },
     };
   }
 
@@ -1191,26 +1371,35 @@ ORDER BY CAST(st.created_at AS date);
     product: string | undefined,
     ingenioId: string | undefined,
     minStatus: number = 9,
-    from?: Date,   // opcional: si no llegan -> hoy 00:00
-    to?: Date      // opcional: si no llegan -> mañana 00:00
+    from?: Date, // opcional: si no llegan -> hoy 00:00
+    to?: Date, // opcional: si no llegan -> mañana 00:00
   ) {
     // 0) Rango por defecto si no vienen (hoy 00:00 → mañana 00:00)
-    const base = new Date(); base.setHours(0, 0, 0, 0);
+    const base = new Date();
+    base.setHours(0, 0, 0, 0);
     const fromLocal = from ?? base;
     const toLocal = to ?? new Date(base.getTime() + 24 * 60 * 60 * 1000);
-    if (!(toLocal > fromLocal)) throw new Error('Rango inválido: "from" debe ser < "to".');
+    if (!(toLocal > fromLocal))
+      throw new Error('Rango inválido: "from" debe ser < "to".');
 
     const params: any[] = [];
-    const add = (v: any) => { const i = params.length; params.push(v); return `@${i}`; };
+    const add = (v: any) => {
+      const i = params.length;
+      params.push(v);
+      return `@${i}`;
+    };
 
     const pStart = add(fromLocal);
     const pEnd = add(toLocal);
     const pMin = add(minStatus);
 
     let filterIng = '';
-    if (ingenioId) filterIng += ` AND UPPER(LTRIM(RTRIM(sh.ingenio_id))) = UPPER(LTRIM(RTRIM(${add(ingenioId)})))`;
+    if (ingenioId)
+      filterIng += ` AND UPPER(LTRIM(RTRIM(sh.ingenio_id))) = UPPER(LTRIM(RTRIM(${add(ingenioId)})))`;
 
-    const productParamSql = product ? `UPPER(LTRIM(RTRIM(${add(product)})))` : `NULL`;
+    const productParamSql = product
+      ? `UPPER(LTRIM(RTRIM(${add(product)})))`
+      : `NULL`;
 
     const sql = `
 ;WITH Params AS (
@@ -1255,10 +1444,11 @@ BaseSource AS (
     AND ls.predefined_status_id >= ${pMin}
 ),
 Products AS (
-  ${product
-        ? `SELECT ${productParamSql} AS product`
-        : `SELECT product FROM BaseSource GROUP BY product`
-      }
+  ${
+    product
+      ? `SELECT ${productParamSql} AS product`
+      : `SELECT product FROM BaseSource GROUP BY product`
+  }
 ),
 Base AS (
   SELECT bs.h, bs.product, bs.uno, bs.kg
@@ -1312,20 +1502,26 @@ OPTION (MAXRECURSION 32767);
 
     const rows: Row[] = await this.dataSource.query(sql, params);
 
-    const rangoStart = rows[0]?.start_iso ?? fromLocal.toISOString().slice(0, 19);
+    const rangoStart =
+      rows[0]?.start_iso ?? fromLocal.toISOString().slice(0, 19);
     const rangoEnd = rows[0]?.end_iso ?? toLocal.toISOString().slice(0, 19);
-    const hoursCount = rows[0]?.hours_count ?? Math.max(1, Math.ceil((toLocal.getTime() - fromLocal.getTime()) / 3600000));
+    const hoursCount =
+      rows[0]?.hours_count ??
+      Math.max(
+        1,
+        Math.ceil((toLocal.getTime() - fromLocal.getTime()) / 3600000),
+      );
 
     const totalRegistros = rows.length ? (rows[0].g_registros ?? 0) : 0;
     const totalKg = rows.length ? (rows[0].g_kg ?? 0) : 0;
 
     // Promedios globales
-    const avgKgPorRegistro = totalRegistros > 0 ? totalKg / totalRegistros : 0;   // kg/registro
-    const avgKgPorHora = hoursCount > 0 ? totalKg / hoursCount : 0;     // kg/hora
-    const avgRegPorHora = hoursCount > 0 ? totalRegistros / hoursCount : 0;  // registros/hora
+    const avgKgPorRegistro = totalRegistros > 0 ? totalKg / totalRegistros : 0; // kg/registro
+    const avgKgPorHora = hoursCount > 0 ? totalKg / hoursCount : 0; // kg/hora
+    const avgRegPorHora = hoursCount > 0 ? totalRegistros / hoursCount : 0; // registros/hora
 
     // Buckets de horas dentro del rango (Hora, Product, Totales y promedio por registro)
-    const horas = rows.map(r => {
+    const horas = rows.map((r) => {
       const tr = r.total_registros ?? 0;
       const tk = r.total_kg ?? 0;
       const avgKgPorReg = tr > 0 ? tk / tr : 0;
@@ -1334,7 +1530,7 @@ OPTION (MAXRECURSION 32767);
         Product: r.product,
         TotalRegistros: tr,
         TotalKg: tk,
-        AvgKgPorRegistro: avgKgPorReg
+        AvgKgPorRegistro: avgKgPorReg,
       };
     });
 
@@ -1350,14 +1546,14 @@ OPTION (MAXRECURSION 32767);
 
         // Promedios del rango (lo que pediste)
         Promedios: {
-          KgPorRegistro: avgKgPorRegistro,  // promedio despachado por número de registros (kg/registro)
-          KgPorHora: avgKgPorHora,      // promedio despachado por horas del rango (kg/h)
-          RegistrosPorHora: avgRegPorHora   // promedio de registros por hora
+          KgPorRegistro: avgKgPorRegistro, // promedio despachado por número de registros (kg/registro)
+          KgPorHora: avgKgPorHora, // promedio despachado por horas del rango (kg/h)
+          RegistrosPorHora: avgRegPorHora, // promedio de registros por hora
         },
 
         // Detalle por hora (incluye promedio por registro por bucket)
-        Horas: horas
-      }
+        Horas: horas,
+      },
     };
   }
 
@@ -1365,15 +1561,21 @@ OPTION (MAXRECURSION 32767);
     product: string | undefined,
     ingenioId: string | undefined,
     hStart: number, // 0..23
-    hEnd: number,   // 0..23
+    hEnd: number, // 0..23
   ) {
     const params: any[] = [];
-    const add = (v: any) => { const i = params.length; params.push(v); return `@${i}`; };
+    const add = (v: any) => {
+      const i = params.length;
+      params.push(v);
+      return `@${i}`;
+    };
 
     // Filtros case-insensitive sobre Shipments
     let filterShip = '';
-    if (product) filterShip += ` AND UPPER(LTRIM(RTRIM(sh.product)))    = UPPER(LTRIM(RTRIM(${add(product)})))`;
-    if (ingenioId) filterShip += ` AND UPPER(LTRIM(RTRIM(sh.ingenio_id))) = UPPER(LTRIM(RTRIM(${add(ingenioId)})))`;
+    if (product)
+      filterShip += ` AND UPPER(LTRIM(RTRIM(sh.product)))    = UPPER(LTRIM(RTRIM(${add(product)})))`;
+    if (ingenioId)
+      filterShip += ` AND UPPER(LTRIM(RTRIM(sh.ingenio_id))) = UPPER(LTRIM(RTRIM(${add(ingenioId)})))`;
 
     // --- RANGO DEL DÍA (desde SQL Server para usar su reloj) ---
     const rangeRow = await this.dataSource.query(`
@@ -1439,11 +1641,17 @@ WHERE p.t4 IS NOT NULL
 ORDER BY Fecha;`;
 
     type TRow = {
-      ShipmentId: number; IngenioId: string; Product: string;
-      TruckType: string; Placa: string; Fecha: string; H: number; DiffSec: number;
+      ShipmentId: number;
+      IngenioId: string;
+      Product: string;
+      TruckType: string;
+      Placa: string;
+      Fecha: string;
+      H: number;
+      DiffSec: number;
     };
     const transRows: TRow[] = await this.dataSource.query(sqlTransito, params);
-    const transFilas = transRows.map(r => ({
+    const transFilas = transRows.map((r) => ({
       ShipmentId: r.ShipmentId,
       IngenioId: r.IngenioId,
       Product: r.Product,
@@ -1453,30 +1661,41 @@ ORDER BY Fecha;`;
       Hora: `${r.H.toString().padStart(2, '0')}:00`,
       Tiempo: this.secToHHMMSS(r.DiffSec),
     }));
-    const transPromSec = transRows.length ? transRows.reduce((a, r) => a + r.DiffSec, 0) / transRows.length : 0;
+    const transPromSec = transRows.length
+      ? transRows.reduce((a, r) => a + r.DiffSec, 0) / transRows.length
+      : 0;
     const transProm = this.secToHHMMSS(transPromSec);
 
     // Promedios por producto y tipo de camión (Transito)
-    const groupKey = (p: string, t: string) => `${(p || '').toUpperCase()}|${(t || '').toUpperCase()}`;
+    const groupKey = (p: string, t: string) =>
+      `${(p || '').toUpperCase()}|${(t || '').toUpperCase()}`;
     const aggProm = (rows: TRow[]) => {
-      const map = new Map<string, { p: string, t: string, sum: number, cnt: number }>();
+      const map = new Map<
+        string,
+        { p: string; t: string; sum: number; cnt: number }
+      >();
       for (const r of rows) {
         const k = groupKey(r.Product, r.TruckType);
-        if (!map.has(k)) map.set(k, { p: r.Product, t: r.TruckType, sum: 0, cnt: 0 });
-        const o = map.get(k)!; o.sum += r.DiffSec; o.cnt++;
+        if (!map.has(k))
+          map.set(k, { p: r.Product, t: r.TruckType, sum: 0, cnt: 0 });
+        const o = map.get(k)!;
+        o.sum += r.DiffSec;
+        o.cnt++;
       }
-      return [...map.values()].map(o => ({
+      return [...map.values()].map((o) => ({
         Product: o.p,
         TruckType: o.t,
         PromedioHHMMSS: this.secToHHMMSS(o.sum / o.cnt),
-        TotalRegistros: o.cnt
+        TotalRegistros: o.cnt,
       }));
     };
     const transPromPT = aggProm(transRows);
 
     // Promedios Azúcar/Melaza (Transito)
     const avgFor = (rows: TRow[], productCode: string) => {
-      const f = rows.filter(r => (r.Product || '').toUpperCase() === productCode.toUpperCase());
+      const f = rows.filter(
+        (r) => (r.Product || '').toUpperCase() === productCode.toUpperCase(),
+      );
       const s = f.length ? f.reduce((a, r) => a + r.DiffSec, 0) / f.length : 0;
       return this.secToHHMMSS(s);
     };
@@ -1537,7 +1756,7 @@ WHERE p.t7 IS NOT NULL
 ORDER BY Fecha;`;
 
     const colaRows: TRow[] = await this.dataSource.query(sqlCola, params);
-    const colaFilas = colaRows.map(r => ({
+    const colaFilas = colaRows.map((r) => ({
       ShipmentId: r.ShipmentId,
       IngenioId: r.IngenioId,
       Product: r.Product,
@@ -1547,14 +1766,20 @@ ORDER BY Fecha;`;
       Hora: `${r.H.toString().padStart(2, '0')}:00`,
       Tiempo: this.secToHHMMSS(r.DiffSec),
     }));
-    const colaPromSec = colaRows.length ? colaRows.reduce((a, r) => a + r.DiffSec, 0) / colaRows.length : 0;
+    const colaPromSec = colaRows.length
+      ? colaRows.reduce((a, r) => a + r.DiffSec, 0) / colaRows.length
+      : 0;
     const colaProm = this.secToHHMMSS(colaPromSec);
     const colaPromPT = aggProm(colaRows);
 
     // Promedios por tipo de camión (Plana/Volteo/Pipa) para TiempoEnCola
     const avgTruck = (rows: TRow[], type: string | string[]) => {
-      const types = Array.isArray(type) ? type.map(t => t.toUpperCase()) : [type.toUpperCase()];
-      const f = rows.filter(r => types.includes((r.TruckType || '').toUpperCase()));
+      const types = Array.isArray(type)
+        ? type.map((t) => t.toUpperCase())
+        : [type.toUpperCase()];
+      const f = rows.filter((r) =>
+        types.includes((r.TruckType || '').toUpperCase()),
+      );
       const s = f.length ? f.reduce((a, r) => a + r.DiffSec, 0) / f.length : 0;
       return this.secToHHMMSS(s);
     };
@@ -1587,17 +1812,19 @@ WHERE stt.created_at >= @start AND stt.created_at < @end
 ORDER BY Fecha;`;
 
     const descRows: TRow[] = await this.dataSource.query(sqlDescarga, params);
-    const descFilas = descRows.map(r => ({
+    const descFilas = descRows.map((r) => ({
       ShipmentId: r.ShipmentId,
       IngenioId: r.IngenioId,
       PlacaRemolque: r.Placa,
-      OperationType: r.Product,        // alias como en tu ejemplo
+      OperationType: r.Product, // alias como en tu ejemplo
       TruckType: r.TruckType,
       Fecha: r.Fecha,
       Hora: `${r.H.toString().padStart(2, '0')}:00`,
       Tiempo: this.secToHHMMSS(r.DiffSec),
     }));
-    const descPromSec = descRows.length ? descRows.reduce((a, r) => a + r.DiffSec, 0) / descRows.length : 0;
+    const descPromSec = descRows.length
+      ? descRows.reduce((a, r) => a + r.DiffSec, 0) / descRows.length
+      : 0;
     const descProm = this.secToHHMMSS(descPromSec);
     const descPromPT = aggProm(descRows);
 
@@ -1609,10 +1836,14 @@ ORDER BY Fecha;`;
     // -------------------------- UnidadesDespachadasPorHora --------------------------
     // Reutilizamos descRows (cada registro = 1 unidad). Totales por tipo:
     const totalTipo = (types: string | string[]) => {
-      const ts = Array.isArray(types) ? types.map(t => t.toUpperCase()) : [types.toUpperCase()];
-      return descRows.filter(r => ts.includes((r.TruckType || '').toUpperCase())).length;
+      const ts = Array.isArray(types)
+        ? types.map((t) => t.toUpperCase())
+        : [types.toUpperCase()];
+      return descRows.filter((r) =>
+        ts.includes((r.TruckType || '').toUpperCase()),
+      ).length;
     };
-    const unidadesHoras = descRows.map(r => ({
+    const unidadesHoras = descRows.map((r) => ({
       Hora: `${r.H.toString().padStart(2, '0')}:00`,
       ShipmentId: r.ShipmentId,
       IngenioId: r.IngenioId,
@@ -1620,7 +1851,7 @@ ORDER BY Fecha;`;
       TruckType: r.TruckType,
       PlacaRemolque: r.Placa,
       Fecha: r.Fecha,
-      Total: 1
+      Total: 1,
     }));
 
     // -------------------------- RESPUESTA FINAL --------------------------
@@ -1662,17 +1893,23 @@ ORDER BY Fecha;`;
         TotalRegistrosPlana: totalTipo(['PLANA', 'R']),
         TotalRegistrosVolteo: totalTipo(['VOLTEO', 'V']),
         TotalRegistrosPipa: totalTipo(['PIPA', 'P']),
-        Horas: unidadesHoras
-      }
+        Horas: unidadesHoras,
+      },
     };
   }
 
   // helper local (mismo archivo/service)
   private secToHHMMSS(totalSec?: number | null): string {
     const sec = Math.max(0, Math.floor(totalSec ?? 0));
-    const h = Math.floor(sec / 3600).toString().padStart(2, '0');
-    const m = Math.floor((sec % 3600) / 60).toString().padStart(2, '0');
-    const s = Math.floor(sec % 60).toString().padStart(2, '0');
+    const h = Math.floor(sec / 3600)
+      .toString()
+      .padStart(2, '0');
+    const m = Math.floor((sec % 3600) / 60)
+      .toString()
+      .padStart(2, '0');
+    const s = Math.floor(sec % 60)
+      .toString()
+      .padStart(2, '0');
     return `${h}:${m}:${s}`;
   }
 }

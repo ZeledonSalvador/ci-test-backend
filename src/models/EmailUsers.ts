@@ -1,6 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+} from 'typeorm';
 
-@Entity('EmailUsers', { schema: "dbo" })
+@Entity('EmailUsers', { schema: 'dbo' })
 export class EmailUsers {
   @PrimaryGeneratedColumn()
   id: number;
@@ -11,7 +16,7 @@ export class EmailUsers {
   @Column({ type: 'varchar', length: 150 })
   name: string;
 
-  @Column({ type: 'varchar', length: 200})
+  @Column({ type: 'varchar', length: 200 })
   email: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
@@ -22,7 +27,8 @@ export class EmailUsers {
 
   @Column({
     type: 'int',
-    comment: '1: Administrador, 2: Gerente de Planta, 3: Cliente, 4: Supervisor de Seguridad',
+    comment:
+      '1: Administrador, 2: Gerente de Planta, 3: Cliente, 4: Supervisor de Seguridad',
   })
   id_rol: number;
 

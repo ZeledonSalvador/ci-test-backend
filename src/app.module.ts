@@ -39,7 +39,7 @@ import { ControlSystemModule } from './modules/control-system/control-system.mod
 import { TransactionLogEntity } from './models/TransactionLogEntity';
 import { DataInconsistency } from './models/DataInconsistency';
 import { DataInconsistencyModule } from './modules/data-inconsistency/data-inconsistency.module';
-import { OperationTime } from './modules/operation-times/types/operation-time.entity'; 
+import { OperationTime } from './modules/operation-times/types/operation-time.entity';
 import { OperationTimesModule } from './modules/operation-times/operation-times.module';
 import { ShipmentTemperature } from './models/ShipmentTemperature';
 import { InternalAuthModule } from './modules/internal-auth/internal-auth.module';
@@ -80,7 +80,7 @@ import { ReportsModule } from './modules/reports/reports.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    
+
     TypeOrmModule.forRoot({
       type: process.env.DATABASE_TYPE as 'mssql',
       host: process.env.DATABASE_HOST,
@@ -143,14 +143,14 @@ import { ReportsModule } from './modules/reports/reports.module';
       extra: {
         connectionLimit: 20,
         max: 20, // Máximo de conexiones en el pool
-        min: 1,  // Mínimo de conexiones en el pool
+        min: 1, // Mínimo de conexiones en el pool
         idleTimeoutMillis: 30000, // Tiempo antes de cerrar conexiones idle
       },
       synchronize: false,
       logging: false,
       autoLoadEntities: false,
     }),
-    
+
     // EventEmitter debe ir antes de NotificationsModule
     EventEmitterModule.forRoot({
       wildcard: true,
@@ -190,4 +190,4 @@ import { ReportsModule } from './modules/reports/reports.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

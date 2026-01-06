@@ -19,7 +19,9 @@ describe('InternalAuthGuard', () => {
   };
 
   // 🆕 Helper para crear mock payload completo
-  const createMockPayload = (overrides: Partial<InternalJwtPayloadDto> = {}): InternalJwtPayloadDto => ({
+  const createMockPayload = (
+    overrides: Partial<InternalJwtPayloadDto> = {},
+  ): InternalJwtPayloadDto => ({
     sub: 1,
     username: 'testuser',
     name: 'Test User',
@@ -30,7 +32,7 @@ describe('InternalAuthGuard', () => {
     fechaExpiracion: '20/08/2025 18:00:00',
     duracionHoras: 8,
     iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + (8 * 60 * 60),
+    exp: Math.floor(Date.now() / 1000) + 8 * 60 * 60,
     ...overrides,
   });
 
@@ -58,7 +60,10 @@ describe('InternalAuthGuard', () => {
     jest.clearAllMocks();
   });
 
-  const createMockExecutionContext = (headers: any = {}, url: string = '/test'): ExecutionContext => {
+  const createMockExecutionContext = (
+    headers: any = {},
+    url: string = '/test',
+  ): ExecutionContext => {
     return {
       switchToHttp: () => ({
         getRequest: () => ({
@@ -82,7 +87,10 @@ describe('InternalAuthGuard', () => {
       const result = await guard.canActivate(context);
 
       expect(result).toBe(true);
-      expect(reflector.get).toHaveBeenCalledWith('internal-permissions', context.getHandler());
+      expect(reflector.get).toHaveBeenCalledWith(
+        'internal-permissions',
+        context.getHandler(),
+      );
     });
 
     it('should return true when permissions array is empty', async () => {
@@ -98,16 +106,23 @@ describe('InternalAuthGuard', () => {
       const context = createMockExecutionContext({}, '/protected-route');
       mockReflector.get.mockReturnValue(['AutorizacionCamiones']);
 
-      await expect(guard.canActivate(context)).rejects.toThrow(ForbiddenException);
-      await expect(guard.canActivate(context)).rejects.toThrow('Falta el encabezado de autorización');
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        ForbiddenException,
+      );
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        'Falta el encabezado de autorización',
+      );
     });
 
     it('should return true when user has required permissions', async () => {
       const headers = {
         authorization: 'Bearer valid-jwt-token',
       };
-      const context = createMockExecutionContext(headers, '/autorizacion-camiones');
-      
+      const context = createMockExecutionContext(
+        headers,
+        '/autorizacion-camiones',
+      );
+
       const mockPayload = createMockPayload({
         sub: 1,
         username: 'testuser',
@@ -124,7 +139,10 @@ describe('InternalAuthGuard', () => {
 
       expect(result).toBe(true);
       expect(jwtService.verify).toHaveBeenCalledWith('valid-jwt-token');
-      expect(reflector.get).toHaveBeenCalledWith('internal-permissions', context.getHandler());
+      expect(reflector.get).toHaveBeenCalledWith(
+        'internal-permissions',
+        context.getHandler(),
+      );
     });
 
     it('should throw ForbiddenException when user lacks required permissions', async () => {
@@ -132,7 +150,7 @@ describe('InternalAuthGuard', () => {
         authorization: 'Bearer valid-jwt-token',
       };
       const context = createMockExecutionContext(headers, '/admin-panel');
-      
+
       const mockPayload = createMockPayload({
         sub: 1,
         username: 'testuser',
@@ -145,16 +163,23 @@ describe('InternalAuthGuard', () => {
       mockReflector.get.mockReturnValue(['AdminPanel']);
       mockJwtService.verify.mockReturnValue(mockPayload);
 
-      await expect(guard.canActivate(context)).rejects.toThrow(ForbiddenException);
-      await expect(guard.canActivate(context)).rejects.toThrow('No tiene permisos para acceder a este recurso');
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        ForbiddenException,
+      );
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        'No tiene permisos para acceder a este recurso',
+      );
     });
 
     it('should return true when user has at least one of the required permissions', async () => {
       const headers = {
         authorization: 'Bearer valid-jwt-token',
       };
-      const context = createMockExecutionContext(headers, '/multi-permission-endpoint');
-      
+      const context = createMockExecutionContext(
+        headers,
+        '/multi-permission-endpoint',
+      );
+
       const mockPayload = createMockPayload({
         sub: 1,
         username: 'testuser',
@@ -177,33 +202,37 @@ describe('InternalAuthGuard', () => {
         authorization: 'Bearer invalid-jwt-token',
       };
       const context = createMockExecutionContext(headers, '/protected-route');
-      
+
       mockReflector.get.mockReturnValue(['AutorizacionCamiones']);
       mockJwtService.verify.mockImplementation(() => {
         throw new Error('Token inválido');
       });
 
-      await expect(guard.canActivate(context)).rejects.toThrow(ForbiddenException);
-      await expect(guard.canActivate(context)).rejects.toThrow('Token inválido');
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        ForbiddenException,
+      );
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        'Token inválido',
+      );
     });
 
     it('should add user info to request when authorization succeeds', async () => {
       const headers = {
         authorization: 'Bearer valid-jwt-token',
       };
-      
+
       const mockRequest = {
         headers,
         url: '/autorizacion-camiones',
       };
-      
+
       const context = {
         switchToHttp: () => ({
           getRequest: () => mockRequest,
         }),
         getHandler: jest.fn(),
       } as any;
-      
+
       const mockPayload = createMockPayload({
         sub: 1,
         username: 'testuser',
@@ -226,8 +255,11 @@ describe('InternalAuthGuard', () => {
       const headers = {
         authorization: 'Bearer valid-jwt-token',
       };
-      const context = createMockExecutionContext(headers, '/autorizacion-camiones');
-      
+      const context = createMockExecutionContext(
+        headers,
+        '/autorizacion-camiones',
+      );
+
       const mockPayload = createMockPayload({
         codBascula: undefined,
         codTurno: undefined,
@@ -247,7 +279,7 @@ describe('InternalAuthGuard', () => {
         authorization: 'Bearer expired-jwt-token',
       };
       const context = createMockExecutionContext(headers, '/protected-route');
-      
+
       mockReflector.get.mockReturnValue(['AutorizacionCamiones']);
       mockJwtService.verify.mockImplementation(() => {
         const error = new Error('jwt expired');
@@ -255,7 +287,9 @@ describe('InternalAuthGuard', () => {
         throw error;
       });
 
-      await expect(guard.canActivate(context)).rejects.toThrow(ForbiddenException);
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        ForbiddenException,
+      );
       await expect(guard.canActivate(context)).rejects.toThrow('jwt expired');
     });
 
@@ -264,7 +298,7 @@ describe('InternalAuthGuard', () => {
         authorization: 'Bearer malformed-token',
       };
       const context = createMockExecutionContext(headers, '/protected-route');
-      
+
       mockReflector.get.mockReturnValue(['AutorizacionCamiones']);
       mockJwtService.verify.mockImplementation(() => {
         const error = new Error('jwt malformed');
@@ -272,7 +306,9 @@ describe('InternalAuthGuard', () => {
         throw error;
       });
 
-      await expect(guard.canActivate(context)).rejects.toThrow(ForbiddenException);
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        ForbiddenException,
+      );
       await expect(guard.canActivate(context)).rejects.toThrow('jwt malformed');
     });
   });

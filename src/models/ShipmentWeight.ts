@@ -52,7 +52,12 @@ export class ShipmentWeight {
   @Column({ name: 'bascula_in', type: 'nvarchar', length: 100, nullable: true })
   bascula_in: string | null;
 
-  @Column({ name: 'bascula_out', type: 'nvarchar', length: 100, nullable: true })
+  @Column({
+    name: 'bascula_out',
+    type: 'nvarchar',
+    length: 100,
+    nullable: true,
+  })
   bascula_out: string | null;
 
   @Column({ name: 'id_nav_record', type: 'int', nullable: true })

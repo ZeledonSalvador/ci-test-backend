@@ -1,10 +1,10 @@
 // src/models/NotificationLogs.ts
-import { 
-  Entity, 
-  PrimaryGeneratedColumn, 
-  Column, 
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
   CreateDateColumn,
-  Index 
+  Index,
 } from 'typeorm';
 
 @Entity('Notification_Logs', { schema: 'dbo' })
@@ -24,7 +24,12 @@ export class NotificationLogs {
   @Column({ type: 'nvarchar', length: 300, name: 'subject' })
   subject: string;
 
-  @Column({ type: 'nvarchar', length: 'MAX', nullable: true, name: 'emailBody' })
+  @Column({
+    type: 'nvarchar',
+    length: 'MAX',
+    nullable: true,
+    name: 'emailBody',
+  })
   emailBody: string | null; // JSON con los datos del template
 
   @Column({ type: 'nvarchar', length: 20, name: 'status' })
@@ -33,16 +38,21 @@ export class NotificationLogs {
   @Column({ type: 'int', default: 1, name: 'attempts' })
   attempts: number;
 
-  @Column({ type: 'nvarchar', length: 'MAX', nullable: true, name: 'errorMessage' })
+  @Column({
+    type: 'nvarchar',
+    length: 'MAX',
+    nullable: true,
+    name: 'errorMessage',
+  })
   errorMessage: string | null;
 
   @Column({ type: 'int', nullable: true, name: 'referenceId' })
   referenceId: number | null;
 
-  @CreateDateColumn({ 
-    type: 'datetime', 
+  @CreateDateColumn({
+    type: 'datetime',
     name: 'createdAt',
-    default: () => 'GETDATE()' 
+    default: () => 'GETDATE()',
   })
   createdAt: Date;
 }

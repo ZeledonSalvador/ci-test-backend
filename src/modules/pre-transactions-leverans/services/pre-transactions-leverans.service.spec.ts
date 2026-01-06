@@ -9,7 +9,9 @@ describe('PreTransactionsLeveransService', () => {
       providers: [PreTransactionsLeveransService],
     }).compile();
 
-    service = module.get<PreTransactionsLeveransService>(PreTransactionsLeveransService);
+    service = module.get<PreTransactionsLeveransService>(
+      PreTransactionsLeveransService,
+    );
   });
 
   it('should be defined', () => {

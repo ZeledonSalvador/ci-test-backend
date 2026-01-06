@@ -19,10 +19,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         signOptions: { expiresIn: configService.get<string>('JWT_EXPIRATION') },
       }),
     }),
-    UsersModule
+    UsersModule,
   ],
   providers: [AuthService, JwtStrategy, AuthGuard],
   controllers: [AuthController],
   exports: [AuthGuard, JwtModule, AuthService, UsersModule],
 })
-export class AuthModule { }
+export class AuthModule {}

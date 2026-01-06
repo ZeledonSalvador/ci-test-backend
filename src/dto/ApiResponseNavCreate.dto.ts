@@ -1,5 +1,5 @@
 interface ApiResponseNavCreate {
-    message: string;
-    logs: any[];
-    newRecord: NavRecord;
+  message: string;
+  logs: any[];
+  newRecord: NavRecord;
 }

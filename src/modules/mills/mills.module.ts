@@ -12,10 +12,10 @@ import { UsersModule } from '../users/users.module';
   imports: [
     TypeOrmModule.forFeature([Clients, Users]),
     AuthModule,
-    UsersModule
+    UsersModule,
   ],
   controllers: [MillsController],
   providers: [MillsService, AuthGuard],
   exports: [MillsService],
 })
-export class MillsModule { }
+export class MillsModule {}

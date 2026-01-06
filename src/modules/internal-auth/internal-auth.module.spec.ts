@@ -37,7 +37,9 @@ describe('InternalAuthModule', () => {
   });
 
   it('should have InternalAuthController', () => {
-    const controller = module.get<InternalAuthController>(InternalAuthController);
+    const controller = module.get<InternalAuthController>(
+      InternalAuthController,
+    );
     expect(controller).toBeDefined();
     expect(controller).toBeInstanceOf(InternalAuthController);
   });
@@ -61,7 +63,8 @@ describe('InternalAuthModule', () => {
   });
 
   it('should export InternalAuthService', () => {
-    const exportedService = module.get<InternalAuthService>(InternalAuthService);
+    const exportedService =
+      module.get<InternalAuthService>(InternalAuthService);
     expect(exportedService).toBeDefined();
   });
 

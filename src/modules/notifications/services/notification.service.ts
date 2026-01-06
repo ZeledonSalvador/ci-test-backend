@@ -25,18 +25,18 @@ export class NotificationService {
   async emit<T = any>(notification: NotificationEvent<T>): Promise<void> {
     try {
       this.logger.log(
-        `[Notification] Emitting: ${notification.eventName} (${notification.type})`
+        `[Notification] Emitting: ${notification.eventName} (${notification.type})`,
       );
 
       this.eventEmitter.emit(notification.eventName, notification);
 
       this.logger.debug(
-        `[Notification] Event emitted: ${notification.eventName}`
+        `[Notification] Event emitted: ${notification.eventName}`,
       );
     } catch (error) {
       this.logger.error(
         `[Notification] Critical error emitting: ${notification.eventName}`,
-        error.stack
+        error.stack,
       );
     }
   }

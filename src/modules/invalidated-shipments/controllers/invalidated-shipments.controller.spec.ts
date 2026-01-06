@@ -9,7 +9,9 @@ describe('InvalidatedShipmentsController', () => {
       controllers: [InvalidatedShipmentsController],
     }).compile();
 
-    controller = module.get<InvalidatedShipmentsController>(InvalidatedShipmentsController);
+    controller = module.get<InvalidatedShipmentsController>(
+      InvalidatedShipmentsController,
+    );
   });
 
   it('should be defined', () => {

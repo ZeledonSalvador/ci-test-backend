@@ -6,38 +6,38 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-} from "typeorm";
-import { LogMetadata } from "./LogMetadata";
-import { Shipments } from "./Shipments";
+} from 'typeorm';
+import { LogMetadata } from './LogMetadata';
+import { Shipments } from './Shipments';
 
-@Index("PK__Shipment__3213E83F60384187", ["id"], { unique: true })
-@Entity("ShipmentLogs", { schema: "dbo" })
+@Index('PK__Shipment__3213E83F60384187', ['id'], { unique: true })
+@Entity('ShipmentLogs', { schema: 'dbo' })
 export class ShipmentLogs {
-  @PrimaryGeneratedColumn({ type: "int", name: "id" })
+  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
-  @Column("nvarchar", { name: "log_type", length: 50 })
+  @Column('nvarchar', { name: 'log_type', length: 50 })
   logType: string;
 
-  @Column("nvarchar", {
-    name: "log_text",
+  @Column('nvarchar', {
+    name: 'log_text',
     nullable: true,
     length: 255,
-    default: () => "NULL",
+    default: () => 'NULL',
   })
   logText: string | null;
 
-  @Column("datetime", {
-    name: "created_at",
+  @Column('datetime', {
+    name: 'created_at',
     nullable: true,
-    default: () => "getdate()",
+    default: () => 'getdate()',
   })
   createdAt: Date | null;
 
-  @Column("datetime", {
-    name: "updated_at",
+  @Column('datetime', {
+    name: 'updated_at',
     nullable: true,
-    default: () => "getdate()",
+    default: () => 'getdate()',
   })
   updatedAt: Date | null;
 
@@ -45,8 +45,8 @@ export class ShipmentLogs {
   logMetadata: LogMetadata[];
 
   @ManyToOne(() => Shipments, (shipments) => shipments.shipmentLogs, {
-    onDelete: "CASCADE",
+    onDelete: 'CASCADE',
   })
-  @JoinColumn([{ name: "shipment_id", referencedColumnName: "id" }])
+  @JoinColumn([{ name: 'shipment_id', referencedColumnName: 'id' }])
   shipment: Shipments;
 }

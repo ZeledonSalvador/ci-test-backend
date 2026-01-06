@@ -1,32 +1,32 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
-@Index("PK__SysLogs__3213E83FE3F96A1C", ["id"], { unique: true })
-@Entity("SysLogs", { schema: "dbo" })
+@Index('PK__SysLogs__3213E83FE3F96A1C', ['id'], { unique: true })
+@Entity('SysLogs', { schema: 'dbo' })
 export class SysLogs {
-  @PrimaryGeneratedColumn({ type: "int", name: "id" })
+  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
-  @Column("nvarchar", { name: "log_type", length: 50 })
+  @Column('nvarchar', { name: 'log_type', length: 50 })
   logType: string;
 
-  @Column("nvarchar", {
-    name: "log_text",
+  @Column('nvarchar', {
+    name: 'log_text',
     nullable: true,
-    default: () => "NULL",
+    default: () => 'NULL',
   })
   logText: string | null;
 
-  @Column("datetime", {
-    name: "created_at",
+  @Column('datetime', {
+    name: 'created_at',
     nullable: true,
-    default: () => "getdate()",
+    default: () => 'getdate()',
   })
   createdAt: Date | null;
 
-  @Column("datetime", {
-    name: "updated_at",
+  @Column('datetime', {
+    name: 'updated_at',
     nullable: true,
-    default: () => "getdate()",
+    default: () => 'getdate()',
   })
   updatedAt: Date | null;
 }

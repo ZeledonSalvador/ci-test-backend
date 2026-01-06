@@ -3,7 +3,7 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn
+  CreateDateColumn,
 } from 'typeorm';
 
 @Entity({ name: 'Ingenios_Logs' })
@@ -20,20 +20,30 @@ export class IngenioLogEntity {
   @Column({ length: 50 })
   usuario: string;
 
-  @CreateDateColumn({ 
-    name: 'fecha_creacion', 
-    type: 'datetime2', 
-    precision: 3, 
-    default: () => 'SYSDATETIME()' 
+  @CreateDateColumn({
+    name: 'fecha_creacion',
+    type: 'datetime2',
+    precision: 3,
+    default: () => 'SYSDATETIME()',
   })
   fechaCreacion: Date;
 
   @Column({ length: 30 })
   estatus: string;
 
-  @Column({ name: 'json_modificacion', type: 'nvarchar', length: 'MAX', nullable: true })
+  @Column({
+    name: 'json_modificacion',
+    type: 'nvarchar',
+    length: 'MAX',
+    nullable: true,
+  })
   jsonModificacion?: string;
 
-  @Column({ name: 'motivo_invalidacion', type: 'nvarchar', length: 'MAX', nullable: true })
+  @Column({
+    name: 'motivo_invalidacion',
+    type: 'nvarchar',
+    length: 'MAX',
+    nullable: true,
+  })
   motivoInvalidacion?: string;
 }

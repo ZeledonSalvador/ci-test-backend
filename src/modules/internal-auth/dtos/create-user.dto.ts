@@ -1,4 +1,13 @@
-import { IsString, IsNotEmpty, IsEmail, IsOptional, IsInt, IsArray, MinLength, ValidateNested } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsEmail,
+  IsOptional,
+  IsInt,
+  IsArray,
+  MinLength,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 class PermissionDto {

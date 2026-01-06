@@ -40,51 +40,58 @@ describe('InternalAuthService', () => {
   };
 
   // Helper function to create mock InternalUsers
-  const createMockUser = (overrides: Partial<InternalUsers> = {}): InternalUsers => ({
-    id: 1,
-    username: 'testuser',
-    name: 'Test User',
-    password: Buffer.from('hashedpassword'),
-    active: 1,
-    idRol: 1,
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-01'),
-    role: {
+  const createMockUser = (
+    overrides: Partial<InternalUsers> = {},
+  ): InternalUsers =>
+    ({
+      id: 1,
+      username: 'testuser',
+      name: 'Test User',
+      password: Buffer.from('hashedpassword'),
+      active: 1,
+      idRol: 1,
+      createdAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-01-01'),
+      role: {
+        id: 1,
+        description: 'Administrador',
+        createdAt: new Date('2024-01-01'),
+        internalUsers: [],
+      },
+      permissions: [],
+      ...overrides,
+    }) as InternalUsers;
+
+  // Helper function to create mock Roles
+  const createMockRole = (overrides: Partial<Roles> = {}): Roles =>
+    ({
       id: 1,
       description: 'Administrador',
       createdAt: new Date('2024-01-01'),
       internalUsers: [],
-    },
-    permissions: [],
-    ...overrides,
-  } as InternalUsers);
-
-  // Helper function to create mock Roles
-  const createMockRole = (overrides: Partial<Roles> = {}): Roles => ({
-    id: 1,
-    description: 'Administrador',
-    createdAt: new Date('2024-01-01'),
-    internalUsers: [],
-    ...overrides,
-  } as Roles);
+      ...overrides,
+    }) as Roles;
 
   // Helper function to create mock Permissions
-  const createMockPermission = (overrides: Partial<Permissions> = {}): Permissions => ({
-    id: 1,
-    idUser: 1,
-    idMenu: 1,
-    createdAt: new Date('2024-01-01'),
-    user: createMockUser(),
-    menu: {
+  const createMockPermission = (
+    overrides: Partial<Permissions> = {},
+  ): Permissions =>
+    ({
       id: 1,
-      url: 'AutorizacionCamiones',
-      icon: '<i class="fa fa-truck"></i>',
-      description: 'Chequeo de Información',
+      idUser: 1,
+      idMenu: 1,
       createdAt: new Date('2024-01-01'),
-      permissions: [],
-    } as Menu,
-    ...overrides,
-  } as Permissions);
+      user: createMockUser(),
+      menu: {
+        id: 1,
+        url: 'AutorizacionCamiones',
+        icon: '<i class="fa fa-truck"></i>',
+        description: 'Chequeo de Información',
+        createdAt: new Date('2024-01-01'),
+        permissions: [],
+      } as Menu,
+      ...overrides,
+    }) as Permissions;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -110,8 +117,12 @@ describe('InternalAuthService', () => {
     }).compile();
 
     service = module.get<InternalAuthService>(InternalAuthService);
-    internalUsersRepository = module.get<Repository<InternalUsers>>(getRepositoryToken(InternalUsers));
-    permissionsRepository = module.get<Repository<Permissions>>(getRepositoryToken(Permissions));
+    internalUsersRepository = module.get<Repository<InternalUsers>>(
+      getRepositoryToken(InternalUsers),
+    );
+    permissionsRepository = module.get<Repository<Permissions>>(
+      getRepositoryToken(Permissions),
+    );
     rolesRepository = module.get<Repository<Roles>>(getRepositoryToken(Roles));
     jwtService = module.get<JwtService>(JwtService);
   });
@@ -134,13 +145,19 @@ describe('InternalAuthService', () => {
       mockInternalUsersRepository.findOne.mockResolvedValue(mockUser);
       mockedBcrypt.compare.mockResolvedValue(true);
 
-      const result = await service.validateInternalUser('testuser', 'password123');
+      const result = await service.validateInternalUser(
+        'testuser',
+        'password123',
+      );
 
       expect(internalUsersRepository.findOne).toHaveBeenCalledWith({
         where: { username: 'testuser', active: 1 },
         relations: ['role'],
       });
-      expect(bcrypt.compare).toHaveBeenCalledWith('password123', 'hashedpassword');
+      expect(bcrypt.compare).toHaveBeenCalledWith(
+        'password123',
+        'hashedpassword',
+      );
       expect(result).toEqual(mockUser);
     });
 
@@ -150,7 +167,10 @@ describe('InternalAuthService', () => {
       mockInternalUsersRepository.findOne.mockResolvedValue(mockUser);
       mockedBcrypt.compare.mockResolvedValue(false);
 
-      const result = await service.validateInternalUser('testuser', 'wrongpassword');
+      const result = await service.validateInternalUser(
+        'testuser',
+        'wrongpassword',
+      );
 
       expect(result).toBeNull();
     });
@@ -158,7 +178,10 @@ describe('InternalAuthService', () => {
     it('should return null for non-existent user', async () => {
       mockInternalUsersRepository.findOne.mockResolvedValue(null);
 
-      const result = await service.validateInternalUser('nonexistent', 'password123');
+      const result = await service.validateInternalUser(
+        'nonexistent',
+        'password123',
+      );
 
       expect(result).toBeNull();
     });
@@ -266,12 +289,17 @@ describe('InternalAuthService', () => {
       // Setup mocks
       jest.spyOn(service, 'validateInternalUser').mockResolvedValue(mockUser);
       jest.spyOn(service, 'getRoleInfo').mockResolvedValue(mockRole);
-      jest.spyOn(service, 'getUserPermissions').mockResolvedValue(mockPermissions);
+      jest
+        .spyOn(service, 'getUserPermissions')
+        .mockResolvedValue(mockPermissions);
       mockJwtService.sign.mockReturnValue(mockToken);
 
       const result = await service.login(loginDto);
 
-      expect(service.validateInternalUser).toHaveBeenCalledWith('testuser', 'password123');
+      expect(service.validateInternalUser).toHaveBeenCalledWith(
+        'testuser',
+        'password123',
+      );
       expect(service.getRoleInfo).toHaveBeenCalledWith(1);
       expect(service.getUserPermissions).toHaveBeenCalledWith(1);
       expect(jwtService.sign).toHaveBeenCalled();
@@ -292,8 +320,13 @@ describe('InternalAuthService', () => {
 
       jest.spyOn(service, 'validateInternalUser').mockResolvedValue(null);
 
-      await expect(service.login(loginDto)).rejects.toThrow(UnauthorizedException);
-      expect(service.validateInternalUser).toHaveBeenCalledWith('wronguser', 'wrongpass');
+      await expect(service.login(loginDto)).rejects.toThrow(
+        UnauthorizedException,
+      );
+      expect(service.validateInternalUser).toHaveBeenCalledWith(
+        'wronguser',
+        'wrongpass',
+      );
     });
 
     it('should throw NotFoundException for non-existent role', async () => {

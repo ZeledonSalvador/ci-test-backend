@@ -13,19 +13,19 @@ import { LeveransUsers } from 'src/models/LeveransUsers';
 import { PredefinedStatuses } from 'src/models/PredefinedStatuses';
 
 @Module({
-  imports : [
+  imports: [
     TypeOrmModule.forFeature([
       LeveransLogger,
       LeveransUserLoginHistory,
       LeveransUsers,
       Status,
       Shipments,
-      PredefinedStatuses
+      PredefinedStatuses,
     ]),
-    AuthModule
+    AuthModule,
   ],
   controllers: [LeveransLoggerController],
   providers: [LeveransLoggerService],
-  exports : [LeveransLoggerService]
+  exports: [LeveransLoggerService],
 })
 export class LeveransLoggerModule {}

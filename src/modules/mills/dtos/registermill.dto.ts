@@ -7,12 +7,11 @@ export class RegisterMillDto {
 
   @IsNotEmpty()
   @IsString()
-  ingenioNavCode: string
+  ingenioNavCode: string;
 
   @IsNotEmpty()
   @IsString()
   username: string;
-
 
   @IsNotEmpty()
   @IsString()
@@ -22,4 +21,3 @@ export class RegisterMillDto {
   @IsString()
   password: string;
 }
-

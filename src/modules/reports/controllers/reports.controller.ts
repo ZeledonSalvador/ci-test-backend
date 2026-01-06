@@ -11,27 +11,27 @@ import { TempBrixChartDto } from '../dto/temp-brix.dto';
 import { TempBrixChartService } from '../services/temp-brix.service';
 
 import { RequiresSweepingReportService } from '../services/requires-sweeping.report';
-import { RequiresSweepingExportQueryDto, RequiresSweepingReportQueryDto } from '../dto/requires-sweeping.dto';
-
-
+import {
+  RequiresSweepingExportQueryDto,
+  RequiresSweepingReportQueryDto,
+} from '../dto/requires-sweeping.dto';
 
 import { TruckEntryReportService } from '../services/truck-entry.report';
-import { TruckEntryExportQueryDto, TruckEntryReportQueryDto } from '../dto/truck-entry.dto';
+import {
+  TruckEntryExportQueryDto,
+  TruckEntryReportQueryDto,
+} from '../dto/truck-entry.dto';
 
 @UseGuards(AuthGuard)
 @Controller('reports')
 export class ReportsController {
-    constructor(
-       private readonly truckEntryReport: TruckEntryReportService,
-       private readonly excelExporter: ExcelExporter,
-       private readonly pdfExporter: PdfExporter,
-       private readonly tempBrixChart: TempBrixChartService,
-       private readonly requiresSweepingReport: RequiresSweepingReportService,
-        
-    ) {}
-
-    
-
+  constructor(
+    private readonly truckEntryReport: TruckEntryReportService,
+    private readonly excelExporter: ExcelExporter,
+    private readonly pdfExporter: PdfExporter,
+    private readonly tempBrixChart: TempBrixChartService,
+    private readonly requiresSweepingReport: RequiresSweepingReportService,
+  ) {}
 
   // A) JSON preview/debug
   @Get('truck-entry')
@@ -41,89 +41,111 @@ export class ReportsController {
   }
 
   // B) Export (por ahora deja el wiring; luego metemos Excel/PDF con formato)
-@Get('truck-entry/export')
-@Roles(Role.ADMIN, Role.BOT)
-async exportTruckEntryReport(@Query() q: TruckEntryExportQueryDto, @Res() res: Response) {
-  const data = await this.truckEntryReport.getData(q);
+  @Get('truck-entry/export')
+  @Roles(Role.ADMIN, Role.BOT)
+  async exportTruckEntryReport(
+    @Query() q: TruckEntryExportQueryDto,
+    @Res() res: Response,
+  ) {
+    const data = await this.truckEntryReport.getData(q);
 
-  const filenameBase = q.filename?.trim() || `truck-entry_${q.from}_to_${q.to}`;
+    const filenameBase =
+      q.filename?.trim() || `truck-entry_${q.from}_to_${q.to}`;
 
-  if (q.format === 'excel') {
-    const file = await this.excelExporter.buildTruckEntryWorkbook({
+    if (q.format === 'excel') {
+      const file = await this.excelExporter.buildTruckEntryWorkbook({
+        rows: data.rows,
+        meta: data.meta,
+      });
+
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      );
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="${filenameBase}.xlsx"`,
+      );
+      return res.send(file);
+    }
+
+    // pdf
+    const pdf = await this.pdfExporter.buildTruckEntryPdf({
       rows: data.rows,
       meta: data.meta,
+      summary: data.summary,
     });
 
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', `attachment; filename="${filenameBase}.xlsx"`);
-    return res.send(file);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${filenameBase}.pdf"`,
+    );
+    return res.send(pdf);
   }
 
-  // pdf
-  const pdf = await this.pdfExporter.buildTruckEntryPdf({
-    rows: data.rows,
-    meta: data.meta,
-    summary: data.summary,
-  });
+  @Get('temperature-brix')
+  @Roles(Role.ADMIN, Role.BOT)
+  async temperatureBrix(@Query() dto: TempBrixChartDto) {
+    return this.tempBrixChart.getChart(dto);
+  }
 
-  res.setHeader('Content-Type', 'application/pdf');
-  res.setHeader('Content-Disposition', `attachment; filename="${filenameBase}.pdf"`);
-  return res.send(pdf);
-}
+  // A) JSON preview
+  @Get('requires-sweeping')
+  @Roles(Role.ADMIN, Role.BOT)
+  async getRequiresSweeping(@Query() q: RequiresSweepingReportQueryDto) {
+    return this.requiresSweepingReport.getData(q);
+  }
 
-@Get('temperature-brix')
-@Roles(Role.ADMIN, Role.BOT)
-async temperatureBrix(@Query() dto: TempBrixChartDto) {
-  return this.tempBrixChart.getChart(dto);
-}
+  // B) Export
+  @Get('requires-sweeping/export')
+  @Roles(Role.ADMIN, Role.BOT)
+  async exportRequiresSweeping(
+    @Query() q: RequiresSweepingExportQueryDto,
+    @Res() res: Response,
+  ) {
+    const data = await this.requiresSweepingReport.getData(q);
 
+    // Generar nombre con fecha y hora actual
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = now.getFullYear();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const dateTimeStr = `${day}-${month}-${year} ${hours}.${minutes}`;
 
-// A) JSON preview
-@Get('requires-sweeping')
-@Roles(Role.ADMIN, Role.BOT)
-async getRequiresSweeping(@Query() q: RequiresSweepingReportQueryDto) {
-  return this.requiresSweepingReport.getData(q);
-}
+    const filenameBase =
+      q.filename?.trim() || `Requiere Barrido (${dateTimeStr})`;
 
-// B) Export
-@Get('requires-sweeping/export')
-@Roles(Role.ADMIN, Role.BOT)
-async exportRequiresSweeping(@Query() q: RequiresSweepingExportQueryDto, @Res() res: Response) {
-  const data = await this.requiresSweepingReport.getData(q);
+    if (q.format === 'excel') {
+      const file = await this.excelExporter.buildRequiresSweepingWorkbook({
+        rows: data.rows,
+        meta: data.meta,
+      });
 
-  // Generar nombre con fecha y hora actual
-  const now = new Date();
-  const day = String(now.getDate()).padStart(2, '0');
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const year = now.getFullYear();
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  const dateTimeStr = `${day}-${month}-${year} ${hours}.${minutes}`;
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      );
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="${filenameBase}.xlsx"`,
+      );
+      return res.send(file);
+    }
 
-  const filenameBase = q.filename?.trim() || `Requiere Barrido (${dateTimeStr})`;
-
-  if (q.format === 'excel') {
-    const file = await this.excelExporter.buildRequiresSweepingWorkbook({
+    const pdf = await this.pdfExporter.buildRequiresSweepingPdf({
       rows: data.rows,
       meta: data.meta,
+      summary: data.summary,
     });
 
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', `attachment; filename="${filenameBase}.xlsx"`);
-    return res.send(file);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${filenameBase}.pdf"`,
+    );
+    return res.send(pdf);
   }
-
-  const pdf = await this.pdfExporter.buildRequiresSweepingPdf({
-    rows: data.rows,
-    meta: data.meta,
-    summary: data.summary,
-  });
-
-  res.setHeader('Content-Type', 'application/pdf');
-  res.setHeader('Content-Disposition', `attachment; filename="${filenameBase}.pdf"`);
-  return res.send(pdf);
-}
-
-
-
 }

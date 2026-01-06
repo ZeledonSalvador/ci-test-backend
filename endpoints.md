@@ -13,36 +13,40 @@ Este proyecto gestiona los envíos realizados por los Ingenios durante el period
     - `user`: Nombre de usuario.
     - `rol`: Rol del usuario (`admin`, `cliente/ingenio`, `bot`).
     - `password`: Contraseña del usuario.
-    
+
     Hacer login de tipo admin
+
     ```json
     {
-        "user" : "admin_user",
-        "password" : "password",
-        "rol" : "admin"
+      "user": "admin_user",
+      "password": "password",
+      "rol": "admin"
     }
     ```
+
     Hacer login de tipo Ingenio cliente
-     ```json
+
+    ```json
     {
-        "user" : "Cabanias",
-        "password" : "password",
-        "rol" : "ingenio/cliente"
+      "user": "Cabanias",
+      "password": "password",
+      "rol": "ingenio/cliente"
     }
     ```
 
 - **Endpoint de registrar usuario** `POST api/auth/register` LISTO
-    - **Parámetros:**
-        - `user`: Nombre de usuario.
-        - `rol`: Rol del usuario (`admin`, `bot`).
-        - `password`: Contraseña del usuario.
-    ```json
-    {
-        "username" : "tes333t",
-        "password" : "123",
-        "role" : "admin"
-    }
-    ```
+  - **Parámetros:**
+    - `user`: Nombre de usuario.
+    - `rol`: Rol del usuario (`admin`, `bot`).
+    - `password`: Contraseña del usuario.
+  ```json
+  {
+    "username": "tes333t",
+    "password": "123",
+    "role": "admin"
+  }
+  ```
+
 ### Modulo de clientes/Ingenios (mills)
 
 - **Endpoint para crear cliente** `POST /api/mills/register` (LISTO)
@@ -52,16 +56,18 @@ Este proyecto gestiona los envíos realizados por los Ingenios durante el period
     - `password`: Contraseña del cliente.
 
     Crear un cliente/ingenio (solamente un usuario con jwt de tipo admin puede)
+
     ```json
-        {
-            "username" : "Cabanias",
-            "ingenioCode" : "1234",
-            "password" : "password"
-        }
+    {
+      "username": "Cabanias",
+      "ingenioCode": "1234",
+      "password": "password"
+    }
     ```
+
 - **Endpoint para listar clientes** `GET api/mills/` (LISTO)
-    - **Parametros: ***
-        - `Header jwt `: De tipo administrador
+  - **Parametros: \***
+    - `Header jwt `: De tipo administrador
 
 ### Módulo de Shipments
 
@@ -120,7 +126,7 @@ Este proyecto gestiona los envíos realizados por los Ingenios durante el period
     }
     ```
 
-- **Endpoint para obtener un envío por código de generación** `GET /shipments/{codigo_gen}` 
+- **Endpoint para obtener un envío por código de generación** `GET /shipments/{codigo_gen}`
 
 - **Endpoint para obtener envíos por ingenio (con paginación y filtrado por fecha)** `GET /shipments/{codigo_ingenio}` (LISTO)
 

@@ -3,19 +3,19 @@ export interface NotificationConfig {
   // Templates
   templateName?: string;
   templatesByRole?: Record<number, string>;
-  
+
   // Destinatarios
-  codigos?: string[];           // Modo 1: Lista de códigos específicos
-  roles?: number[];             // Modo 2: Lista de roles
+  codigos?: string[]; // Modo 1: Lista de códigos específicos
+  roles?: number[]; // Modo 2: Lista de roles
   roleFilters?: Record<number, string[]>; // Modo 3: Roles con códigos específicos
-  
+
   // Modo 4: Configuración mixta
   mixedTargets?: {
-    allUsersInRoles?: number[];            // Roles donde se envía a TODOS los usuarios
+    allUsersInRoles?: number[]; // Roles donde se envía a TODOS los usuarios
     specificUsers?: Record<number, string[]>; // Roles con códigos específicos
-    specificCodes?: string[];              // Códigos individuales sin importar rol
+    specificCodes?: string[]; // Códigos individuales sin importar rol
   };
-  
+
   // Contenido
   subject: string;
   templateData: Record<string, any>;

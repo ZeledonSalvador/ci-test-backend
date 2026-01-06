@@ -1,7 +1,12 @@
 // src/modules/operation-times/types/operation-time.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+} from 'typeorm';
 
-@Entity({ name: 'ShipmentsTimes', schema: 'dbo' }) 
+@Entity({ name: 'ShipmentsTimes', schema: 'dbo' })
 export class OperationTime {
   @PrimaryGeneratedColumn()
   id: number;

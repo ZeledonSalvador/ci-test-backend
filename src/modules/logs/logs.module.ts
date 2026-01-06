@@ -13,7 +13,7 @@ import { TransactionLogsController } from './controllers/transaction-logs.contro
 import { IngenioLogEntity } from 'src/models/IngenioLogEntity';
 import { IngenioLogsController } from './controllers/ingenio-logs.controller';
 import { IngenioLogsService } from './services/ingenio-logs.service';
-import { AuthModule } from 'src/modules/auth/auth.module'; 
+import { AuthModule } from 'src/modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -25,10 +25,24 @@ import { AuthModule } from 'src/modules/auth/auth.module';
       TransactionLogEntity,
       IngenioLogEntity,
     ]),
-    AuthModule 
+    AuthModule,
   ],
-  controllers: [LogsShipmentsController, TransactionLogsController, IngenioLogsController],
-  providers: [LogsShipmentsService, LogsSystemService, TransactionLogsService, IngenioLogsService],
-  exports: [LogsShipmentsService, LogsSystemService, TransactionLogsService, IngenioLogsService],
+  controllers: [
+    LogsShipmentsController,
+    TransactionLogsController,
+    IngenioLogsController,
+  ],
+  providers: [
+    LogsShipmentsService,
+    LogsSystemService,
+    TransactionLogsService,
+    IngenioLogsService,
+  ],
+  exports: [
+    LogsShipmentsService,
+    LogsSystemService,
+    TransactionLogsService,
+    IngenioLogsService,
+  ],
 })
 export class LogsModule {}
